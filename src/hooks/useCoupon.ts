@@ -1,23 +1,32 @@
-import { useContractFunction, useEthers } from '@usedapp/core';
-import { Coupon } from '../../types/ethers/Coupon';  // Import TypeChain-generated type
-import { ethers, Contract } from 'ethers';
-import ABIs from "../../ABIs.json"
+import { Contract, ethers } from 'ethers';
+import ABIs from "../constants/ABIs.json"
+import { useBlockchainContext } from '../contexts/BlockchainContextProvider';
+import { ContractAddresses } from '../types/ContractAddresses';
+import { Coupon } from '../../types/ethers';
+import { useEthers } from '@usedapp/core';
+import { useProvider } from './useProvider';
+import { useMemo, useRef } from 'react';
+import { useRenderCount } from './useDebug';
 
-const useCoupon = () => {
-  const { library } = useEthers();
-  const couponAddress = 'YOUR_CONTRACT_ADDRESS_HERE';
-
-  if (!library) throw Error("Provider not initialized");
-
-  // Create a Contract instance and assert the correct type
-  const couponContract = new Contract(
-    couponAddress,
-    ABIs.Coupon,
-    library.getSigner()
-  ) as unknown as Coupon;  // Type assertion here
-
-  // Now you can use couponContract as a Coupon instance with all methods strongly typed
-  return couponContract;
+//Never import this directly. Call the blockchain context
+const useCoupon = (addresses: ContractAddresses | null): Coupon | undefined => {
+    useRenderCount("useCoupon",false)
+    const provider = useProvider();
+    // Create a Contract instance and assert the correct type
+    return useMemo(() => {
+        if (provider && addresses && addresses.Coupon) {
+            const signer = provider.getSigner()
+            const couponContract = new Contract(
+                addresses.Coupon,
+                ABIs.Coupon,
+                signer
+            ) as unknown as Coupon;  // Type assertion here
+            console.log('coupon address ' + couponContract.address)
+            // Now you can use issuerContract as a Issuer instance with all methods strongly typed
+            return couponContract;
+        }
+        return undefined
+    }, [provider, addresses])
 };
 
 export default useCoupon

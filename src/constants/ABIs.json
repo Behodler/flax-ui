@@ -1,4 +1,25 @@
 {
+  "AddressToString": [
+    {
+      "type": "function",
+      "name": "toAsciiString",
+      "inputs": [
+        {
+          "name": "x",
+          "type": "address",
+          "internalType": "address"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "",
+          "type": "string",
+          "internalType": "string"
+        }
+      ],
+      "stateMutability": "pure"
+    }
+  ],
   "CommonBase": [],
   "Context": [],
   "Counter": [
@@ -1747,6 +1768,28 @@
         }
       ],
       "anonymous": false
+    }
+  ],
+  "DeployContracts": [
+    {
+      "type": "function",
+      "name": "IS_SCRIPT",
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "",
+          "type": "bool",
+          "internalType": "bool"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "run",
+      "inputs": [],
+      "outputs": [],
+      "stateMutability": "nonpayable"
     }
   ],
   "ERC20": [
@@ -4530,6 +4573,19 @@
     },
     {
       "type": "function",
+      "name": "burnBurnable",
+      "inputs": [
+        {
+          "name": "tokenAddress",
+          "type": "address",
+          "internalType": "address"
+        }
+      ],
+      "outputs": [],
+      "stateMutability": "nonpayable"
+    },
+    {
+      "type": "function",
       "name": "couponContract",
       "inputs": [],
       "outputs": [
@@ -5005,6 +5061,20 @@
     },
     {
       "type": "function",
+      "name": "testFail_burnNonBurnableToken",
+      "inputs": [],
+      "outputs": [],
+      "stateMutability": "nonpayable"
+    },
+    {
+      "type": "function",
+      "name": "testFail_burnNonWhitelistedToken",
+      "inputs": [],
+      "outputs": [],
+      "stateMutability": "nonpayable"
+    },
+    {
+      "type": "function",
       "name": "testIssueBurnableToken",
       "inputs": [],
       "outputs": [],
@@ -5027,6 +5097,20 @@
     {
       "type": "function",
       "name": "testMintingExceedsLimit",
+      "inputs": [],
+      "outputs": [],
+      "stateMutability": "nonpayable"
+    },
+    {
+      "type": "function",
+      "name": "test_burnBurnableToken",
+      "inputs": [],
+      "outputs": [],
+      "stateMutability": "nonpayable"
+    },
+    {
+      "type": "function",
+      "name": "test_burnZeroBalance",
       "inputs": [],
       "outputs": [],
       "stateMutability": "nonpayable"
