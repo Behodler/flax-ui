@@ -1,10 +1,40 @@
 import { ContractTransaction } from 'ethers';
 
-export default function Broadcast(transaction: Promise<ContractTransaction>, onInitiate: () => void, onSign: () => void, onSuccess: () => void, onReject: () => void, onFail: () => void) {
-    onInitiate()
+export enum TransactionProgress {
+    dormant,
+    triggered,
+    signed,
+    confirmed,
+    rejected,
+    failed
+}
+
+export interface IProgressSetter {
+    (state: TransactionProgress): void
+}
+
+export function Broadcast(transaction: Promise<ContractTransaction>, setProgress: IProgressSetter, endTimeout: number) {
+    setProgress(TransactionProgress.triggered)
     transaction.then((tx) => {
-        onSign()
-        tx.wait().then(onSuccess)
-        .catch(onFail)
-    }).catch(onReject)
+        setProgress(TransactionProgress.signed)
+        tx.wait().then(() => {
+            setProgress(TransactionProgress.confirmed)
+            setTimeout(() => {
+                setProgress(TransactionProgress.dormant)
+            }, endTimeout * 1000)
+        })
+            .catch(() => {
+                setProgress(TransactionProgress.failed)
+                setTimeout(() => {
+                    setProgress(TransactionProgress.dormant)
+                }, endTimeout * 1000)
+            })
+    }).catch(() => {
+        setProgress(TransactionProgress.rejected)
+        setTimeout(() => {
+            setProgress(TransactionProgress.dormant)
+        }, endTimeout * 1000)
+    })
+
+
 }

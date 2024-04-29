@@ -5,12 +5,23 @@ import useCoupon from './hooks/useCoupon';
 import { TransactionState, useContractFunction, useEthers } from '@usedapp/core';
 import { Contract, ContractTransaction } from 'ethers';
 import { ControlCamera } from '@mui/icons-material';
-import Broadcast from './extensions/Broadcast';
+import { Broadcast, TransactionProgress } from './extensions/Broadcast';
+
+const progressTextMapper = (progress: TransactionProgress) => {
+  switch (progress) {
+    case TransactionProgress.dormant: return "Dormant"
+    case TransactionProgress.confirmed: return "Confirmed"
+    case TransactionProgress.rejected: return "Rejected"
+    case TransactionProgress.failed: return "Failed"
+    case TransactionProgress.signed: return "Signed"
+    case TransactionProgress.triggered: return "Triggered"
+  }
+}
 
 function App() {
   const { contracts, account } = useBlockchainContext()
   const [info, setInfo] = useState<string[]>([])
-
+  const [minterTXProgress, setMinterTxProgress] = useState<TransactionProgress>(TransactionProgress.dormant)
   useEffect(() => {
     if (account) {
       const getNames = async (contracts: Contracts) => {
@@ -33,19 +44,14 @@ function App() {
     console.log('contracts changed')
   }, [contracts])
 
-  const onInitiate = () => console.log('Button Clicked')
-  const onSign = () => console.log('Metamask signed')
-  const onConfirm = () => console.log('TX Confirmed')
-  const onFail = () => console.log('Tx failed')
-  const onReject = () => console.log('Metamask rejected')
-  function DoSomething() {
-    Broadcast(contracts.coupon.mint(10000, account), onInitiate, onSign, onConfirm, onReject, onFail)
 
+  function DoSomething() {
+    Broadcast(contracts.coupon.setMinter(account, true), setMinterTxProgress, 5)
 
   }
   return (
     <div className="App">
-
+      <h2>{progressTextMapper(minterTXProgress)}</h2>
       {info.length > 0 ? JSON.stringify(info, null, 4) : "nothing loaded"}
       <input type="button" onClick={DoSomething} value="setMinter to self" />
     </div>
