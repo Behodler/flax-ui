@@ -8,6 +8,7 @@ export { CounterTest__factory } from "./CounterTest__factory";
 export { Coupon__factory } from "./Coupon__factory";
 export { CouponTest__factory } from "./CouponTest__factory";
 export { DeployContracts__factory } from "./DeployContracts__factory";
+export { DeployMulticall2__factory } from "./DeployMulticall2__factory";
 export { ERC20__factory } from "./ERC20__factory";
 export { ICoupon__factory } from "./ICoupon__factory";
 export { IERC1155Errors__factory } from "./IERC1155Errors__factory";
