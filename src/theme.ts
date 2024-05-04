@@ -36,6 +36,18 @@ const theme = createTheme({
       lineHeight: '20px',
       color: 'rgb(122, 138, 153)',
     },
+    h2: { // Assuming subtitle1 for subtext
+      fontWeight: 400,
+      fontSize: '35px',
+      lineHeight: '40px',
+      color: 'white',
+    },
+    h5:{
+      fontWeight: 500,
+      fontSize: '15px',
+      lineHeight: '20px',
+      color: 'white',
+    }
   },
 });
 

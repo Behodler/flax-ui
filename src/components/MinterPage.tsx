@@ -1,6 +1,7 @@
 import React from 'react';
 import { Grid, Container, Box } from '@mui/material';
-
+import BalanceHeader
+ from './BalanceHeader';
 const MinterPage = () => {
   return (
     <Container maxWidth={false} disableGutters>
@@ -14,10 +15,10 @@ const MinterPage = () => {
               justifyContent="center"
               alignItems="stretch"
             >
-              <Grid item style={{ height: '152px', border: '1px solid orange', marginBottom: '30px' }}>
-              Balance header goes header
+              <Grid item style={{ height: '152px', marginBottom: '30px' }}>
+               <BalanceHeader />
               </Grid>
-              <Grid item style={{ minHeight: '600px', border: '1px solid orange' }}>
+              <Grid item style={{ minHeight: '600px',}}>
                 Asset list and actions go here in a grid
               </Grid>
             </Grid>
