@@ -2,6 +2,7 @@ import React from 'react';
 import { Grid, Container, Box } from '@mui/material';
 import BalanceHeader
  from './BalanceHeader';
+import AssetList from './AssetList';
 const MinterPage = () => {
   return (
     <Container maxWidth={false} disableGutters>
@@ -19,7 +20,7 @@ const MinterPage = () => {
                <BalanceHeader />
               </Grid>
               <Grid item style={{ minHeight: '600px',}}>
-                Asset list and actions go here in a grid
+                <AssetList/>
               </Grid>
             </Grid>
 
