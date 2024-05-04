@@ -14,7 +14,7 @@ function App() {
 
   return (
     <ThemeProvider theme={theme}>
-      <div>
+      <div style={ {overflowX: 'hidden'}}>
         <MinterPage />
       </div>
     </ThemeProvider>
