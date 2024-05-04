@@ -14,13 +14,14 @@ const MinterPage = () => {
               justifyContent="center"
               alignItems="stretch"
             >
-              <Grid item style={{ height: '172px', border: '1px solid orange' }}>
-                {/* Content for the first row (fixed height) */}
+              <Grid item style={{ height: '152px', border: '1px solid orange', marginBottom: '30px' }}>
+              Balance header goes header
               </Grid>
               <Grid item style={{ minHeight: '600px', border: '1px solid orange' }}>
-                <Box sx={{ height: '800px', width: '600px', color: 'white', padding: 4, backgroundColor: 'white', boxSizing: 'border-box' }} />
+                Asset list and actions go here in a grid
               </Grid>
             </Grid>
+
           </Box>
         </Grid>
         <Grid item xs={false} sm={1} md={true} style={{ flexGrow: 1 }} />
