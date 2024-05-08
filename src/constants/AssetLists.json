@@ -1,0 +1,91 @@
+{
+    "1": [
+        {
+            "address": "0x712516e61c8b383df4a63cfe83d7701bce54b03e",
+            "image": "eye",
+            "friendlyName": "Eye",
+            "AMMs": [
+                {
+                    "location": "uni",
+                    "type": "base",
+                    "url": "#/swap?inputCurrency=ETH&outputCurrency=0x155ff1A85F440EE0A382eA949f24CE4E0b751c65"
+                },
+                {
+                    "location": "behodler",
+                    "type": "base",
+                    "url": "https://app.behodler.io/swap"
+                }
+            ]
+        },
+        {
+            "address": "0x05aa229aec102f78ce0e852a812a388f076aa555",
+            "image": "scx",
+            "friendlyName": "Scarcity"
+        },
+        {
+            "address": "0xbcf26943c0197d2ee0e5d05c716be60cc2761508",
+            "image": "scxEye",
+            "friendlyName": "SCX/EYE LP (Uni-V2)",
+            "AMMs": [
+                {
+                    "location": "uni",
+                    "type": "LP",
+                    "url": "add/v2/0x155ff1A85F440EE0A382eA949f24CE4E0b751c65/0x1B8568FbB47708E9E9D31Ff303254f748805bF21"
+                }
+            ]
+        },
+        {
+            "address": "0x0f5d1ef48f12b6f691401bfe88c2037c690a6afe",
+            "image": "pyroScxEth",
+            "friendlyName": "Pyro (SCX/ETH)",
+            "AMMs": [
+                {
+                    "location": "behodler",
+                    "type": "pyro",
+                    "url": "https://app.behodler.io/"
+                }
+            ]
+        }
+    ],
+    "31337": [
+        {
+            "address": "0x712516e61c8b383df4a63cfe83d7701bce54b03e",
+            "image": "eye",
+            "friendlyName": "Eye",
+            "AMMs": [
+                {
+                    "location": "uni",
+                    "type": "base",
+                    "url": "0x0/0x1"
+                },
+                {
+                    "location": "behodler",
+                    "type": "base",
+                    "url": "https://app.behodler.io/swap"
+                }
+            ]
+        },
+        {
+            "address": "0x05aa229aec102f78ce0e852a812a388f076aa555",
+            "image": "scx",
+            "friendlyName": "Scarcity"
+        },
+        {
+            "address": "0xbcf26943c0197d2ee0e5d05c716be60cc2761508",
+            "image": "scxEye",
+            "friendlyName": "SCX/EYE LP (Uni-V2)",
+            "AMMs": [
+                {
+                    "location": "uni",
+                    "type": "LP",
+                    "url": "add/v2/0x155ff1A85F440EE0A382eA949f24CE4E0b751c65/0x1B8568FbB47708E9E9D31Ff303254f748805bF21"
+                }
+            ]
+        },
+        {
+            "address": "0x0f5d1ef48f12b6f691401bfe88c2037c690a6afe",
+            "image": "pyroScxEth",
+            "friendlyName": "Pyro (SCX/ETH)"
+        }
+    ]
+}

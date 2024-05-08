@@ -6,6 +6,7 @@ import { useEthers, useBlockNumber } from '@usedapp/core';
 import { ethers } from 'ethers';
 
 const BalanceHeader = () => {
+
     const [balance, setBalance] = useState<string>("0.0000")
     const { contracts, account } = useBlockchainContext()
     const blockNumber = useBlockNumber();
