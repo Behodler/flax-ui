@@ -22,7 +22,6 @@ const AssetList = () => {
     const { chainId, account } = useBlockchainContext()
     const [assets, setAssets] = useState<AssetProps[]>(loadList(chainId))
     const assetAddresses = assets.map(a => a.address)
-    console.log('addresses ' + JSON.stringify(assetAddresses, null, 4))
     useEffect(() => {
         if (chainId)
             setAssets(assetList[chainId.toString()])

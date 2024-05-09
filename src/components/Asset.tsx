@@ -1,4 +1,4 @@
-import { Grid, Link, ListItem, ListItemButton, Typography } from '@mui/material';
+import { Grid, Link, ListItem, ListItemButton, Tooltip, Typography } from '@mui/material';
 import React, { useEffect, useState } from 'react';
 import { useBlockchainContext } from '../contexts/BlockchainContextProvider';
 
@@ -6,14 +6,15 @@ import eye from "../images/eye.png"
 import { acceptableImages, getImagePath } from '../extensions/ImageMapper';
 import { useBlockNumber, useTokenBalance } from '@usedapp/core';
 import { BigNumber, ethers } from 'ethers';
-import { formatUnits } from 'ethers/lib/utils';
 import behodler from "../images/behodler.png"
 import uniswap from "../images/uniswap.png"
+
 interface AMM {
     location: "uni" | "behodler"
     type: "base" | "LP" | "pyro",
     url: string
 }
+
 
 export interface AssetProps {
     address: string,
@@ -32,11 +33,13 @@ const baseAMMURL = (amm: AMM) => {
     return { url: domain + amm.url, isUni }
 }
 
-const getAMMLink = (amm: AMM) => {
-    const { url, isUni } = baseAMMURL(amm)
 
-    const title = "Get on " + (isUni ? "Uniswap" : "Behodler")
-    return <img width="30px" src={isUni ? uniswap : behodler} title={title} onClick={() => window.open(url, "_blank")} />
+const getAMMLink = (amm: AMM, muiKey: number) => {
+    const { url, isUni } = baseAMMURL(amm)
+    const buyPhrase = amm.type === "LP" || amm.type === "pyro" ? "Mint on " : "Buy from ";
+    const title = buyPhrase + (isUni ? "Uniswap" : "Behodler")
+    return <Tooltip key={muiKey} title={title}><img width="30px" src={isUni ? uniswap : behodler} style={{ margin: "0 5px 0 0" }} onClick={() => window.open(url, "_blank")} />
+    </Tooltip>
 }
 
 export function Asset(props: { children: AssetProps }) {
@@ -49,12 +52,10 @@ export function Asset(props: { children: AssetProps }) {
     const { contracts } = useBlockchainContext()
     const inputs = contracts.inputs
     const selectedInput = inputs.filter(input => input.address === asset.address)[0]
-    console.log('block number ' + blockNumber)
     useEffect(() => {
         const fetchBalance = async () => {
             if (account && selectedInput && inputs.length > 0) {
                 try {
-                    console.log('trying to call balance on selectedInput ' + selectedInput.address)
                     const balanceValue = await selectedInput.balanceOf(account);
                     const formattedBalance = ethers.utils.formatEther(balanceValue);
                     const balanceFixed = parseFloat(formattedBalance).toFixed(4); // Ensure it always has 4 decimal places
@@ -71,8 +72,7 @@ export function Asset(props: { children: AssetProps }) {
 
 
     const image = <img src={imagePath.default || imagePath} style={{ height: '40px' }} />
-    const ammURLS = asset.AMMs?.map(amm => baseAMMURL(amm))
-    const ammLinks = asset.AMMs?.map(amm => getAMMLink(amm))
+    const ammLinks = asset.AMMs?.map((amm, index) => getAMMLink(amm, index))
     //carry on here
     return <ListItem
         key={asset.address}
@@ -96,7 +96,7 @@ export function Asset(props: { children: AssetProps }) {
 
                 </Grid>
                 <Grid item xs>
-                   {ammLinks}
+                    {ammLinks}
                 </Grid>
             </Grid>
         </ListItemButton>

@@ -15,7 +15,6 @@ const useERC20s = (addresses: ContractAddresses | null): Coupon[] | undefined =>
         if (addresses && addresses.Inputs && provider) {
             const signer = provider.getSigner();
             return addresses.Inputs.map(address => {
-                console.log('wrapping contract for ' + address)
                 return new Contract(
                     address,
                     ABIs.Coupon,

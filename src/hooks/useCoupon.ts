@@ -21,7 +21,6 @@ const useCoupon = (addresses: ContractAddresses | null): Coupon | undefined => {
                 ABIs.Coupon,
                 signer
             ) as unknown as Coupon;  // Type assertion here
-            console.log('coupon address ' + couponContract.address)
             // Now you can use issuerContract as a Issuer instance with all methods strongly typed
             return couponContract;
         }

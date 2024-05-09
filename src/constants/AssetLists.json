@@ -68,7 +68,14 @@
         {
             "address": "0x05aa229aec102f78ce0e852a812a388f076aa555",
             "image": "scx",
-            "friendlyName": "Scarcity"
+            "friendlyName": "Scarcity",
+            "AMMs": [
+                {
+                    "location": "behodler",
+                    "type": "base",
+                    "url": "https://app.behodler.io/"
+                }
+            ]
         },
         {
             "address": "0xbcf26943c0197d2ee0e5d05c716be60cc2761508",
@@ -85,7 +92,14 @@
         {
             "address": "0x0f5d1ef48f12b6f691401bfe88c2037c690a6afe",
             "image": "pyroScxEth",
-            "friendlyName": "Pyro (SCX/ETH)"
+            "friendlyName": "Pyro (SCX/ETH)",
+            "AMMs": [
+                {
+                    "location": "behodler",
+                    "type": "pyro",
+                    "url": "https://app.behodler.io/"
+                }
+            ]
         }
     ]
 }
