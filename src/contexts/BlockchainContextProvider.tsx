@@ -57,12 +57,6 @@ export const BlockchainContextProvider: React.FC<BlockchainProviderProps> = ({ c
         getChainIdFromMetamask()
     }, [active, account, ethWindow.ethereum]);
 
-
-    // Derive the currentChainID based on presence of window.ethereum and account
-    const currentChainID = !ethWindow.ethereum ? ChainID.absent
-        : !account ? ChainID.disconnected
-            : chainId as ChainID;
-
     if (!contracts || !account) return <h1>loading...</h1>
 
     return (

@@ -19,36 +19,47 @@ const theme = createTheme({
     allVariants: {
       color: 'rgb(255, 255, 255)',
     },
-    h6: { // Assuming h6 for header text based on size
+    h6: {
       fontWeight: 500,
       fontSize: '11px',
       lineHeight: '16px',
       color: 'rgb(122, 138, 153)',
     },
-    body1: { // Assuming body1 for main content text
+    body1: {
       fontWeight: 400,
       fontSize: '15px',
       lineHeight: '20px',
     },
-    subtitle1: { // Assuming subtitle1 for subtext
+    subtitle1: {
       fontWeight: 400,
       fontSize: '13px',
       lineHeight: '20px',
       color: 'rgb(122, 138, 153)',
     },
-    h2: { // Assuming subtitle1 for subtext
+    h2: {
       fontWeight: 400,
       fontSize: '35px',
       lineHeight: '40px',
       color: 'white',
     },
-    h5:{
+    h5: {
       fontWeight: 500,
       fontSize: '15px',
       lineHeight: '20px',
       color: 'white',
     }
   },
+  components: {
+    MuiButton: {
+      styleOverrides: {
+        root: {
+          "&.Mui-disabled": {
+            color: 'rgba(255, 255, 255, 0.3)'
+          }
+        }
+      }
+    }
+  }
 });
 
 export default theme;

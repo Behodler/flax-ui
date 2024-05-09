@@ -8,20 +8,9 @@ import { useBlockNumber, useTokenBalance } from '@usedapp/core';
 import { BigNumber, ethers } from 'ethers';
 import behodler from "../images/behodler.png"
 import uniswap from "../images/uniswap.png"
-
-interface AMM {
-    location: "uni" | "behodler"
-    type: "base" | "LP" | "pyro",
-    url: string
-}
+import { AMM, AssetProps } from '../types/Assets';
 
 
-export interface AssetProps {
-    address: string,
-    image: acceptableImages,
-    friendlyName: string,
-    AMMs?: AMM[]
-}
 
 const baseAMMURL = (amm: AMM) => {
     const isUni = amm.type == "LP" || amm.location == "uni"

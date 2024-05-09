@@ -3,12 +3,11 @@ import assetJSON from "../constants/AssetLists.json"
 import { useBlockchainContext } from '../contexts/BlockchainContextProvider';
 import { useBlockNumber, useEthers } from '@usedapp/core';
 import { Paper, Typography, List, ListItem, ListItemButton } from '@mui/material';
-import { Asset, AssetProps } from './Asset';
+import { Asset } from './Asset';
+import { AssetProps, Assets } from '../types/Assets';
 
 
-type Assets = {
-    [key: string]: AssetProps[];
-};
+
 const assetList = assetJSON as Assets
 const loadList = (chainId: number | undefined) => {
     if (chainId) {
@@ -19,12 +18,15 @@ const loadList = (chainId: number | undefined) => {
 
 const AssetList = () => {
 
-    const { chainId, account } = useBlockchainContext()
+    const { chainId,setSelectedAssetId } = useBlockchainContext()
     const [assets, setAssets] = useState<AssetProps[]>(loadList(chainId))
     const assetAddresses = assets.map(a => a.address)
     useEffect(() => {
-        if (chainId)
-            setAssets(assetList[chainId.toString()])
+        if (chainId){
+            const currentAssets = assetList[chainId.toString()]
+            setAssets(currentAssets)
+            setSelectedAssetId(currentAssets[0].address)
+        }
     }, [chainId])
 
     return <Paper style={{ padding: '20px', backgroundColor: '#1D2833', color: 'white', minHeight: "500px" }}>
