@@ -1,26 +1,37 @@
 import React, { ReactNode, createContext, useContext, useEffect, useState } from 'react';
 import { useEthers, MultiCall } from '@usedapp/core';
-import { ChainID } from '../types/ChainID';
+import { ChainID } from '../types/ChainID'
 import { Coupon, ERC20, Issuer } from '../../types/ethers';
 import useAddresses from '../hooks/useAddresses'; // Updated import for renamed hook
 import { useContracts } from '../hooks/useContracts';
-import { ethers, providers } from 'ethers';
+import { BigNumber, ethers, providers } from 'ethers';
+import _ from 'lodash';
+
 
 export interface Contracts {
     coupon: Coupon;
     issuer: Issuer;
-    inputs: Coupon[];
+    inputs: ERC20[];
 }
-
+export interface DynamicTokenInfo {
+    balance:BigNumber
+    burnable:boolean
+    teraCouponPerToken:BigNumber
+}
 interface BlockchainContextType {
     chainId: ChainID;
     contracts: Contracts;
     account: string
     selectedAssetId: string,
     setSelectedAssetId: (assetId: string) => void
+    dynamicTokenInfo: Record<string, DynamicTokenInfo>
+    updateDyamicTokenInfo: (address: string, value: DynamicTokenInfo) => void
 }
 
-const BlockchainContext = createContext<BlockchainContextType>({ chainId: ChainID.disconnected, contracts: {} as any, account: "0x0", selectedAssetId: '', setSelectedAssetId: (id: string) => { } });
+const BlockchainContext = createContext<BlockchainContextType>({
+    chainId: ChainID.disconnected, contracts: {} as any, account: "0x0", selectedAssetId: '',
+    setSelectedAssetId: (id: string) => { }, dynamicTokenInfo: {}, updateDyamicTokenInfo: (address, value) => { }
+});
 
 interface BlockchainProviderProps {
     children: ReactNode;
@@ -37,6 +48,8 @@ export const BlockchainContextProvider: React.FC<BlockchainProviderProps> = ({ c
     const contracts = useContracts(addresses)
     const ethWindow: EthWindow = (window as unknown) as EthWindow
     const [derivedChainId, setDerivedChainId] = useState<ChainID>(ChainID.absent)
+    const [dynamicTokenInfo, setDynamicTokenInfo] = useState<Record<string, DynamicTokenInfo>>({})
+
     // console.log(`active ${active}, account ${!!account}`)
     useEffect(() => {
         if ((!account || !active) && ethWindow.ethereum) {
@@ -57,10 +70,18 @@ export const BlockchainContextProvider: React.FC<BlockchainProviderProps> = ({ c
         getChainIdFromMetamask()
     }, [active, account, ethWindow.ethereum]);
 
+    const updateBalance = (address: string, value: DynamicTokenInfo) => {
+        if (!_.isEqual(dynamicTokenInfo[address], value)) {
+            const newBalanceMap = _.clone(dynamicTokenInfo)
+            newBalanceMap[address] = value
+            setDynamicTokenInfo(newBalanceMap)
+        }
+    }
+   
     if (!contracts || !account) return <h1>loading...</h1>
 
     return (
-        <BlockchainContext.Provider value={{ chainId: derivedChainId, contracts, account, selectedAssetId, setSelectedAssetId }}>
+        <BlockchainContext.Provider value={{ chainId: derivedChainId, contracts, account, selectedAssetId, setSelectedAssetId, dynamicTokenInfo: dynamicTokenInfo, updateDyamicTokenInfo: updateBalance }}>
             {children}
         </BlockchainContext.Provider>
     );

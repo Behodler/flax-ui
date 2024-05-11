@@ -1,14 +1,17 @@
 import { Grid, Link, ListItem, ListItemButton, Tooltip, Typography } from '@mui/material';
 import React, { useEffect, useState } from 'react';
-import { useBlockchainContext } from '../contexts/BlockchainContextProvider';
+import { DynamicTokenInfo, useBlockchainContext } from '../contexts/BlockchainContextProvider';
 
-import eye from "../images/eye.png"
+import burn from "../images/burn.png"
+import lock from "../images/padlock.png"
 import { acceptableImages, getImagePath } from '../extensions/ImageMapper';
 import { useBlockNumber, useTokenBalance } from '@usedapp/core';
 import { BigNumber, ethers } from 'ethers';
 import behodler from "../images/behodler.png"
 import uniswap from "../images/uniswap.png"
 import { AMM, AssetProps } from '../types/Assets';
+import { useDeepCompareEffect } from '../hooks/useDeepCompareEffect';
+import { TeraToString } from '../extensions/Utils';
 
 
 
@@ -36,19 +39,21 @@ export function Asset(props: { children: AssetProps }) {
     const { children: asset } = props
     const imagePath = require(`../images/${getImagePath(asset.image)}`);
     const { account } = useBlockchainContext()
-    const [balance, setBalance] = useState<string>("0.0000")
     const blockNumber = useBlockNumber();
-    const { contracts } = useBlockchainContext()
+    const { contracts, dynamicTokenInfo, updateDyamicTokenInfo: updateBalance } = useBlockchainContext()
+    const [currentBalance, setCurrentBalance] = useState<string | undefined>(undefined)
     const inputs = contracts.inputs
     const selectedInput = inputs.filter(input => input.address === asset.address)[0]
-    useEffect(() => {
+
+    const selectedDynamic = selectedInput !== undefined ? dynamicTokenInfo[selectedInput.address] : undefined
+
+    useDeepCompareEffect(() => {
         const fetchBalance = async () => {
             if (account && selectedInput && inputs.length > 0) {
                 try {
-                    const balanceValue = await selectedInput.balanceOf(account);
-                    const formattedBalance = ethers.utils.formatEther(balanceValue);
-                    const balanceFixed = parseFloat(formattedBalance).toFixed(4); // Ensure it always has 4 decimal places
-                    setBalance(balanceFixed);
+                    const balance = await selectedInput.balanceOf(account);
+                    const { burnable, teraCouponPerToken } = await contracts.issuer.whitelist(selectedInput.address)
+                    updateBalance(selectedInput.address, { balance, burnable, teraCouponPerToken })
                 } catch (error) {
                     console.error('Failed to fetch balance:', error);
                 }
@@ -56,12 +61,29 @@ export function Asset(props: { children: AssetProps }) {
         };
 
         fetchBalance();
-    }, [account, blockNumber]); // Re-run when account or block number changes
+    }, [account, blockNumber, dynamicTokenInfo]); // NOTE:if list grows long and rendering gets too heavy, remove balanceMap dependency
 
+    useDeepCompareEffect(() => {
+        if (selectedInput && selectedDynamic) {
+            const formattedBalance = ethers.utils.formatEther(dynamicTokenInfo[selectedInput.address].balance);
+            const balanceFixed = parseFloat(formattedBalance).toFixed(4); // Ensure it always has 4 decimal places
+            setCurrentBalance(balanceFixed);
+        }
+    }, [dynamicTokenInfo])
 
 
     const image = <img src={imagePath.default || imagePath} style={{ height: '40px' }} />
     const ammLinks = asset.AMMs?.map((amm, index) => getAMMLink(amm, index))
+    let burnableImage = <></>
+    let mintPrice = ""
+    if (selectedDynamic !== undefined) {
+        const burnMessage = `Deposit ${selectedDynamic.burnable ? "burnt" : "permanently locked"} on Flax minting`
+        const burnSource = selectedDynamic.burnable ? burn : lock
+        burnableImage = <Tooltip title={burnMessage}><img width="30px" src={burnSource} style={{ margin: "5px 0 0 0" }} />
+        </Tooltip>
+        mintPrice = TeraToString(selectedDynamic.teraCouponPerToken)
+    }
+    const mintMessage = `1 ${asset.friendlyName} mints ${mintPrice} Flax`
     //carry on here
     return <ListItem
         key={asset.address}
@@ -80,12 +102,30 @@ export function Asset(props: { children: AssetProps }) {
                         {asset.friendlyName}
                     </Typography>
                     <Typography variant="subtitle1" style={{ cursor: 'pointer' }}>
-                        SCX. Wallet balance: {balance}
+                        SCX. Wallet balance: {currentBalance === undefined ? <i>fetching...</i> : <>{currentBalance}</>}
                     </Typography>
 
                 </Grid>
-                <Grid item xs>
-                    {ammLinks}
+                <Grid item xs >
+                    <Grid
+                        container
+                        direction="row"
+                        justifyContent="left"
+                        alignItems="center"
+                    >
+                        <Grid item style={{ width: "110px" }}>
+                            {ammLinks}
+                        </Grid>
+                        <Grid item style={{ width: "30px" }} >
+                            {burnableImage}
+                        </Grid>
+                        <Grid item style={{ width: "100px" }}>
+                            <Tooltip title={mintMessage}>
+                                <Typography style={{ marginTop: "5px", textAlign: "right" }} variant="h3"> {mintPrice} FLX</Typography>
+                            </Tooltip>
+                        </Grid>
+                    </Grid>
+
                 </Grid>
             </Grid>
         </ListItemButton>

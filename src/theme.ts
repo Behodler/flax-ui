@@ -42,6 +42,12 @@ const theme = createTheme({
       lineHeight: '40px',
       color: 'white',
     },
+    h3: {
+      fontWeight: 500,
+      fontSize: '13px',
+      lineHeight: '16px',
+      color: 'rgb(142, 158, 173)',
+    },
     h5: {
       fontWeight: 500,
       fontSize: '15px',

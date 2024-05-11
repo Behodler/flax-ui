@@ -6,12 +6,13 @@ interface TransactionButtonProps {
     transactionGetter: () => Promise<ContractTransaction>,
     progress: TransactionProgress
     progressSetter: IProgressSetter,
+    invalid?:boolean
     children: any
 }
 
 export default function TransactionButton(props: TransactionButtonProps
 ) {
-    const enabled = props.progress === TransactionProgress.dormant
+    const enabled = props.progress === TransactionProgress.dormant && !props.invalid
     let child: any = getChildProps(props.progress, props.children)
     return <Button disabled={!enabled} onClick={() => Broadcast(props.transactionGetter(), props.progressSetter, 5)}>
         {child}

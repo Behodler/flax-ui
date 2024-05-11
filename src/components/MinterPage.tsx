@@ -1,10 +1,21 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Grid, Container, Box, Paper } from '@mui/material';
 import BalanceHeader
   from './BalanceHeader';
 import AssetList from './AssetList';
 import MintPanel from './MintPanel';
+import { BigNumber } from 'ethers';
+import { useBlockNumber } from '@usedapp/core';
+import { useBlockchainContext } from '../contexts/BlockchainContextProvider';
 const MinterPage = () => {
+  const [flaxAllowance, setFlaxAllowance] = useState<BigNumber>(BigNumber.from(0))
+  const blockNumber = useBlockNumber()
+  const {contracts,chainId} = useBlockchainContext()
+  
+  useEffect(()=>{
+    contracts.issuer.mintAllowance().then(setFlaxAllowance)
+  },[blockNumber,chainId])
+
   return (
     <Container maxWidth={false} disableGutters>
       <Grid container spacing={0} sx={{ backgroundColor: '#0D131A', width: '100vw', minHeight: '100vh', boxSizing: 'border-box' }}>
@@ -33,7 +44,7 @@ const MinterPage = () => {
                     <AssetList />
                   </Grid>
                   <Grid item sx={{ width: '440px' }}>
-                    <MintPanel />
+                    <MintPanel flaxAllowance={flaxAllowance} />
                   </Grid>
                 </Grid>
               </Grid>

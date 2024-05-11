@@ -5,22 +5,42 @@ import { getImagePath } from '../extensions/ImageMapper';
 import assetJSON from "../constants/AssetLists.json"
 import { AssetProps, Assets } from '../types/Assets';
 import { ERC20 } from '../../types/ethers';
-import { ethers } from 'ethers';
+import { BigNumber, ethers } from 'ethers';
 import { useBlockNumber } from '@usedapp/core';
 import TransactionButton from './TransactionButton';
 import { IProgressSetter, TransactionProgress } from '../extensions/Broadcast';
 import IconTextBox from './IconTextBox';
 
-export default function MintPanel() {
-    const { selectedAssetId, chainId, contracts, account } = useBlockchainContext()
+type invalidReasons = "" | "Invalid Input" | "Exceeds Balance" | "Exceeds Flax Mint Allowance"
+export default function MintPanel(props: { flaxAllowance: BigNumber }) {
+    const { selectedAssetId, chainId, contracts, account, dynamicTokenInfo } = useBlockchainContext()
     const blockNumber = useBlockNumber()
     const [asset, setAsset] = useState<AssetProps>()
     const [token, setToken] = useState<ERC20>()
     const [updateChecker, setUpdateChecker] = useState<number>(0)
     const [assetApproved, setAssetApproved] = useState<boolean>(false)
-    // Initialize imageGetter with a default function that returns an empty <div>
     const [imagePath, setImagePath] = useState<any>()
     const [approveProgress, setApproveProgress] = useState<TransactionProgress>(TransactionProgress.dormant)
+    const [mintProgress, setMintProgress] = useState<TransactionProgress>(TransactionProgress.dormant)
+    const [mintText, setMintText] = useState<string>("")
+    const [invalidReason, setInvalidReason] = useState<invalidReasons>("")
+
+
+    useEffect(() => {
+        const floatRegex = /^\d+(\.\d+)?$/;
+        const validInput = floatRegex.test(mintText) && !isNaN(parseFloat(mintText));
+        let reason: invalidReasons = ""
+        if (!validInput) {
+            reason = "Invalid Input"
+        } else if (token) {
+            const mintWei = ethers.utils.parseUnits(mintText, 18)
+            if (mintWei.gt(dynamicTokenInfo[token.address].balance)) {
+                reason = "Exceeds Balance"
+            }
+
+        }
+        setInvalidReason(reason)
+    }, [mintText, props.flaxAllowance])
 
     useEffect(() => {
         if (chainId && selectedAssetId.length > 2) {
@@ -31,7 +51,6 @@ export default function MintPanel() {
     }, [selectedAssetId, chainId])
 
     useEffect(() => {
-
         setUpdateChecker(updateChecker + 1)
     }, [approveProgress])
 
@@ -53,10 +72,12 @@ export default function MintPanel() {
             getApproval()
         }
     }, [token, updateChecker])
-    const cornerImage = !assetApproved && imagePath !== undefined ? <img src={imagePath.default || imagePath} style={{ height: `20px` }} /> : <div></div>
-   const iconImage = <img src={imagePath.default || imagePath} style={{ height: `40px` }} />
-    const iconTextBox =  <IconTextBox cornerImage={iconImage} />;
-   
+
+    const cornerImage = !assetApproved && imagePath !== undefined ? <img src={imagePath || imagePath} style={{ height: `20px` }} /> : <div></div>
+    const iconImage = <img src={imagePath} style={{ height: `40px` }} />
+    const dynamic = token? dynamicTokenInfo[token.address]:undefined
+    const iconTextBox = <IconTextBox text={mintText} setText={setMintText} cornerImage={iconImage} max={dynamic!==undefined ? ethers.utils.formatEther(dynamic.balance) : "0"} invalidReason={invalidReason} />;
+
     return (
         <Paper style={{ height: '300px', padding: '20px', backgroundColor: '#1D2833' }}>
             <Grid
@@ -64,8 +85,8 @@ export default function MintPanel() {
                 direction="column"
                 justifyContent="stretch"  // Ensures vertical stretching
                 alignItems="center"
-                spacing={4}
-                
+                spacing={2}
+
             >
                 <Grid item style={{ width: '100%' }}>
                     <Grid
@@ -95,6 +116,13 @@ export default function MintPanel() {
                         <TransactionButton progressSetter={setApproveProgress} progress={approveProgress} transactionGetter={() => token.approve(contracts.issuer.address, ethers.constants.MaxUint256)} >
                             Approve {asset?.friendlyName} for minting Flax
                         </TransactionButton> : <div>{iconTextBox}</div>}
+                </Grid>
+                <Grid item>
+                    {assetApproved && token && (
+                        <TransactionButton progressSetter={setMintProgress} progress={mintProgress} invalid={invalidReason.length > 0} transactionGetter={() => contracts.issuer.issue(token.address, mintText)} >
+                            Mint Flax
+                        </TransactionButton>
+                    )}
                 </Grid>
             </Grid>
         </Paper>
