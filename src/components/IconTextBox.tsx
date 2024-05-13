@@ -1,18 +1,16 @@
-import React, { useState } from 'react';
 import { TextField, InputAdornment, Button, Box, Typography, Grid } from '@mui/material';
-import { Label } from '@mui/icons-material';
+
+export type invalidReasons = "" | "Invalid Input" | "Exceeds Balance" | "Exceeds Flax Mint Allowance"
 
 interface IconTextBoxProps {
     cornerImage: JSX.Element
     text: string,
     setText: (val: string) => void
     max: string
-    invalidReason: string
+    invalidReason: invalidReasons
 }
 
 const IconTextBox = (props: IconTextBoxProps) => {
-    const [showInvalidReason, setShowInvalidReason] = useState(false);
-
     return (
         <Box sx={{ width: 360, display: 'flex', flexDirection: 'column', alignItems: 'end', position: 'relative' }}>
             <Box sx={{ position: 'absolute', top: '20px', left: '0' }}>
@@ -25,11 +23,7 @@ const IconTextBox = (props: IconTextBoxProps) => {
                 value={props.text}
                 onChange={(event) => {
                     props.setText(event.target.value);
-                    if (props.invalidReason.length === 0)
-                        setShowInvalidReason(false); // Hide invalid reason on text change
-                }}
-                onBlur={() => {
-                    setShowInvalidReason(props.invalidReason !== ''); // Show invalid reason on blur if there's a reason
+
                 }}
                 InputProps={{
                     startAdornment: (
@@ -64,8 +58,8 @@ const IconTextBox = (props: IconTextBoxProps) => {
             />
             <Grid container alignItems="center">
                 <Grid item xs={8}>
-                    {showInvalidReason && (
-                        <Typography variant='h6' sx={{ color: 'red', mt: 1, margin:"-20px 0 0 0"}}>
+                    {props.text.trim().length > 0 && (
+                        <Typography variant='h6' sx={{ color: 'red', mt: 1, margin: "-20px 0 0 0" }}>
                             {props.invalidReason}
                         </Typography>
                     )}
