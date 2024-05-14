@@ -1,11 +1,26 @@
-# Use an official lightweight Node image based on Alpine
-FROM node:20-alpine
+# Stage 1: Build the React app
+FROM node:20 AS builder
 
-# Set the working directory
 WORKDIR /app
 
-# Expose the port the app runs on
-EXPOSE 3000
+# Copy package.json and yarn.lock to the working directory
+COPY package.json yarn.lock ./
 
-# Set the command to start the app (This will be overridden by docker-compose)
+# Install dependencies
+RUN yarn install
+
+# Copy the rest of the application code
+COPY . .
+
+# Build the React app
+RUN yarn build
+
+# Stage 2: Prepare the build output
+FROM node:20
+
+WORKDIR /app
+
+# Copy build artifacts from the builder stage
+COPY --from=builder /app/build ./build
+
 CMD ["yarn", "start"]

@@ -1,7 +1,7 @@
 {
     "1": [
         {
-            "address": "0x712516e61c8b383df4a63cfe83d7701bce54b03e",
+            "address": "0x155ff1a85f440ee0a382ea949f24ce4e0b751c65",
             "image": "eye",
             "friendlyName": "Eye",
             "AMMs": [
@@ -9,21 +9,23 @@
                     "location": "uni",
                     "type": "base",
                     "url": "#/swap?inputCurrency=ETH&outputCurrency=0x155ff1A85F440EE0A382eA949f24CE4E0b751c65"
-                },
-                {
-                    "location": "behodler",
-                    "type": "base",
-                    "url": "https://app.behodler.io/swap"
                 }
             ]
         },
         {
-            "address": "0x05aa229aec102f78ce0e852a812a388f076aa555",
+            "address": "0x1b8568fbb47708e9e9d31ff303254f748805bf21",
             "image": "scx",
-            "friendlyName": "Scarcity"
+            "friendlyName": "Scarcity",
+            "AMMs": [
+                {
+                    "location": "behodler",
+                    "type": "base",
+                    "url": "https://app.behodler.io/"
+                }
+            ]
         },
         {
-            "address": "0xbcf26943c0197d2ee0e5d05c716be60cc2761508",
+            "address": "0xf047ee812b21050186f86106f6cabdfec35366c6",
             "image": "scxEye",
             "friendlyName": "SCX/EYE LP (Uni-V2)",
             "AMMs": [
@@ -35,7 +37,32 @@
             ]
         },
         {
-            "address": "0x0f5d1ef48f12b6f691401bfe88c2037c690a6afe",
+            "address": "0x0287120f9b7d8709b4dD5b589Ae759F79fD34E62",
+            "image": "pyroScxEye",
+            "friendlyName": "Pyro(SCX/EYE)",
+            "AMMs": [
+                {
+                    "location": "behodler",
+                    "type": "pyro",
+                    "url": "https://app.behodler.io/"
+                }
+            ]
+        },
+        {
+            "address":"0x319ead06eb01e808c80c7eb9bd77c5d8d163addb",
+            "image":"scxEth",
+            "friendlyName":"SCX/ETH LP (Uni-V2)",
+            "AMMs":[
+                {
+                    "location":"uni",
+                    "type":"LP",
+                    "url": "add/v2/ETH/0x1B8568FbB47708E9E9D31Ff303254f748805bF21"
+                
+                }
+            ]
+        },
+        {
+            "address": "0xa9EEA8723FffD923F6908586455411159B525d23",
             "image": "pyroScxEth",
             "friendlyName": "Pyro (SCX/ETH)",
             "AMMs": [

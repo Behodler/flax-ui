@@ -8,8 +8,8 @@ import { LiveProps } from '../extensions/LiveProps';
 
 
 
-const BalanceHeader = (props:LiveProps) => {
-    const {account, contracts} = props
+const BalanceHeader = (props: LiveProps) => {
+    const { account, contracts } = props
     const [balance, setBalance] = useState<string>("0.0")
     const blockNumber = useBlockNumber();
 
@@ -43,9 +43,11 @@ const BalanceHeader = (props:LiveProps) => {
                 </Typography>
             </Grid>
             <Grid item style={{ marginBottom: '12px', display: 'flex', alignItems: 'center' }}>
-                <Tooltip title="Flax (FLX)" placement="left">
-                    <Box component="img" src={Flax} alt="Balance Icon" sx={{ height: '40px', width: '40px', marginRight: '10px', cursor: 'pointer' }} />
-                </Tooltip>
+                <a href="https://etherscan.io/token/0x0cf758d4303295c43cd95e1232f0101adb3da9e8" target='_blank'>
+                    <Tooltip title="Flax (FLX)" placement="left">
+                        <Box component="img" src={Flax} alt="Balance Icon" sx={{ height: '40px', width: '40px', marginRight: '10px', cursor: 'pointer' }} />
+                    </Tooltip>
+                </a>
                 <Typography variant="h2">
                     {balance}
                 </Typography>

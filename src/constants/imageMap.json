@@ -1,7 +1,10 @@
 {
     "eye": "eye.png",
     "flax": "FlaxSmall.png",
+    "scxEth":"scx-eth.png",
     "pyroScxEth": "pyro-scx-eth.png",
     "scx": "scarcity.png",
-    "scxEye": "scx-eye-logo.png"
+    "scxEye": "scx-eye.png",
+    "pyroScxEye":"pyro-scx-eye.png"
+
 }
