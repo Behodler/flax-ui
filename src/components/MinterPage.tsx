@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Grid, Container, Box, Paper } from '@mui/material';
+import { Grid, Container, Box, Paper, Typography } from '@mui/material';
 import BalanceHeader
   from './BalanceHeader';
 import AssetList from './AssetList';
@@ -8,23 +8,45 @@ import { BigNumber } from 'ethers';
 import { useBlockNumber } from '@usedapp/core';
 import { useBlockchainContext } from '../contexts/BlockchainContextProvider';
 import { LiveProps } from '../extensions/LiveProps';
-import { supportedChain } from '../types/ChainID';
+import { ChainID, supportedChain } from '../types/ChainID';
 const MinterPage = () => {
 
   const blockNumber = useBlockNumber()
   const { contracts, chainId, account } = useBlockchainContext()
   const [liveProps, setLiveProps] = useState<LiveProps | undefined>()
+  const [loadingMessage, setLoadingMessage] = useState<string>("")
   useEffect(() => {
     if (contracts && chainId && account && supportedChain(chainId)) {
       setLiveProps({ chainId, account, contracts })
     } else {
+      if (supportedChain(chainId)) {
+        setLoadingMessage("Loading...")
+      } else {
+        if (chainId == ChainID.disconnected) {
+          setLoadingMessage("Metamask not connected")
+        } else if (chainId == ChainID.absent) {
+          setLoadingMessage("Dapp presently requires Metamask only")
+        } else if (chainId == ChainID.unsupported) {
+          setLoadingMessage("Please switch to mainet")
+        }
+      }
       setLiveProps(undefined)
     }
   }, [contracts, account, chainId])
 
 
   //logic for when contracts, chainId and account are all not null
-  const BalanceHeaderLive = liveProps ? <BalanceHeader {...liveProps} /> : <div></div>
+  const BalanceHeaderLive = liveProps ? <BalanceHeader {...liveProps} /> : <Grid
+    container
+    direction="row"
+    justifyContent="center"
+    alignItems="center"
+    style={{ height: '100%' }}
+  >
+    <Grid item>
+      <Typography variant="h2">{loadingMessage}</Typography>
+    </Grid>
+  </Grid>
   const AssetListLive = liveProps ? <AssetList {...liveProps} /> : <div></div>
   const MintPanelLive = liveProps ? <MintPanel {...liveProps} /> : <div></div>
   return (

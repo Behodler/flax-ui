@@ -52,7 +52,6 @@ export const BlockchainContextProvider: React.FC<BlockchainProviderProps> = ({ c
     const contracts = useContracts(addresses);
 
     useEffect(() => {
-        console.log('initial setup triggered');
         if ((!account || !active) && ethWindow.ethereum) {
             activateBrowserWallet();
         }
