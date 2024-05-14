@@ -4,11 +4,13 @@ import Flax from "../images/FlaxSmall.png"
 import { useBlockchainContext } from '../contexts/BlockchainContextProvider';
 import { useEthers, useBlockNumber } from '@usedapp/core';
 import { ethers } from 'ethers';
+import { LiveProps } from '../extensions/LiveProps';
 
-const BalanceHeader = () => {
 
-    const [balance, setBalance] = useState<string>("0.0000")
-    const { contracts, account } = useBlockchainContext()
+
+const BalanceHeader = (props:LiveProps) => {
+    const {account, contracts} = props
+    const [balance, setBalance] = useState<string>("0.0")
     const blockNumber = useBlockNumber();
 
     useEffect(() => {

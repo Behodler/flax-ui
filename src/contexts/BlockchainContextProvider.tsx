@@ -1,11 +1,11 @@
 import React, { ReactNode, createContext, useContext, useEffect, useState } from 'react';
 import { useEthers, MultiCall } from '@usedapp/core';
-import { ChainID } from '../types/ChainID'
+import { ChainID, supportedChain } from '../types/ChainID'
 import { Coupon, ERC20, Issuer } from '../../types/ethers';
 import useAddresses from '../hooks/useAddresses'; // Updated import for renamed hook
 import { useContracts } from '../hooks/useContracts';
 import { BigNumber, ethers, providers } from 'ethers';
-import _ from 'lodash';
+import _, { chain } from 'lodash';
 
 
 export interface Contracts {
@@ -14,23 +14,23 @@ export interface Contracts {
     inputs: ERC20[];
 }
 export interface DynamicTokenInfo {
-    balance:BigNumber
-    burnable:boolean
-    teraCouponPerToken:BigNumber
+    balance: BigNumber
+    burnable: boolean
+    teraCouponPerToken: BigNumber
 }
 interface BlockchainContextType {
     chainId: ChainID;
-    contracts: Contracts;
-    account: string
+    contracts: Contracts | undefined;
+    account: string | undefined
     selectedAssetId: string,
     setSelectedAssetId: (assetId: string) => void
     dynamicTokenInfo: Record<string, DynamicTokenInfo>
-    updateDyamicTokenInfo: (address: string, value: DynamicTokenInfo) => void
+    updateDynamicTokenInfo: (address: string, value: DynamicTokenInfo) => void
 }
 
 const BlockchainContext = createContext<BlockchainContextType>({
     chainId: ChainID.disconnected, contracts: {} as any, account: "0x0", selectedAssetId: '',
-    setSelectedAssetId: (id: string) => { }, dynamicTokenInfo: {}, updateDyamicTokenInfo: (address, value) => { }
+    setSelectedAssetId: (id: string) => { }, dynamicTokenInfo: {}, updateDynamicTokenInfo: (address, value) => { }
 });
 
 interface BlockchainProviderProps {
@@ -40,48 +40,69 @@ interface BlockchainProviderProps {
 interface EthWindow {
     ethereum: any
 }
-
 export const BlockchainContextProvider: React.FC<BlockchainProviderProps> = ({ children }) => {
-    const { account, chainId, active, activateBrowserWallet } = useEthers();
-    const { addresses } = useAddresses(chainId as ChainID); // useAddresses is called regardless of condition
-    const [selectedAssetId, setSelectedAssetId] = useState<string>('')
-    const contracts = useContracts(addresses)
-    const ethWindow: EthWindow = (window as unknown) as EthWindow
-    const [derivedChainId, setDerivedChainId] = useState<ChainID>(ChainID.absent)
-    const [dynamicTokenInfo, setDynamicTokenInfo] = useState<Record<string, DynamicTokenInfo>>({})
+    const { account, active, activateBrowserWallet } = useEthers();
+    const [selectedAssetId, setSelectedAssetId] = useState<string>('');
+    const ethWindow: EthWindow = (window as unknown) as EthWindow;
+    const [derivedChainId, setDerivedChainId] = useState<ChainID>(ChainID.absent);
+    const [dynamicTokenInfo, setDynamicTokenInfo] = useState<Record<string, DynamicTokenInfo>>({});
 
-    // console.log(`active ${active}, account ${!!account}`)
+    // Fetch addresses and contracts whenever chainId changes
+    const {addresses} = useAddresses(derivedChainId); 
+    const contracts = useContracts(addresses);
+
     useEffect(() => {
+        console.log('initial setup triggered');
         if ((!account || !active) && ethWindow.ethereum) {
             activateBrowserWallet();
         }
+
+        const handleChainChanged = async (chainIdHex: string) => {
+            const chainId: ChainID = parseInt(chainIdHex, 16);
+            if (supportedChain(chainId)) {
+                setDerivedChainId(chainId);
+            } else {
+                setDerivedChainId(ChainID.unsupported);
+            }
+        };
+
         const getChainIdFromMetamask = async () => {
             if (!ethWindow.ethereum) {
-                setDerivedChainId(ChainID.absent)
+                setDerivedChainId(ChainID.absent);
+            } else if (!account || !active) {
+                setDerivedChainId(ChainID.disconnected);
+            } else {
+                const chainIdHex: string = await ethWindow.ethereum.request({ method: 'eth_chainId' });
+                handleChainChanged(chainIdHex);
             }
-            if (!account || !active) {
-                setDerivedChainId(ChainID.disconnected)
-            }
-            else {
-                const chainId = await ethWindow.ethereum.request({ method: 'eth_chainId' });
-                setDerivedChainId(parseInt(BigInt(chainId).toString()))
-            }
-        }
-        getChainIdFromMetamask()
+        };
+
+        getChainIdFromMetamask();
+        ethWindow.ethereum?.on('chainChanged', handleChainChanged);
+
+        return () => {
+            ethWindow.ethereum?.removeListener('chainChanged', handleChainChanged);
+        };
     }, [active, account, ethWindow.ethereum]);
 
     const updateBalance = (address: string, value: DynamicTokenInfo) => {
         if (!_.isEqual(dynamicTokenInfo[address], value)) {
-            const newBalanceMap = _.clone(dynamicTokenInfo)
-            newBalanceMap[address] = value
-            setDynamicTokenInfo(newBalanceMap)
+            const newBalanceMap = _.clone(dynamicTokenInfo);
+            newBalanceMap[address] = value;
+            setDynamicTokenInfo(newBalanceMap);
         }
-    }
-   
-    if (!contracts || !account) return <h1>loading...</h1>
+    };
 
     return (
-        <BlockchainContext.Provider value={{ chainId: derivedChainId, contracts, account, selectedAssetId, setSelectedAssetId, dynamicTokenInfo: dynamicTokenInfo, updateDyamicTokenInfo: updateBalance }}>
+        <BlockchainContext.Provider value={{ 
+            chainId: derivedChainId, 
+            contracts, 
+            account, 
+            selectedAssetId, 
+            setSelectedAssetId, 
+            dynamicTokenInfo, 
+            updateDynamicTokenInfo: updateBalance 
+        }}>
             {children}
         </BlockchainContext.Provider>
     );

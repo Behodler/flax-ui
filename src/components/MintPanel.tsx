@@ -10,14 +10,17 @@ import { useBlockNumber } from '@usedapp/core';
 import TransactionButton from './TransactionButton';
 import { TransactionProgress } from '../extensions/Broadcast';
 import IconTextBox, { invalidReasons } from './IconTextBox';
+import { LiveProps } from '../extensions/LiveProps';
 
 const validateMintText = (text: string) => {
     const floatRegex = /^\d+(\.\d+)?$/;
     return floatRegex.test(text) && !isNaN(parseFloat(text));
 }
 
-export default function MintPanel(props: { flaxAllowance: BigNumber }) {
-    const { selectedAssetId, chainId, contracts, account, dynamicTokenInfo } = useBlockchainContext()
+export default function MintPanel(props:LiveProps) {
+    const [flaxAllowance, setFlaxAllowance] = useState<BigNumber>(BigNumber.from(0))
+    const {contracts,account,chainId} = props
+    const { selectedAssetId,   dynamicTokenInfo } = useBlockchainContext()
     const blockNumber = useBlockNumber()
     const [asset, setAsset] = useState<AssetProps>()
     const [token, setToken] = useState<ERC20>()
@@ -31,6 +34,10 @@ export default function MintPanel(props: { flaxAllowance: BigNumber }) {
     const [flaxToMint, setFlaxToMint] = useState<string>("")
     const dynamic = token ? dynamicTokenInfo[token.address] : undefined
 
+    useEffect(()=>{
+        contracts.issuer.mintAllowance().then(setFlaxAllowance)
+      },[blockNumber,chainId])
+    
     useEffect(() => {
         if (mintProgress === TransactionProgress.confirmed) {
             setMintText("")
@@ -47,7 +54,7 @@ export default function MintPanel(props: { flaxAllowance: BigNumber }) {
             const flax = ethers.utils.formatEther(divTera.toString()).toString()
             if (flax != flaxToMint) {
                 setFlaxToMint(flax);
-                setInvalidReason (validateFlaxMintAllowance(flax, props.flaxAllowance, invalidReason))
+                setInvalidReason (validateFlaxMintAllowance(flax, flaxAllowance, invalidReason))
             }
         }
     }, [mintText, invalidReason])
@@ -65,8 +72,8 @@ export default function MintPanel(props: { flaxAllowance: BigNumber }) {
     }
 
     useEffect(() => {
-        setInvalidReason(validateFlaxMintAllowance(flaxToMint, props.flaxAllowance, invalidReason))
-    }, [flaxToMint, props.flaxAllowance])
+        setInvalidReason(validateFlaxMintAllowance(flaxToMint, flaxAllowance, invalidReason))
+    }, [flaxToMint, flaxAllowance])
 
     useEffect(() => {
         const floatRegex = /^\d+(\.\d+)?$/;
@@ -81,13 +88,13 @@ export default function MintPanel(props: { flaxAllowance: BigNumber }) {
             if (mintWei.gt(dynamicTokenInfo[token.address].balance)) {
                 reason = "Exceeds Balance"
             } else {
-                reason = validateFlaxMintAllowance(flaxToMint, props.flaxAllowance, reason)
+                reason = validateFlaxMintAllowance(flaxToMint, flaxAllowance, reason)
             }
 
         }
 
         setInvalidReason(reason)
-    }, [mintText, props.flaxAllowance])
+    }, [mintText, flaxAllowance])
 
     useEffect(() => {
         if (chainId && selectedAssetId.length > 2) {
@@ -180,7 +187,7 @@ export default function MintPanel(props: { flaxAllowance: BigNumber }) {
                                     <Tooltip title="This is the remaining amount of Flax that can be minted.
                                      Dapps which add liquidity such as the price tilter from Flan (upcoming) will top up the Flax mint allowance.
                                     This restriction prevents hyperinflation">
-                                        <Typography variant='h6' sx={{ fontWeight: "bold", fontSize: (theme) => theme.typography.h5.fontSize }}>Flax mint allowance remaining: {ethers.utils.formatEther(props.flaxAllowance)}</Typography>
+                                        <Typography variant='h6' sx={{ fontWeight: "bold", fontSize: (theme) => theme.typography.h5.fontSize }}>Flax mint allowance remaining: {ethers.utils.formatEther(flaxAllowance)}</Typography>
                                     </Tooltip>
                                 </Grid>
                             </Grid>

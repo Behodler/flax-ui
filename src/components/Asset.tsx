@@ -1,6 +1,6 @@
 import { Grid, Link, ListItem, ListItemButton, Tooltip, Typography } from '@mui/material';
 import React, { useEffect, useState } from 'react';
-import { DynamicTokenInfo, useBlockchainContext } from '../contexts/BlockchainContextProvider';
+import { Contracts, DynamicTokenInfo, useBlockchainContext } from '../contexts/BlockchainContextProvider';
 
 import burn from "../images/burn.png"
 import lock from "../images/padlock.png"
@@ -12,6 +12,7 @@ import uniswap from "../images/uniswap.png"
 import { AMM, AssetProps } from '../types/Assets';
 import { useDeepCompareEffect } from '../hooks/useDeepCompareEffect';
 import { TeraToString } from '../extensions/Utils';
+import { LiveProps } from '../extensions/LiveProps';
 
 
 
@@ -33,14 +34,18 @@ const getAMMLink = (amm: AMM, muiKey: number) => {
     return <Tooltip key={muiKey} title={title}><img width="30px" src={isUni ? uniswap : behodler} style={{ margin: "0 5px 0 0" }} onClick={() => window.open(url, "_blank")} />
     </Tooltip>
 }
-
-export function Asset(props: { children: AssetProps }) {
+interface IProps{
+    contracts:Contracts
+    children:AssetProps
+}
+export function Asset(props: IProps) {
     const { setSelectedAssetId } = useBlockchainContext()
+    const {contracts} = props
     const { children: asset } = props
     const imagePath = require(`../images/${getImagePath(asset.image)}`);
     const { account } = useBlockchainContext()
     const blockNumber = useBlockNumber();
-    const { contracts, dynamicTokenInfo, updateDyamicTokenInfo: updateBalance } = useBlockchainContext()
+    const { dynamicTokenInfo, updateDynamicTokenInfo: updateBalance } = useBlockchainContext()
     const [currentBalance, setCurrentBalance] = useState<string | undefined>(undefined)
     const inputs = contracts.inputs
     const selectedInput = inputs.filter(input => input.address === asset.address)[0]

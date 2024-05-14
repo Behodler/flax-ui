@@ -7,15 +7,26 @@ import MintPanel from './MintPanel';
 import { BigNumber } from 'ethers';
 import { useBlockNumber } from '@usedapp/core';
 import { useBlockchainContext } from '../contexts/BlockchainContextProvider';
+import { LiveProps } from '../extensions/LiveProps';
+import { supportedChain } from '../types/ChainID';
 const MinterPage = () => {
-  const [flaxAllowance, setFlaxAllowance] = useState<BigNumber>(BigNumber.from(0))
-  const blockNumber = useBlockNumber()
-  const {contracts,chainId} = useBlockchainContext()
-  
-  useEffect(()=>{
-    contracts.issuer.mintAllowance().then(setFlaxAllowance)
-  },[blockNumber,chainId])
 
+  const blockNumber = useBlockNumber()
+  const { contracts, chainId, account } = useBlockchainContext()
+  const [liveProps, setLiveProps] = useState<LiveProps | undefined>()
+  useEffect(() => {
+    if (contracts && chainId && account && supportedChain(chainId)) {
+      setLiveProps({ chainId, account, contracts })
+    } else {
+      setLiveProps(undefined)
+    }
+  }, [contracts, account, chainId])
+
+
+  //logic for when contracts, chainId and account are all not null
+  const BalanceHeaderLive = liveProps ? <BalanceHeader {...liveProps} /> : <div></div>
+  const AssetListLive = liveProps ? <AssetList {...liveProps} /> : <div></div>
+  const MintPanelLive = liveProps ? <MintPanel {...liveProps} /> : <div></div>
   return (
     <Container maxWidth={false} disableGutters>
       <Grid container spacing={0} sx={{ backgroundColor: '#0D131A', width: '100vw', minHeight: '100vh', boxSizing: 'border-box' }}>
@@ -29,7 +40,7 @@ const MinterPage = () => {
               alignItems="stretch"
             >
               <Grid item style={{ height: '130px' }}>
-                <BalanceHeader />
+                {BalanceHeaderLive}
               </Grid>
 
 
@@ -41,10 +52,10 @@ const MinterPage = () => {
                   alignItems="top"
                 >
                   <Grid item sx={{ width: '640px' }}>
-                    <AssetList />
+                    {AssetListLive}
                   </Grid>
                   <Grid item sx={{ width: '440px' }}>
-                    <MintPanel flaxAllowance={flaxAllowance} />
+                    {MintPanelLive}
                   </Grid>
                 </Grid>
               </Grid>

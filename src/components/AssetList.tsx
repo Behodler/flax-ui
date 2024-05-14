@@ -5,6 +5,7 @@ import { useBlockNumber, useEthers } from '@usedapp/core';
 import { Paper, Typography, List, ListItem, ListItemButton } from '@mui/material';
 import { Asset } from './Asset';
 import { AssetProps, Assets } from '../types/Assets';
+import { LiveProps } from '../extensions/LiveProps';
 
 
 
@@ -16,9 +17,10 @@ const loadList = (chainId: number | undefined) => {
     return []
 }
 
-const AssetList = () => {
+const AssetList = (props:LiveProps) => {
 
-    const { chainId,setSelectedAssetId } = useBlockchainContext()
+    const { setSelectedAssetId } = useBlockchainContext()
+    const {chainId} = props 
     const [assets, setAssets] = useState<AssetProps[]>(loadList(chainId))
     useEffect(() => {
         if (chainId){
@@ -32,7 +34,7 @@ const AssetList = () => {
         <Typography variant="h6" style={{ marginBottom: '10px' }}>Assets</Typography>
         <List>
             {assets.map((asset, index) => (
-                <Asset key={index}>
+                <Asset contracts={props.contracts} key={index}>
                     {asset}
                 </Asset>
             ))}
