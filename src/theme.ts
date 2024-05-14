@@ -64,6 +64,12 @@ const theme = createTheme({
           }
         }
       }
+    }, MuiTooltip: {
+      styleOverrides: {
+        tooltip: {
+          fontSize: '14px', // Sets the font size for all tooltips
+        },
+      }
     }
   }
 });

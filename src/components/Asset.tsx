@@ -102,7 +102,7 @@ export function Asset(props: { children: AssetProps }) {
                         {asset.friendlyName}
                     </Typography>
                     <Typography variant="subtitle1" style={{ cursor: 'pointer' }}>
-                        SCX. Wallet balance: {currentBalance === undefined ? <i>fetching...</i> : <>{currentBalance}</>}
+                        Wallet balance: {currentBalance === undefined ? <i>fetching...</i> : <>{currentBalance}</>}
                     </Typography>
 
                 </Grid>

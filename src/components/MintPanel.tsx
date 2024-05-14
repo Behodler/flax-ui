@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useBlockchainContext } from '../contexts/BlockchainContextProvider';
-import { Grid, Paper, Typography } from '@mui/material';
+import { Box, Grid, Paper, Tooltip, Typography } from '@mui/material';
 import { getImagePath } from '../extensions/ImageMapper';
 import assetJSON from "../constants/AssetLists.json"
 import { AssetProps, Assets } from '../types/Assets';
@@ -10,6 +10,11 @@ import { useBlockNumber } from '@usedapp/core';
 import TransactionButton from './TransactionButton';
 import { TransactionProgress } from '../extensions/Broadcast';
 import IconTextBox, { invalidReasons } from './IconTextBox';
+
+const validateMintText = (text: string) => {
+    const floatRegex = /^\d+(\.\d+)?$/;
+    return floatRegex.test(text) && !isNaN(parseFloat(text));
+}
 
 export default function MintPanel(props: { flaxAllowance: BigNumber }) {
     const { selectedAssetId, chainId, contracts, account, dynamicTokenInfo } = useBlockchainContext()
@@ -27,30 +32,60 @@ export default function MintPanel(props: { flaxAllowance: BigNumber }) {
     const dynamic = token ? dynamicTokenInfo[token.address] : undefined
 
     useEffect(() => {
-        if (invalidReason === "" && dynamic) {
+        if (mintProgress === TransactionProgress.confirmed) {
+            setMintText("")
+            setFlaxToMint("")
+        }
+    }, [mintProgress])
 
+
+    useEffect(() => {
+        if (invalidReason !== "Invalid Input" && dynamic && validateMintText(mintText)) {
             const mintWei = ethers.utils.parseUnits(mintText, 18)
             const big = mintWei.mul(dynamic.teraCouponPerToken)
             const divTera = big.div(1000_000_000_000)
             const flax = ethers.utils.formatEther(divTera.toString()).toString()
-            if (flax != flaxToMint)
+            if (flax != flaxToMint) {
                 setFlaxToMint(flax);
+                setInvalidReason (validateFlaxMintAllowance(flax, props.flaxAllowance, invalidReason))
+            }
         }
     }, [mintText, invalidReason])
-    
+
+    //validate mint allowance
+    const validateFlaxMintAllowance = (flax: string, allowance: BigNumber, existingReason: invalidReasons): invalidReasons => {
+        if (invalidReason == "" && !isNaN(parseFloat(flax))) {
+            const flaxToMintWei = ethers.utils.parseEther(flax)
+            if (flaxToMintWei.gt(allowance)) {
+                return "Exceeds Flax Mint Allowance"
+            }
+            else return ""
+        }
+        return existingReason
+    }
+
+    useEffect(() => {
+        setInvalidReason(validateFlaxMintAllowance(flaxToMint, props.flaxAllowance, invalidReason))
+    }, [flaxToMint, props.flaxAllowance])
+
     useEffect(() => {
         const floatRegex = /^\d+(\.\d+)?$/;
         const validInput = floatRegex.test(mintText) && !isNaN(parseFloat(mintText));
         let reason: invalidReasons = ""
         if (!validInput) {
             reason = "Invalid Input"
+            setFlaxToMint("")
         } else if (token) {
             const mintWei = ethers.utils.parseUnits(mintText, 18)
+
             if (mintWei.gt(dynamicTokenInfo[token.address].balance)) {
                 reason = "Exceeds Balance"
+            } else {
+                reason = validateFlaxMintAllowance(flaxToMint, props.flaxAllowance, reason)
             }
 
         }
+
         setInvalidReason(reason)
     }, [mintText, props.flaxAllowance])
 
@@ -60,7 +95,6 @@ export default function MintPanel(props: { flaxAllowance: BigNumber }) {
             const selectedAsset = currentAssets.filter(asset => asset.address === selectedAssetId)[0]
             setAsset(selectedAsset)
             setMintText("")
-
         }
     }, [selectedAssetId, chainId])
 
@@ -100,7 +134,6 @@ export default function MintPanel(props: { flaxAllowance: BigNumber }) {
                 justifyContent="stretch"  // Ensures vertical stretching
                 alignItems="center"
                 spacing={2}
-
             >
                 <Grid item style={{ width: '100%' }}>
                     <Grid
@@ -131,13 +164,29 @@ export default function MintPanel(props: { flaxAllowance: BigNumber }) {
                             Approve {asset?.friendlyName} for minting Flax
                         </TransactionButton> : <div>{iconTextBox}</div>}
                 </Grid>
-                <Grid item>
-                    {assetApproved && token && (
-                        <TransactionButton progressSetter={setMintProgress} progress={mintProgress} invalid={invalidReason.length > 0} transactionGetter={() => contracts.issuer.issue(token.address, ethers.utils.parseEther(mintText).toString())} >
-                            Mint {flaxToMint !== "" ? flaxToMint : ""} Flax
-                        </TransactionButton>
-                    )}
-                </Grid>
+                {assetApproved && token && (
+                    <>
+                        <Grid item>
+
+                            <TransactionButton progressSetter={setMintProgress} progress={mintProgress} invalid={invalidReason.length > 0} transactionGetter={() => contracts.issuer.issue(token.address, ethers.utils.parseEther(mintText).toString())} >
+                                Mint {flaxToMint !== "" ? flaxToMint : ""} Flax
+                            </TransactionButton>
+
+                        </Grid>
+
+                        <Grid item style={{ width: "100%" }}>
+                            <Grid container direction="row" justifyContent="center">
+                                <Grid item xs={12} style={{ textAlign: 'right' }}>
+                                    <Tooltip title="This is the remaining amount of Flax that can be minted.
+                                     Dapps which add liquidity such as the price tilter from Flan (upcoming) will top up the Flax mint allowance.
+                                    This restriction prevents hyperinflation">
+                                        <Typography variant='h6' sx={{ fontWeight: "bold", fontSize: (theme) => theme.typography.h5.fontSize }}>Flax mint allowance remaining: {ethers.utils.formatEther(props.flaxAllowance)}</Typography>
+                                    </Tooltip>
+                                </Grid>
+                            </Grid>
+
+                        </Grid>
+                    </>)}
             </Grid>
         </Paper>
 
