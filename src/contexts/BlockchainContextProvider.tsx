@@ -1,11 +1,11 @@
 import React, { ReactNode, createContext, useContext, useEffect, useState } from 'react';
-import { useEthers, MultiCall } from '@usedapp/core';
+import { useEthers } from '@usedapp/core';
 import { ChainID, supportedChain } from '../types/ChainID'
-import { Coupon, ERC20, Issuer } from '../../types/ethers';
+import { Coupon, ERC20, Issuer } from "../typechain/types/ethers";
 import useAddresses from '../hooks/useAddresses'; // Updated import for renamed hook
 import { useContracts } from '../hooks/useContracts';
-import { BigNumber, ethers, providers } from 'ethers';
-import _, { chain } from 'lodash';
+import { BigNumber } from 'ethers';
+import _ from 'lodash';
 
 
 export interface Contracts {

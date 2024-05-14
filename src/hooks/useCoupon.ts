@@ -2,7 +2,7 @@ import { Contract, ethers } from 'ethers';
 import ABIs from "../constants/ABIs.json"
 import { useBlockchainContext } from '../contexts/BlockchainContextProvider';
 import { ContractAddresses } from '../types/ContractAddresses';
-import { Coupon } from '../../types/ethers';
+import { Coupon } from '../typechain/types/ethers'
 import { useEthers } from '@usedapp/core';
 import { useProvider } from './useProvider';
 import { useMemo, useRef } from 'react';

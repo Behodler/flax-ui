@@ -4,7 +4,7 @@ import { Box, Grid, Paper, Tooltip, Typography } from '@mui/material';
 import { getImagePath } from '../extensions/ImageMapper';
 import assetJSON from "../constants/AssetLists.json"
 import { AssetProps, Assets } from '../types/Assets';
-import { ERC20 } from '../../types/ethers';
+import { ERC20 } from "../typechain/types/ethers";
 import { BigNumber, ethers } from 'ethers';
 import { useBlockNumber } from '@usedapp/core';
 import TransactionButton from './TransactionButton';

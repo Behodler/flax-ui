@@ -1,5 +1,5 @@
 import { useBlockNumber, useEthers } from '@usedapp/core';
-import { Coupon, ERC20 } from '../../types/ethers';  // Import TypeChain-generated type
+import {  ERC20 } from '../typechain/types/ethers';  // Import TypeChain-generated type
 import { ethers, Contract } from 'ethers';
 import ABIs from "../constants/ABIs.json"
 import { useBlockchainContext } from '../contexts/BlockchainContextProvider';

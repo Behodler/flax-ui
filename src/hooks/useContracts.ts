@@ -4,7 +4,6 @@ import useCoupon from './useCoupon';
 import useIssuer from './useIssuer';
 import useERC20s from './useERC20s';
 import { Contracts } from '../contexts/BlockchainContextProvider';
-import { Coupon } from '../../types/ethers';
 import _ from 'lodash'
 // Custom hook to manage contracts based on addresses
 export function useContracts(addresses: ContractAddresses | null): Contracts | undefined {

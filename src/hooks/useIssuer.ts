@@ -1,5 +1,5 @@
 import { useContractFunction, useEthers } from '@usedapp/core';
-import { Issuer } from '../../types/ethers/Issuer';  // Import TypeChain-generated type
+import { Issuer } from "../typechain/types/ethers";  // Import TypeChain-generated type
 import { ethers, Contract } from 'ethers';
 import ABIs from "../constants/ABIs.json"
 import { useBlockchainContext } from '../contexts/BlockchainContextProvider';
