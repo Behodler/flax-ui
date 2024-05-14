@@ -27,7 +27,7 @@ const MinterPage = () => {
         } else if (chainId == ChainID.absent) {
           setLoadingMessage("Dapp presently requires Metamask only")
         } else if (chainId == ChainID.unsupported) {
-          setLoadingMessage("Please switch to mainet")
+          setLoadingMessage("Please switch to mainnet")
         }
       }
       setLiveProps(undefined)
