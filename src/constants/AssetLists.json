@@ -21,6 +21,10 @@
                     "location": "behodler",
                     "type": "base",
                     "url": "https://app.behodler.io/"
+                },  {
+                    "location": "uni",
+                    "type": "base",
+                    "url": "#/swap?inputCurrency=ETH&outputCurrency=0x1b8568fbb47708e9e9d31ff303254f748805bf21"
                 }
             ]
         },
