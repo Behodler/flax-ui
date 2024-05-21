@@ -17,10 +17,10 @@ const validateMintText = (text: string) => {
     return floatRegex.test(text) && !isNaN(parseFloat(text));
 }
 
-export default function MintPanel(props:LiveProps) {
+export default function MintPanel(props: LiveProps) {
     const [flaxAllowance, setFlaxAllowance] = useState<BigNumber>(BigNumber.from(0))
-    const {contracts,account,chainId} = props
-    const { selectedAssetId,   dynamicTokenInfo } = useBlockchainContext()
+    const { contracts, account, chainId } = props
+    const { selectedAssetId, dynamicTokenInfo } = useBlockchainContext()
     const blockNumber = useBlockNumber()
     const [asset, setAsset] = useState<AssetProps>()
     const [token, setToken] = useState<ERC20>()
@@ -34,10 +34,10 @@ export default function MintPanel(props:LiveProps) {
     const [flaxToMint, setFlaxToMint] = useState<string>("")
     const dynamic = token ? dynamicTokenInfo[token.address] : undefined
 
-    useEffect(()=>{
+    useEffect(() => {
         contracts.issuer.mintAllowance().then(setFlaxAllowance)
-      },[blockNumber,chainId])
-    
+    }, [blockNumber, chainId])
+
     useEffect(() => {
         if (mintProgress === TransactionProgress.confirmed) {
             setMintText("")
@@ -54,7 +54,7 @@ export default function MintPanel(props:LiveProps) {
             const flax = ethers.utils.formatEther(divTera.toString()).toString()
             if (flax != flaxToMint) {
                 setFlaxToMint(flax);
-                setInvalidReason (validateFlaxMintAllowance(flax, flaxAllowance, invalidReason))
+                setInvalidReason(validateFlaxMintAllowance(flax, flaxAllowance, invalidReason))
             }
         }
     }, [mintText, invalidReason])
@@ -119,14 +119,15 @@ export default function MintPanel(props:LiveProps) {
     }, [asset])
 
     useEffect(() => {
-        if (token) {
+        if (token && validateMintText(mintText)) {
             const getApproval = async () => {
                 const allowance = await token.allowance(account, contracts.issuer.address)
-                setAssetApproved(allowance.gt(ethers.constants.MaxInt256))
+                const mintWei = ethers.utils.parseUnits(mintText, 18)
+                setAssetApproved(allowance.gte(mintWei))
             }
             getApproval()
         }
-    }, [token, updateChecker])
+    }, [token, updateChecker, mintText])
 
     const cornerImage = !assetApproved && imagePath !== undefined ? <img src={imagePath || imagePath} style={{ height: `20px` }} /> : <div></div>
     const iconImage = <img src={imagePath} style={{ height: `40px` }} />
@@ -160,25 +161,23 @@ export default function MintPanel(props:LiveProps) {
                     </Grid>
                 </Grid>
                 <Grid item style={{ width: '100%', paddingTop: "60px" }}>
-                    {!assetApproved ? <Typography variant="h5" style={{ textAlign: 'center' }}>
-                        Token is not approved
-                    </Typography> :
-                        <div></div>}
+                        <div></div>
                 </Grid>
                 <Grid item>
-                    {!assetApproved && token ?
-                        <TransactionButton progressSetter={setApproveProgress} progress={approveProgress} transactionGetter={() => token.approve(contracts.issuer.address, ethers.constants.MaxUint256)} >
-                            Approve {asset?.friendlyName} for minting Flax
-                        </TransactionButton> : <div>{iconTextBox}</div>}
+                  <div>{iconTextBox}</div>
                 </Grid>
-                {assetApproved && token && (
+                {token && (
                     <>
                         <Grid item>
-
-                            <TransactionButton progressSetter={setMintProgress} progress={mintProgress} invalid={invalidReason.length > 0} transactionGetter={() => contracts.issuer.issue(token.address, ethers.utils.parseEther(mintText).toString())} >
-                                Mint {flaxToMint !== "" ? flaxToMint : ""} Flax
-                            </TransactionButton>
-
+                            {assetApproved ?
+                                <TransactionButton progressSetter={setMintProgress} progress={mintProgress} invalid={invalidReason.length > 0} transactionGetter={() => contracts.issuer.issue(token.address, ethers.utils.parseEther(mintText).toString())} >
+                                    Mint {flaxToMint !== "" ? flaxToMint : ""} Flax
+                                </TransactionButton>
+                                :
+                                <TransactionButton progressSetter={setApproveProgress} progress={approveProgress} transactionGetter={() => token.approve(contracts.issuer.address, ethers.constants.MaxUint256)} >
+                                    Approve {asset?.friendlyName} for minting Flax
+                                </TransactionButton>
+                            }
                         </Grid>
 
                         <Grid item style={{ width: "100%" }}>
