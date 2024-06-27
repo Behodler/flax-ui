@@ -31,6 +31,7 @@ export default function MintPanel(props: LiveProps) {
     const [mintProgress, setMintProgress] = useState<TransactionProgress>(TransactionProgress.dormant)
     const [mintText, setMintText] = useState<string>("")
     const [invalidReason, setInvalidReason] = useState<invalidReasons>("")
+
     const [flaxToMint, setFlaxToMint] = useState<string>("")
     const dynamic = token ? dynamicTokenInfo[token.address] : undefined
 
@@ -45,7 +46,6 @@ export default function MintPanel(props: LiveProps) {
         }
     }, [mintProgress])
 
-
     useEffect(() => {
         if (invalidReason !== "Invalid Input" && dynamic && validateMintText(mintText)) {
             const mintWei = ethers.utils.parseUnits(mintText, 18)
@@ -54,47 +54,30 @@ export default function MintPanel(props: LiveProps) {
             const flax = ethers.utils.formatEther(divTera.toString()).toString()
             if (flax != flaxToMint) {
                 setFlaxToMint(flax);
-                setInvalidReason(validateFlaxMintAllowance(flax, flaxAllowance, invalidReason))
+                setInvalidReason(validateFlaxMintAllowance(flax, flaxAllowance, invalidReason),)
             }
         }
     }, [mintText, invalidReason, blockNumber])
 
     //validate mint allowance
     const validateFlaxMintAllowance = (flax: string, allowance: BigNumber, existingReason: invalidReasons): invalidReasons => {
-        if (invalidReason == "" && !isNaN(parseFloat(flax))) {
+        if (!isNaN(parseFloat(flax))) {
             const flaxToMintWei = ethers.utils.parseEther(flax)
             if (flaxToMintWei.gt(allowance)) {
                 return "Exceeds Flax Mint Allowance"
             }
-            else return ""
+            else {
+                return ""
+
+            }
         }
         return existingReason
     }
 
     useEffect(() => {
         setInvalidReason(validateFlaxMintAllowance(flaxToMint, flaxAllowance, invalidReason))
-    }, [flaxToMint, flaxAllowance])
+    }, [flaxToMint, flaxAllowance, blockNumber])
 
-    useEffect(() => {
-        const floatRegex = /^\d+(\.\d+)?$/;
-        const validInput = floatRegex.test(mintText) && !isNaN(parseFloat(mintText));
-        let reason: invalidReasons = ""
-        if (!validInput) {
-            reason = "Invalid Input"
-            setFlaxToMint("")
-        } else if (token) {
-            const mintWei = ethers.utils.parseUnits(mintText, 18)
-
-            if (mintWei.gt(dynamicTokenInfo[token.address].balance)) {
-                reason = "Exceeds Balance"
-            } else {
-                reason = validateFlaxMintAllowance(flaxToMint, flaxAllowance, reason)
-            }
-
-        }
-
-        setInvalidReason(reason)
-    }, [mintText, flaxAllowance, blockNumber])
 
     useEffect(() => {
         if (chainId && selectedAssetId.length > 2) {
