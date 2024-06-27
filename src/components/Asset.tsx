@@ -55,7 +55,8 @@ export function Asset(props: IProps) {
             if (account && selectedInput && inputs.length > 0) {
                 try {
                     const balance = await selectedInput.balanceOf(account);
-                    const { burnable, teraCouponPerToken } = await contracts.issuer.whitelist(selectedInput.address)
+                    const teraCouponPerToken = await contracts.issuer.currentPrice(selectedInput.address)
+                    const { burnable } = await contracts.issuer.whitelist(selectedInput.address)
                     updateBalance(selectedInput.address, { balance, burnable, teraCouponPerToken })
                 } catch (error) {
                     console.error('Failed to fetch balance:', error);

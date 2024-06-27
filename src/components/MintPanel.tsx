@@ -57,7 +57,7 @@ export default function MintPanel(props: LiveProps) {
                 setInvalidReason(validateFlaxMintAllowance(flax, flaxAllowance, invalidReason))
             }
         }
-    }, [mintText, invalidReason])
+    }, [mintText, invalidReason, blockNumber])
 
     //validate mint allowance
     const validateFlaxMintAllowance = (flax: string, allowance: BigNumber, existingReason: invalidReasons): invalidReasons => {
@@ -94,7 +94,7 @@ export default function MintPanel(props: LiveProps) {
         }
 
         setInvalidReason(reason)
-    }, [mintText, flaxAllowance])
+    }, [mintText, flaxAllowance, blockNumber])
 
     useEffect(() => {
         if (chainId && selectedAssetId.length > 2) {
@@ -161,10 +161,10 @@ export default function MintPanel(props: LiveProps) {
                     </Grid>
                 </Grid>
                 <Grid item style={{ width: '100%', paddingTop: "60px" }}>
-                        <div></div>
+                    <div></div>
                 </Grid>
                 <Grid item>
-                  <div>{iconTextBox}</div>
+                    <div>{iconTextBox}</div>
                 </Grid>
                 {token && (
                     <>
@@ -186,7 +186,7 @@ export default function MintPanel(props: LiveProps) {
                                     <Tooltip title="This is the remaining amount of Flax that can be minted.
                                      Dapps which add liquidity such as the price tilter from Flan (upcoming) will top up the Flax mint allowance.
                                     This restriction prevents hyperinflation">
-                                        <Typography variant='h6' sx={{ fontWeight: "bold", fontSize: (theme) => theme.typography.h5.fontSize }}>Flax mint allowance remaining: {ethers.utils.formatEther(flaxAllowance)}</Typography>
+                                        <Typography variant='h6' sx={{ fontWeight: "bold", fontSize: (theme) => theme.typography.h5.fontSize }}>Max Flax per mint: {ethers.utils.formatEther(flaxAllowance)}</Typography>
                                     </Tooltip>
                                 </Grid>
                             </Grid>
