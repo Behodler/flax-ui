@@ -132,5 +132,59 @@
                 }
             ]
         }
+    ],"11155111": [
+        {
+            "address": "0xc4171cB917Db366BBcB84aF3472CB63BB0f3a554",
+            "image": "eye",
+            "friendlyName": "Eye",
+            "AMMs": [
+                {
+                    "location": "uni",
+                    "type": "base",
+                    "url": "#/swap?inputCurrency=ETH&outputCurrency=0x155ff1A85F440EE0A382eA949f24CE4E0b751c65"
+                }
+            ]
+        },
+        {
+            "address": "0x594d83f99a0339d7FA867F746f8Af91DC4562FC9",
+            "image": "scx",
+            "friendlyName": "Scarcity",
+            "AMMs": [
+                {
+                    "location": "behodler",
+                    "type": "base",
+                    "url": "https://app.behodler.io/"
+                },  {
+                    "location": "uni",
+                    "type": "base",
+                    "url": "#/swap?inputCurrency=ETH&outputCurrency=0x1b8568fbb47708e9e9d31ff303254f748805bf21"
+                }
+            ]
+        },
+        {
+            "address": "0xdA479c034876Ee72105a7E536d9077d0b18A68a5",
+            "image": "scxEye",
+            "friendlyName": "SCX/EYE LP (Uni-V2)",
+            "AMMs": [
+                {
+                    "location": "uni",
+                    "type": "LP",
+                    "url": "add/v2/0x155ff1A85F440EE0A382eA949f24CE4E0b751c65/0x1B8568FbB47708E9E9D31Ff303254f748805bF21"
+                }
+            ]
+        },
+        {
+            "address":"0x1070a8B8E83A58856F6a21682868eAf0dc09e6C3",
+            "image":"scxEth",
+            "friendlyName":"SCX/ETH LP (Uni-V2)",
+            "AMMs":[
+                {
+                    "location":"uni",
+                    "type":"LP",
+                    "url": "add/v2/ETH/0x1B8568FbB47708E9E9D31Ff303254f748805bF21"
+                
+                }
+            ]
+        }
     ]
 }

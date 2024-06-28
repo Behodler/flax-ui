@@ -34,10 +34,23 @@ const useAddresses = (chainId: ChainID): { addresses: OptionalAddresses, loading
                             '0x0287120f9b7d8709b4dD5b589Ae759F79fD34E62', //pyro(SCX/EYE) price =55
                             '0x319ead06eb01e808c80c7eb9bd77c5d8d163addb', //SCX/Eth price = ($1283.924375215) 16691
                             '0xa9EEA8723FffD923F6908586455411159B525d23'] //pyro(scx/ETH) price = 16857
-                                                                            //tera mult:1000000000000 = 10^12 so that 1 EYE mints 1 Flax
+                        //tera mult:1000000000000 = 10^12 so that 1 EYE mints 1 Flax
+                    });
+                    //input order: EYE, SCX, SCX/EYE,pyro(SCX/EYE), SCX/ETH, pyro(SCX/ETH),
+                } else if (chainId === ChainID.sepolia) {
+                    // Hardcoded Ethereum addresses for Sepolia
+                    setIfNotEqual({
+                        Coupon: '0x526C7Efc77A42D46447f45E13B9598919BbB9e4F', Issuer: '0xFfDe4Ee842bE23779514a745659f0DB8AB4508A0', Multicall: "0x0",
+                        Inputs: ['0xc4171cB917Db366BBcB84aF3472CB63BB0f3a554', //EYE price = 1
+                            '0x594d83f99a0339d7FA867F746f8Af91DC4562FC9',   //SCX price = 20
+                            '0xdA479c034876Ee72105a7E536d9077d0b18A68a5', //SCX/EYE price = 55
+                            '0x1070a8B8E83A58856F6a21682868eAf0dc09e6C3' //SCX/Eth price = ($1283.924375215) 16691
+                        ] //pyro(scx/ETH) price = 16857
+                        //tera mult:1000000000000 = 10^12 so that 1 EYE mints 1 Flax
                     });
                     //input order: EYE, SCX, SCX/EYE,pyro(SCX/EYE), SCX/ETH, pyro(SCX/ETH),
                 }
+
             } catch (e) {
                 setError((e as any).message);
                 setIfNotEqual(null)
