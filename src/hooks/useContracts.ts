@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { ContractAddresses } from '../types/ContractAddresses';
 import useCoupon from './useCoupon';
 import useIssuer from './useIssuer';
+import useFaucet from './useFaucet';
 import useERC20s from './useERC20s';
 import { Contracts } from '../contexts/BlockchainContextProvider';
 import _ from 'lodash'
@@ -11,10 +12,11 @@ export function useContracts(addresses: ContractAddresses | null): Contracts | u
     const coupon = useCoupon(addresses);
     const issuer = useIssuer(addresses);
     const inputs = useERC20s(addresses);
-    const newContracts = { coupon, issuer, inputs }
-    const isNew:boolean = !_.isEqual(newContracts,contracts)
-    if (coupon && issuer && inputs && isNew){
-        setContracts({ coupon, issuer, inputs });
+    const faucet = useFaucet(addresses);
+    const newContracts = { coupon, issuer, inputs, faucet}
+    const isNew: boolean = !_.isEqual(newContracts, contracts)
+    if (coupon && issuer && inputs && faucet && isNew) {
+        setContracts({ coupon, issuer, inputs, faucet });
     }
     return contracts;
 }

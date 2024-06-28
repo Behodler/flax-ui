@@ -1,7 +1,7 @@
 import React, { ReactNode, createContext, useContext, useEffect, useState } from 'react';
 import { useEthers } from '@usedapp/core';
 import { ChainID, supportedChain } from '../types/ChainID'
-import { Coupon, ERC20, Issuer } from "../typechain/types/ethers";
+import { Coupon, ERC20, Issuer, Test, TestnetFaucet } from "../typechain/types/ethers";
 import useAddresses from '../hooks/useAddresses'; // Updated import for renamed hook
 import { useContracts } from '../hooks/useContracts';
 import { BigNumber } from 'ethers';
@@ -12,6 +12,7 @@ export interface Contracts {
     coupon: Coupon;
     issuer: Issuer;
     inputs: ERC20[];
+    faucet: TestnetFaucet
 }
 export interface DynamicTokenInfo {
     balance: BigNumber
@@ -48,7 +49,7 @@ export const BlockchainContextProvider: React.FC<BlockchainProviderProps> = ({ c
     const [dynamicTokenInfo, setDynamicTokenInfo] = useState<Record<string, DynamicTokenInfo>>({});
 
     // Fetch addresses and contracts whenever chainId changes
-    const {addresses} = useAddresses(derivedChainId); 
+    const { addresses } = useAddresses(derivedChainId);
     const contracts = useContracts(addresses);
 
     useEffect(() => {
@@ -93,14 +94,14 @@ export const BlockchainContextProvider: React.FC<BlockchainProviderProps> = ({ c
     };
 
     return (
-        <BlockchainContext.Provider value={{ 
-            chainId: derivedChainId, 
-            contracts, 
-            account, 
-            selectedAssetId, 
-            setSelectedAssetId, 
-            dynamicTokenInfo, 
-            updateDynamicTokenInfo: updateBalance 
+        <BlockchainContext.Provider value={{
+            chainId: derivedChainId,
+            contracts,
+            account,
+            selectedAssetId,
+            setSelectedAssetId,
+            dynamicTokenInfo,
+            updateDynamicTokenInfo: updateBalance
         }}>
             {children}
         </BlockchainContext.Provider>
