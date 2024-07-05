@@ -21,12 +21,11 @@ const loadList = (chainId: number | undefined) => {
 }
 
 const AssetList = (props: LiveProps) => {
-
     const { setSelectedAssetId } = useBlockchainContext()
     const { chainId } = props
     const { contracts } = useBlockchainContext()
     const [assets, setAssets] = useState<AssetProps[]>(loadList(chainId))
-    
+
     const [approveProgress, setApproveProgress] = useState<TransactionProgress>(TransactionProgress.dormant)
     useEffect(() => {
         if (chainId) {
@@ -42,6 +41,8 @@ const AssetList = (props: LiveProps) => {
         marginTop: '100px'
     });
 
+
+
     return <Paper style={{ padding: '20px', backgroundColor: '#1D2833', color: 'white', minHeight: "500px" }}>
         <Typography variant="h6" style={{ marginBottom: '10px' }}>Assets</Typography>
         <List>
@@ -52,19 +53,22 @@ const AssetList = (props: LiveProps) => {
             ))}
 
         </List>
-{contracts?
-        <Grid container justifyContent="flex-end">
-            <Grid item>
-            <TransactionButton progressSetter={setApproveProgress} progress={approveProgress} transactionGetter={() =>contracts.faucet.mint(assets.map(asset=>asset.address))} >
-            <Tooltip title="Testnet Faucet. Click to mint input tokens">
-                        <img src={faucetImg} alt="button" style={{ width: '50px' }} />
-                    </Tooltip>
-                                </TransactionButton>
-                {/* <ImageButton onClick={() => alert('clicked')}>
-                    
-                </ImageButton> */}
-            </Grid></Grid>
-:<> </>}
+        {contracts && contracts.faucet ?
+            <Grid container justifyContent="flex-end">
+                <Grid item>
+                    <TransactionButton progressSetter={setApproveProgress} progress={approveProgress} transactionGetter={() => {
+                        if (contracts?.faucet) {
+                            return contracts.faucet.mint(assets.map(asset => asset.address));
+                        } else {
+                            return Promise.reject(new Error("Faucet is not available"));
+                        }
+                    }} >
+                        <Tooltip title="Testnet Faucet. Click to mint input tokens">
+                            <img src={faucetImg} alt="button" style={{ width: '50px' }} />
+                        </Tooltip>
+                    </TransactionButton>
+                </Grid></Grid>
+            : <> </>}
     </Paper>
 }
 

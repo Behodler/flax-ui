@@ -15,7 +15,7 @@ export function useContracts(addresses: ContractAddresses | null): Contracts | u
     const faucet = useFaucet(addresses);
     const newContracts = { coupon, issuer, inputs, faucet}
     const isNew: boolean = !_.isEqual(newContracts, contracts)
-    if (coupon && issuer && inputs && faucet && isNew) {
+    if (coupon && issuer && inputs && isNew) {
         setContracts({ coupon, issuer, inputs, faucet });
     }
     return contracts;

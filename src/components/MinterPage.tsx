@@ -34,7 +34,6 @@ const MinterPage = () => {
     }
   }, [contracts, account, chainId])
 
-
   //logic for when contracts, chainId and account are all not null
   const BalanceHeaderLive = liveProps ? <BalanceHeader {...liveProps} /> : <Grid
     container

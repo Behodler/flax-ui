@@ -12,6 +12,7 @@ import uniswap from "../images/uniswap.png"
 import { AMM, AssetProps } from '../types/Assets';
 import { useDeepCompareEffect } from '../hooks/useDeepCompareEffect';
 import { TeraToString } from '../extensions/Utils';
+import _ from 'lodash';
 
 
 
@@ -49,7 +50,7 @@ export function Asset(props: IProps) {
     const inputs = contracts.inputs
     const selectedInput = inputs.filter(input => input.address === asset.address)[0]
     const selectedDynamic = selectedInput !== undefined ? dynamicTokenInfo[selectedInput.address] : undefined
-
+    const [newPrice, setNewPrice] = useState<boolean>()
     useDeepCompareEffect(() => {
         const fetchBalance = async () => {
             if (account && selectedInput && inputs.length > 0) {
@@ -63,9 +64,10 @@ export function Asset(props: IProps) {
                 }
             }
         };
-
         fetchBalance();
     }, [account, blockNumber, dynamicTokenInfo]); // NOTE:if list grows long and rendering gets too heavy, remove balanceMap dependency
+
+
 
     useDeepCompareEffect(() => {
         if (selectedInput && selectedDynamic) {
@@ -74,7 +76,6 @@ export function Asset(props: IProps) {
             setCurrentBalance(balanceFixed);
         }
     }, [dynamicTokenInfo])
-
 
     const image = <img src={imagePath.default || imagePath} style={{ height: '40px' }} />
     const ammLinks = asset.AMMs?.map((amm, index) => getAMMLink(amm, index))
@@ -124,8 +125,9 @@ export function Asset(props: IProps) {
                             {burnableImage}
                         </Grid>
                         <Grid item style={{ width: "100px" }}>
+                        
                             <Tooltip title={mintMessage}>
-                                <Typography style={{ marginTop: "5px", textAlign: "right" }} variant="h3"> {mintPrice} FLX</Typography>
+                                <Typography style={{ marginTop: "5px", textAlign: "right" }} variant={"h3"}> {mintPrice} FLX</Typography>
                             </Tooltip>
                         </Grid>
                     </Grid>

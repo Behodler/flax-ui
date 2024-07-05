@@ -12,7 +12,7 @@ export interface Contracts {
     coupon: Coupon;
     issuer: Issuer;
     inputs: ERC20[];
-    faucet: TestnetFaucet
+    faucet?: TestnetFaucet
 }
 export interface DynamicTokenInfo {
     balance: BigNumber
@@ -50,8 +50,8 @@ export const BlockchainContextProvider: React.FC<BlockchainProviderProps> = ({ c
 
     // Fetch addresses and contracts whenever chainId changes
     const { addresses } = useAddresses(derivedChainId);
-    const contracts = useContracts(addresses);
 
+    const contracts = useContracts(addresses);
     useEffect(() => {
         if ((!account || !active) && ethWindow.ethereum) {
             activateBrowserWallet();
@@ -88,7 +88,7 @@ export const BlockchainContextProvider: React.FC<BlockchainProviderProps> = ({ c
     const updateBalance = (address: string, value: DynamicTokenInfo) => {
         if (!_.isEqual(dynamicTokenInfo[address], value)) {
             const newBalanceMap = _.clone(dynamicTokenInfo);
-            newBalanceMap[address] = value;
+            newBalanceMap[address] = value
             setDynamicTokenInfo(newBalanceMap);
         }
     };

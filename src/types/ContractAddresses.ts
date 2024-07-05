@@ -3,5 +3,5 @@ export interface ContractAddresses {
     Issuer: string;
     Multicall:string
     Inputs: string[];
-    Faucet:string
+    Faucet?:string
 }
