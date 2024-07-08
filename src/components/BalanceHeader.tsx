@@ -14,7 +14,13 @@ const BalanceHeader = (props: LiveProps) => {
     const [balance, setBalance] = useState<string>("0.0")
     const [lockedBalance, setLockedBalance] = useState<string>();
     const blockNumber = useBlockNumber();
+    const { flxLaunchDaiPrice } = useBlockchainContext()
+    const [formattedFLXPrice, setFormattedFLXPrice] = useState<string>();
 
+    useEffect(() => {
+        const dollarValue = ethers.utils.formatEther(flxLaunchDaiPrice);
+        setFormattedFLXPrice(parseFloat(dollarValue).toFixed(2))
+    }, [flxLaunchDaiPrice])
 
     useEffect(() => {
         const fetchBalance = async () => {
@@ -75,7 +81,7 @@ const BalanceHeader = (props: LiveProps) => {
             </Grid>
             <Grid item>
                 <Typography variant="h5" style={{ color: '#00A36C' }}>
-                    $0.10 <i>minimum launch price</i>
+                    ${formattedFLXPrice} <i>minimum launch price</i>
                 </Typography>
 
             </Grid>

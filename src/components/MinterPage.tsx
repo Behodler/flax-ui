@@ -27,7 +27,7 @@ const MinterPage = () => {
         } else if (chainId == ChainID.absent) {
           setLoadingMessage("Dapp presently requires Metamask only")
         } else if (chainId == ChainID.unsupported) {
-          setLoadingMessage("Please switch to sepolia test network")
+          setLoadingMessage("Please switch to one of the following networks: Sepolia or Mainnet")
         }
       }
       setLiveProps(undefined)

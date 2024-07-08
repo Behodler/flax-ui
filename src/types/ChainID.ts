@@ -7,7 +7,7 @@ export enum ChainID {
     unsupported
 }
 
-const supportedChains: ChainID[] = [ ChainID.anvil, ChainID.sepolia]
+const supportedChains: ChainID[] = [ ChainID.anvil, ChainID.sepolia, ChainID.mainnet]
 
 export const supportedChain = (id: ChainID): boolean => {
     return supportedChains.find(chain => chain === id) !== undefined

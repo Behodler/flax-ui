@@ -43,14 +43,24 @@ export function Asset(props: IProps) {
     const { contracts } = props
     const { children: asset } = props
     const imagePath = require(`../images/${getImagePath(asset.image)}`);
-    const { account } = useBlockchainContext()
+    const { account, flxLaunchDaiPrice } = useBlockchainContext()
     const blockNumber = useBlockNumber();
     const { dynamicTokenInfo, updateDynamicTokenInfo: updateBalance } = useBlockchainContext()
     const [currentBalance, setCurrentBalance] = useState<string | undefined>(undefined)
     const inputs = contracts.inputs
     const selectedInput = inputs.filter(input => input.address === asset.address)[0]
     const selectedDynamic = selectedInput !== undefined ? dynamicTokenInfo[selectedInput.address] : undefined
-    const [newPrice, setNewPrice] = useState<boolean>()
+    const [flxValue, setFlxValue] = useState<string>()
+
+    useDeepCompareEffect(() => {
+        if (dynamicTokenInfo && dynamicTokenInfo[props.children.address]) {
+            const teraCouponPerToken = dynamicTokenInfo[props.children.address].teraCouponPerToken
+            const factor = BigNumber.from(10).pow(12);
+            const flxValueBig = teraCouponPerToken.mul(flxLaunchDaiPrice).div(factor)
+            setFlxValue(parseFloat(ethers.utils.formatEther(flxValueBig)).toFixed(4));
+        }
+    }, [flxLaunchDaiPrice, dynamicTokenInfo])
+
     useDeepCompareEffect(() => {
         const fetchBalance = async () => {
             if (account && selectedInput && inputs.length > 0) {
@@ -88,7 +98,7 @@ export function Asset(props: IProps) {
         </Tooltip>
         mintPrice = TeraToString(selectedDynamic.teraCouponPerToken)
     }
-    const mintMessage = `1 ${asset.friendlyName} mints ${mintPrice} Flax`
+    const mintMessage = `1 ${asset.friendlyName} mints ${mintPrice} Flax (\$${flxValue})`
     //carry on here
     return <ListItem
         key={asset.address}
@@ -103,9 +113,28 @@ export function Asset(props: IProps) {
                     {image}
                 </Grid>
                 <Grid item xs>
-                    <Typography variant="body1" style={{ cursor: 'pointer' }}>
-                        {asset.friendlyName}
-                    </Typography>
+
+                    <Grid
+                        container
+                        direction="row"
+                        justifyContent="flex-start"
+                        alignItems="center"
+                        spacing={1}
+                    >
+                        <Grid item>
+                            <Typography variant="body1" style={{ cursor: 'pointer' }}>
+                                {asset.friendlyName}
+                            </Typography>
+                        </Grid>
+                        <Grid item>
+                            <Tooltip title="1 EYE = $0.34">
+                                <Typography variant="h6" style={{ cursor: 'pointer' }}>
+                                    <b>$0.34</b>
+                                </Typography>
+                            </Tooltip>
+                        </Grid>
+                    </Grid>
+
                     <Typography variant="subtitle1" style={{ cursor: 'pointer' }}>
                         Wallet balance: {currentBalance === undefined ? <i>fetching...</i> : <>{currentBalance}</>}
                     </Typography>
@@ -125,9 +154,12 @@ export function Asset(props: IProps) {
                             {burnableImage}
                         </Grid>
                         <Grid item style={{ width: "100px" }}>
-                        
+
                             <Tooltip title={mintMessage}>
-                                <Typography style={{ marginTop: "5px", textAlign: "right" }} variant={"h3"}> {mintPrice} FLX</Typography>
+                                <div>
+                                    <Typography style={{ textAlign: "right" }} variant={"h3"}> {mintPrice} FLX</Typography>
+                                    <Typography style={{ textAlign: "right" }} variant={"h6"}> (${flxValue})</Typography>
+                                </div>
                             </Tooltip>
                         </Grid>
                     </Grid>

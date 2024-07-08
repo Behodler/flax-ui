@@ -27,8 +27,8 @@ const useAddresses = (chainId: ChainID): { addresses: OptionalAddresses, loading
                 } else if (chainId === ChainID.mainnet) {
                     // Hardcoded Ethereum addresses for Mainnet
                     setIfNotEqual({
-                        Coupon: '0x0cf758D4303295C43CD95e1232f0101ADb3DA9E8',Faucet:'0x0', Issuer: '0x821090c1b10c5461BA53abece5458E3902b4Facb',
-                         Multicall: "0x0", HedgeyAdapter:"0x0",
+                        Coupon: '0x0cf758D4303295C43CD95e1232f0101ADb3DA9E8', Issuer: '0x5C758642b0b116632aBc90fFe2C03Ef898753807',
+                         Multicall: "0x0", HedgeyAdapter:"0xb2d3445304d40A71A4461CD3A9eCdc44f2479825",
                      
                         Inputs: ['0x155ff1a85f440ee0a382ea949f24ce4e0b751c65', //EYE price = 1
                             '0x1b8568fbb47708e9e9d31ff303254f748805bf21',   //SCX price = 20

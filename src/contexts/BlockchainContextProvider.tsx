@@ -26,14 +26,15 @@ interface BlockchainContextType {
     contracts: Contracts | undefined;
     account: string | undefined
     selectedAssetId: string,
+    flxLaunchDaiPrice: BigNumber,
     setSelectedAssetId: (assetId: string) => void
     dynamicTokenInfo: Record<string, DynamicTokenInfo>
     updateDynamicTokenInfo: (address: string, value: DynamicTokenInfo) => void
 }
 
 const BlockchainContext = createContext<BlockchainContextType>({
-    chainId: ChainID.disconnected, contracts: {} as any, account: "0x0", selectedAssetId: '',
-    setSelectedAssetId: (id: string) => { }, dynamicTokenInfo: {}, updateDynamicTokenInfo: (address, value) => { }
+    chainId: ChainID.disconnected, contracts: {} as any, account: "0x0", selectedAssetId: '', flxLaunchDaiPrice: BigNumber.from('100000000000000000'),
+    setSelectedAssetId: (id: string) => { }, dynamicTokenInfo: {}, updateDynamicTokenInfo: (address, value) => { },
 });
 
 interface BlockchainProviderProps {
@@ -103,6 +104,7 @@ export const BlockchainContextProvider: React.FC<BlockchainProviderProps> = ({ c
             selectedAssetId,
             setSelectedAssetId,
             dynamicTokenInfo,
+            flxLaunchDaiPrice: BigNumber.from('100000000000000000'),
             updateDynamicTokenInfo: updateBalance
         }}>
             {children}

@@ -8,6 +8,7 @@ import { Route } from '@uniswap/v2-sdk'
 import { ChainID } from '../types/ChainID';
 import { Pair } from '@uniswap/v2-sdk'
 import UniV2Pair from '../constants/UniV2PairABI.json'
+import { isEthAddress } from '../extensions/Utils';
 
 //docs: https://docs.uniswap.org/sdk/v2/guides/pricing
 export function useUniPrice(dependent: string, independent: string): BigNumber | undefined {
@@ -37,12 +38,4 @@ export function useUniPrice(dependent: string, independent: string): BigNumber |
             fetchTokenPrice();
     }, [dependentToken, independentToken, blockchain.chainId, provider])
     return price
-}
-
-const isEthAddress = (address: string | undefined) => {
-    if (!address)
-        return false
-    // Regex to check if the address is exactly 42 characters long, starts with '0x', followed by exactly 40 hexadecimal characters.
-    const regex = /^0x[a-fA-F0-9]{40}$/;
-    return regex.test(address);
 }

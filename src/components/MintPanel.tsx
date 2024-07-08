@@ -11,6 +11,7 @@ import TransactionButton from './TransactionButton';
 import { TransactionProgress } from '../extensions/Broadcast';
 import IconTextBox, { invalidReasons } from './IconTextBox';
 import { LiveProps } from '../extensions/LiveProps';
+import { isEthAddress } from '../extensions/Utils';
 
 const validateMintText = (text: string) => {
     const floatRegex = /^\d+(\.\d+)?$/;
@@ -18,9 +19,11 @@ const validateMintText = (text: string) => {
 }
 
 export default function MintPanel(props: LiveProps) {
-    const [flaxAllowance, setFlaxAllowance] = useState<BigNumber>(BigNumber.from(0))
+    const [flaxAllowance, setFlaxAllowance] = useState<BigNumber>()
+    const [lockDuration, setLockDuration] = useState<number>()
+    const [inputBalance, setInputBalance] = useState<BigNumber>();
     const { contracts, account, chainId } = props
-    const { selectedAssetId, dynamicTokenInfo } = useBlockchainContext()
+    const { selectedAssetId, dynamicTokenInfo, flxLaunchDaiPrice } = useBlockchainContext()
     const blockNumber = useBlockNumber()
     const [asset, setAsset] = useState<AssetProps>()
     const [token, setToken] = useState<ERC20>()
@@ -33,10 +36,12 @@ export default function MintPanel(props: LiveProps) {
     const [invalidReason, setInvalidReason] = useState<invalidReasons>("")
 
     const [flaxToMint, setFlaxToMint] = useState<string>("")
+    const [mintDai, setMintDai] = useState<string>()
     const dynamic = token ? dynamicTokenInfo[token.address] : undefined
 
     useEffect(() => {
         contracts.issuer.mintAllowance().then(setFlaxAllowance)
+        contracts.issuer.lockupDuration().then(duration => setLockDuration(duration.toNumber()))
     }, [blockNumber, chainId])
 
     useEffect(() => {
@@ -47,37 +52,44 @@ export default function MintPanel(props: LiveProps) {
     }, [mintProgress])
 
     useEffect(() => {
-        if (invalidReason !== "Invalid Input" && dynamic && validateMintText(mintText)) {
-            const mintWei = ethers.utils.parseUnits(mintText, 18)
-            const big = mintWei.mul(dynamic.teraCouponPerToken)
-            const divTera = big.div(1000_000_000_000)
-            const flax = ethers.utils.formatEther(divTera.toString()).toString()
-            if (flax != flaxToMint) {
-                setFlaxToMint(flax);
-                setInvalidReason(validateFlaxMintAllowance(flax, flaxAllowance, invalidReason),)
+        if (isEthAddress(selectedAssetId) && isEthAddress(account)) {
+            const selectedInput = contracts.inputs.find(input => input.address === selectedAssetId)
+            if (selectedInput) {
+                const getBalance = async () => {
+                    setInputBalance(await selectedInput.balanceOf(account))
+                }
+                getBalance()
             }
         }
-    }, [mintText, invalidReason, blockNumber])
-
-    //validate mint allowance
-    const validateFlaxMintAllowance = (flax: string, allowance: BigNumber, existingReason: invalidReasons): invalidReasons => {
-        if (!isNaN(parseFloat(flax))) {
-            const flaxToMintWei = ethers.utils.parseEther(flax)
-            if (flaxToMintWei.gt(allowance)) {
-                return "Exceeds Flax Mint Allowance"
-            }
-            else {
-                return ""
-
-            }
-        }
-        return existingReason
-    }
+    }, [selectedAssetId, account])
 
     useEffect(() => {
-        setInvalidReason(validateFlaxMintAllowance(flaxToMint, flaxAllowance, invalidReason))
-    }, [flaxToMint, flaxAllowance, blockNumber])
+        if (dynamic) {
+            if (validateMintText(mintText)) {
+                const mintWei = ethers.utils.parseUnits(mintText, 18)
+                const big = mintWei.mul(dynamic.teraCouponPerToken)
+                const divTera = big.div(1000_000_000_000)
+                const flax = ethers.utils.formatEther(divTera.toString()).toString()
+                if (flax != flaxToMint) {
+                    setFlaxToMint(flax);
+                    const daiValueWei = flxLaunchDaiPrice.mul(divTera).div(BigNumber.from(10).pow(18));
+                    setMintDai(parseFloat(ethers.utils.formatEther(daiValueWei)).toFixed(2));
+                    validateInput(mintWei, divTera);
+                }
+            } else {
+                setInvalidReason("Invalid Input")
+            }
+        }
+    }, [mintText, invalidReason, blockNumber, inputBalance])
 
+    const validateInput = (mintWei: BigNumber, flaxToMint: BigNumber) => {
+        if (flaxAllowance && mintWei.gt(flaxAllowance)) {
+            setInvalidReason("Exceeds Flax Mint Allowance")
+        } else if (inputBalance && mintWei.gt(inputBalance)) {
+            setInvalidReason("Exceeds Balance")
+        }
+        else setInvalidReason("")
+    }
 
     useEffect(() => {
         if (chainId && selectedAssetId.length > 2) {
@@ -153,9 +165,20 @@ export default function MintPanel(props: LiveProps) {
                     <>
                         <Grid item>
                             {assetApproved ?
-                                <TransactionButton progressSetter={setMintProgress} progress={mintProgress} invalid={invalidReason.length > 0} transactionGetter={() => contracts.issuer.issue(token.address, ethers.utils.parseEther(mintText).toString())} >
-                                    Mint {flaxToMint !== "" ? flaxToMint : ""} Flax
-                                </TransactionButton>
+                                <Grid container
+                                    direction="column"
+                                    alignItems="center">
+                                    <Grid item>
+                                        <TransactionButton progressSetter={setMintProgress} progress={mintProgress} invalid={invalidReason.length > 0} transactionGetter={() => contracts.issuer.issue(token.address, ethers.utils.parseEther(mintText).toString())} >
+                                            Mint {flaxToMint !== "" ? parseFloat(flaxToMint).toFixed(2) : ""} Flax {mintDai && mintDai !== "" ? '($' + mintDai + ')' : ''}
+                                        </TransactionButton>
+                                    </Grid>
+                                    <Grid item>
+                                        <Typography variant='h6'>
+                                            (streamed over {lockDuration} days)
+                                        </Typography>
+                                    </Grid>
+                                </Grid>
                                 :
                                 <TransactionButton progressSetter={setApproveProgress} progress={approveProgress} transactionGetter={() => token.approve(contracts.issuer.address, ethers.constants.MaxUint256)} >
                                     Approve {asset?.friendlyName} for minting Flax
@@ -163,18 +186,19 @@ export default function MintPanel(props: LiveProps) {
                             }
                         </Grid>
 
-                        <Grid item style={{ width: "100%" }}>
-                            <Grid container direction="row" justifyContent="center">
-                                <Grid item xs={12} style={{ textAlign: 'right' }}>
-                                    <Tooltip title="This is the remaining amount of Flax that can be minted.
+                        {flaxAllowance ?
+                            <Grid item style={{ width: "100%" }}>
+                                <Grid container direction="row" justifyContent="center">
+                                    <Grid item xs={12} style={{ textAlign: 'right' }}>
+                                        <Tooltip title="This is the remaining amount of Flax that can be minted.
                                      Dapps which add liquidity such as the price tilter from Flan (upcoming) will top up the Flax mint allowance.
                                     This restriction prevents hyperinflation">
-                                        <Typography variant='h6' sx={{ fontWeight: "bold", fontSize: (theme) => theme.typography.h5.fontSize }}>Max Flax per mint: {ethers.utils.formatEther(flaxAllowance)}</Typography>
-                                    </Tooltip>
+                                            <Typography variant='h6' sx={{ fontWeight: "bold", fontSize: (theme) => theme.typography.h5.fontSize }}>Max Flax per mint: {ethers.utils.formatEther(flaxAllowance)}</Typography>
+                                        </Tooltip>
+                                    </Grid>
                                 </Grid>
-                            </Grid>
+                            </Grid> : <></>}
 
-                        </Grid>
                     </>)}
             </Grid>
         </Paper>
