@@ -42,8 +42,8 @@ const useAddresses = (chainId: ChainID): { addresses: OptionalAddresses, loading
                 } else if (chainId === ChainID.sepolia) {
                     // Hardcoded Ethereum addresses for Sepolia
                     setIfNotEqual({
-                        Coupon: '0x526C7Efc77A42D46447f45E13B9598919BbB9e4F', Issuer: '0xFfDe4Ee842bE23779514a745659f0DB8AB4508A0', Multicall: "0x0",
-                        Faucet:'0x16B0642032F652146534D7A99d6CF3513616Cf97',HedgeyAdapter:"0x0",
+                        Coupon: '0x526C7Efc77A42D46447f45E13B9598919BbB9e4F', Issuer: '0x9616Fc9Bf9b7c2F0Da0342ABf943B18A7190100b', Multicall: "0x0",
+                        Faucet:'0x16B0642032F652146534D7A99d6CF3513616Cf97',HedgeyAdapter:"0x36396c4EAE2928747E43C257Fbd7d4bed1b7f570",
                         Inputs: ['0xc4171cB917Db366BBcB84aF3472CB63BB0f3a554', //EYE price = 1
                             '0x594d83f99a0339d7FA867F746f8Af91DC4562FC9',   //SCX price = 20
                             '0xdA479c034876Ee72105a7E536d9077d0b18A68a5', //SCX/EYE price = 55
