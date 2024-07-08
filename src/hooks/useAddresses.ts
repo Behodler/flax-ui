@@ -27,7 +27,9 @@ const useAddresses = (chainId: ChainID): { addresses: OptionalAddresses, loading
                 } else if (chainId === ChainID.mainnet) {
                     // Hardcoded Ethereum addresses for Mainnet
                     setIfNotEqual({
-                        Coupon: '0x0cf758D4303295C43CD95e1232f0101ADb3DA9E8',Faucet:'0x0', Issuer: '0x821090c1b10c5461BA53abece5458E3902b4Facb', Multicall: "0x0",
+                        Coupon: '0x0cf758D4303295C43CD95e1232f0101ADb3DA9E8',Faucet:'0x0', Issuer: '0x821090c1b10c5461BA53abece5458E3902b4Facb',
+                         Multicall: "0x0", HedgeyAdapter:"0x0",
+                     
                         Inputs: ['0x155ff1a85f440ee0a382ea949f24ce4e0b751c65', //EYE price = 1
                             '0x1b8568fbb47708e9e9d31ff303254f748805bf21',   //SCX price = 20
                             '0xf047ee812b21050186f86106f6cabdfec35366c6', //SCX/EYE price = 55
@@ -41,7 +43,7 @@ const useAddresses = (chainId: ChainID): { addresses: OptionalAddresses, loading
                     // Hardcoded Ethereum addresses for Sepolia
                     setIfNotEqual({
                         Coupon: '0x526C7Efc77A42D46447f45E13B9598919BbB9e4F', Issuer: '0xFfDe4Ee842bE23779514a745659f0DB8AB4508A0', Multicall: "0x0",
-                        Faucet:'0x16B0642032F652146534D7A99d6CF3513616Cf97',
+                        Faucet:'0x16B0642032F652146534D7A99d6CF3513616Cf97',HedgeyAdapter:"0x0",
                         Inputs: ['0xc4171cB917Db366BBcB84aF3472CB63BB0f3a554', //EYE price = 1
                             '0x594d83f99a0339d7FA867F746f8Af91DC4562FC9',   //SCX price = 20
                             '0xdA479c034876Ee72105a7E536d9077d0b18A68a5', //SCX/EYE price = 55

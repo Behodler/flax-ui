@@ -1,7 +1,7 @@
 import React, { ReactNode, createContext, useContext, useEffect, useState } from 'react';
 import { useEthers } from '@usedapp/core';
 import { ChainID, supportedChain } from '../types/ChainID'
-import { Coupon, ERC20, Issuer, Test, TestnetFaucet } from "../typechain/types/ethers";
+import { Coupon, ERC20, HedgeyAdapter, Issuer, Test, TestnetFaucet, TokenLockupPlans } from "../typechain/types/ethers";
 import useAddresses from '../hooks/useAddresses'; // Updated import for renamed hook
 import { useContracts } from '../hooks/useContracts';
 import { BigNumber } from 'ethers';
@@ -12,6 +12,8 @@ export interface Contracts {
     coupon: Coupon;
     issuer: Issuer;
     inputs: ERC20[];
+    hedgey: HedgeyAdapter
+    tokenLockup: TokenLockupPlans
     faucet?: TestnetFaucet
 }
 export interface DynamicTokenInfo {

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Box, Grid, Tooltip, Typography } from '@mui/material';
 import Flax from "../images/FlaxSmall.png"
+import HedgeyIcon from "../images/hedgeyIcon.png"
 import { useBlockchainContext } from '../contexts/BlockchainContextProvider';
 import { useEthers, useBlockNumber } from '@usedapp/core';
 import { ethers } from 'ethers';
@@ -11,7 +12,9 @@ import { LiveProps } from '../extensions/LiveProps';
 const BalanceHeader = (props: LiveProps) => {
     const { account, contracts } = props
     const [balance, setBalance] = useState<string>("0.0")
+    const [lockedBalance, setLockedBalance] = useState<string>();
     const blockNumber = useBlockNumber();
+
 
     useEffect(() => {
         const fetchBalance = async () => {
@@ -28,6 +31,17 @@ const BalanceHeader = (props: LiveProps) => {
         };
 
         fetchBalance();
+
+        const fetchLockupBalance = async () => {
+            if (account) {
+                const balance = await contracts.tokenLockup.lockedBalances(account, contracts.coupon.address)
+
+                const formattedBalance = ethers.utils.formatEther(balance)
+                const balanceFixed = parseFloat(formattedBalance).toFixed(4); // Ensure it always has 4 decimal places
+                setLockedBalance(balanceFixed);
+            }
+        }
+        fetchLockupBalance()
     }, [account, blockNumber]); // Re-run when account or block number changes
 
     return (
@@ -51,11 +65,19 @@ const BalanceHeader = (props: LiveProps) => {
                 <Typography variant="h2">
                     {balance}
                 </Typography>
+                {lockedBalance === "0.0000" ? <></> :
+                    <a href="https://app.hedgey.finance/investor-lockups" target='_blank'>
+                        <Tooltip title={`${lockedBalance} FLX locked on Hedgey Finance`} placement="left">
+                            <Box component="img" src={HedgeyIcon} alt="Balance Icon" sx={{ height: '15px', width: '15px', marginLeft: '10px', cursor: 'pointer', border: "2px solid white", borderRadius: "3px", padding: "4px" }} />
+                        </Tooltip>
+                    </a>
+                }
             </Grid>
             <Grid item>
                 <Typography variant="h5" style={{ color: '#00A36C' }}>
-                    $0.00
+                    $0.10 <i>minimum launch price</i>
                 </Typography>
+
             </Grid>
         </Grid>
     );
