@@ -13,6 +13,9 @@ import { AMM, AssetProps } from '../types/Assets';
 import { useDeepCompareEffect } from '../hooks/useDeepCompareEffect';
 import { TeraToString } from '../extensions/Utils';
 import _ from 'lodash';
+import { getDaiPriceOfToken } from '../extensions/Uniswap';
+import { useProvider } from '../hooks/useProvider';
+import { ChainID } from '../types/ChainID';
 
 
 
@@ -43,7 +46,7 @@ export function Asset(props: IProps) {
     const { contracts } = props
     const { children: asset } = props
     const imagePath = require(`../images/${getImagePath(asset.image)}`);
-    const { account, flxLaunchDaiPrice } = useBlockchainContext()
+    const { account, flxLaunchDaiPrice, chainId, daiPriceOfEth } = useBlockchainContext()
     const blockNumber = useBlockNumber();
     const { dynamicTokenInfo, updateDynamicTokenInfo: updateBalance } = useBlockchainContext()
     const [currentBalance, setCurrentBalance] = useState<string | undefined>(undefined)
@@ -51,6 +54,28 @@ export function Asset(props: IProps) {
     const selectedInput = inputs.filter(input => input.address === asset.address)[0]
     const selectedDynamic = selectedInput !== undefined ? dynamicTokenInfo[selectedInput.address] : undefined
     const [flxValue, setFlxValue] = useState<string>()
+    const [inputDollarPrice, setInputDollarPrice] = useState<string | undefined>()
+
+    const ethProvider = useProvider();
+
+    useEffect(() => {
+        if (ethProvider && chainId === ChainID.mainnet) {
+            const fetchDaiPrice = async () => {
+                if (daiPriceOfEth) {
+
+                    const daiPrice = await getDaiPriceOfToken(props.children.address, ethProvider, chainId, daiPriceOfEth)
+                    if (daiPrice) {
+                        const formatted = parseFloat(ethers.utils.formatEther(daiPrice)).toFixed(2)
+                        setInputDollarPrice(formatted)
+                    }
+                } else {
+                    setInputDollarPrice(undefined)
+                }
+            }
+            fetchDaiPrice();
+        }
+
+    }, [blockNumber, chainId, ethProvider])
 
     useDeepCompareEffect(() => {
         if (dynamicTokenInfo && dynamicTokenInfo[props.children.address]) {
@@ -69,7 +94,7 @@ export function Asset(props: IProps) {
                     const teraCouponPerToken = await contracts.issuer.currentPrice(selectedInput.address)
                     const { burnable } = await contracts.issuer.whitelist(selectedInput.address)
                     updateBalance(selectedInput.address, { balance, burnable, teraCouponPerToken })
-                } catch {}
+                } catch { }
             }
         };
         fetchBalance();
@@ -124,13 +149,14 @@ export function Asset(props: IProps) {
                                 {asset.friendlyName}
                             </Typography>
                         </Grid>
-                        <Grid item>
-                            <Tooltip title="1 EYE = $0.34">
+                        {inputDollarPrice ? <Grid item>
+                            <Tooltip title={`1 EYE = \$${inputDollarPrice}`}>
                                 <Typography variant="h6" style={{ cursor: 'pointer' }}>
-                                    <b>$0.34</b>
+                                    <b>${inputDollarPrice}</b>
                                 </Typography>
                             </Tooltip>
-                        </Grid>
+                        </Grid> : <></>}
+
                     </Grid>
 
                     <Typography variant="subtitle1" style={{ cursor: 'pointer' }}>

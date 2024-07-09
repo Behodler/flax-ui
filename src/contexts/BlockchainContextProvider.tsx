@@ -6,6 +6,8 @@ import useAddresses from '../hooks/useAddresses'; // Updated import for renamed 
 import { useContracts } from '../hooks/useContracts';
 import { BigNumber } from 'ethers';
 import _ from 'lodash';
+import { getDaiPriceOfEth } from '../extensions/Uniswap';
+import { useProvider } from '../hooks/useProvider';
 
 
 export interface Contracts {
@@ -30,11 +32,12 @@ interface BlockchainContextType {
     setSelectedAssetId: (assetId: string) => void
     dynamicTokenInfo: Record<string, DynamicTokenInfo>
     updateDynamicTokenInfo: (address: string, value: DynamicTokenInfo) => void
+    daiPriceOfEth: BigNumber | undefined
 }
 
 const BlockchainContext = createContext<BlockchainContextType>({
     chainId: ChainID.disconnected, contracts: {} as any, account: "0x0", selectedAssetId: '', flxLaunchDaiPrice: BigNumber.from('100000000000000000'),
-    setSelectedAssetId: (id: string) => { }, dynamicTokenInfo: {}, updateDynamicTokenInfo: (address, value) => { },
+    setSelectedAssetId: (id: string) => { }, dynamicTokenInfo: {}, updateDynamicTokenInfo: (address, value) => { }, daiPriceOfEth: undefined
 });
 
 interface BlockchainProviderProps {
@@ -50,7 +53,7 @@ export const BlockchainContextProvider: React.FC<BlockchainProviderProps> = ({ c
     const ethWindow: EthWindow = (window as unknown) as EthWindow;
     const [derivedChainId, setDerivedChainId] = useState<ChainID>(ChainID.absent);
     const [dynamicTokenInfo, setDynamicTokenInfo] = useState<Record<string, DynamicTokenInfo>>({});
-
+    const [daiPriceOfEth, setDaiPriceOfEth] = useState<BigNumber | undefined>()
     // Fetch addresses and contracts whenever chainId changes
     const { addresses } = useAddresses(derivedChainId);
 
@@ -88,6 +91,19 @@ export const BlockchainContextProvider: React.FC<BlockchainProviderProps> = ({ c
         };
     }, [active, account, ethWindow.ethereum]);
 
+    const ethProvider = useProvider()
+    useEffect(() => {
+        if (derivedChainId === ChainID.mainnet && ethProvider) {
+            const getDaiPrice = async () => {
+                setDaiPriceOfEth(await getDaiPriceOfEth(ethProvider))
+            }
+            getDaiPrice()
+        }
+        else {
+            setDaiPriceOfEth(undefined)
+        }
+    }, [derivedChainId, ethProvider])
+
     const updateBalance = (address: string, value: DynamicTokenInfo) => {
         if (!_.isEqual(dynamicTokenInfo[address], value)) {
             const newBalanceMap = _.clone(dynamicTokenInfo);
@@ -105,7 +121,8 @@ export const BlockchainContextProvider: React.FC<BlockchainProviderProps> = ({ c
             setSelectedAssetId,
             dynamicTokenInfo,
             flxLaunchDaiPrice: BigNumber.from('100000000000000000'),
-            updateDynamicTokenInfo: updateBalance
+            updateDynamicTokenInfo: updateBalance,
+            daiPriceOfEth
         }}>
             {children}
         </BlockchainContext.Provider>
