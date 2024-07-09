@@ -63,7 +63,7 @@ export const BlockchainContextProvider: React.FC<BlockchainProviderProps> = ({ c
             activateBrowserWallet();
         }
 
-        const handleChainChanged = async (chainIdHex: string) => {
+        const setChain = async (chainIdHex: string) => {
             const chainId: ChainID = parseInt(chainIdHex, 16);
             if (supportedChain(chainId)) {
                 setDerivedChainId(chainId);
@@ -72,6 +72,8 @@ export const BlockchainContextProvider: React.FC<BlockchainProviderProps> = ({ c
             }
         };
 
+        const handleChainChanged = () => window.location.reload();
+
         const getChainIdFromMetamask = async () => {
             if (!ethWindow.ethereum) {
                 setDerivedChainId(ChainID.absent);
@@ -79,7 +81,7 @@ export const BlockchainContextProvider: React.FC<BlockchainProviderProps> = ({ c
                 setDerivedChainId(ChainID.disconnected);
             } else {
                 const chainIdHex: string = await ethWindow.ethereum.request({ method: 'eth_chainId' });
-                handleChainChanged(chainIdHex);
+                setChain(chainIdHex);
             }
         };
 
