@@ -12,6 +12,9 @@ import { TransactionProgress } from '../extensions/Broadcast';
 import IconTextBox, { invalidReasons } from './IconTextBox';
 import { LiveProps } from '../extensions/LiveProps';
 import { isEthAddress } from '../extensions/Utils';
+import { useProvider } from '../hooks/useProvider';
+import { ChainID } from '../types/ChainID';
+import { getDaiPriceOfToken } from '../extensions/Uniswap';
 
 const validateMintText = (text: string) => {
     const floatRegex = /^\d+(\.\d+)?$/;
@@ -23,7 +26,7 @@ export default function MintPanel(props: LiveProps) {
     const [lockDuration, setLockDuration] = useState<number>()
     const [inputBalance, setInputBalance] = useState<BigNumber>();
     const { contracts, account, chainId } = props
-    const { selectedAssetId, dynamicTokenInfo, flxLaunchDaiPrice } = useBlockchainContext()
+    const { selectedAssetId, dynamicTokenInfo, flxLaunchDaiPrice, daiPriceOfEth } = useBlockchainContext()
     const blockNumber = useBlockNumber()
     const [asset, setAsset] = useState<AssetProps>()
     const [token, setToken] = useState<ERC20>()
@@ -38,13 +41,33 @@ export default function MintPanel(props: LiveProps) {
     const [flaxToMint, setFlaxToMint] = useState<string>("")
     const [mintDai, setMintDai] = useState<string>()
     const dynamic = token ? dynamicTokenInfo[token.address] : undefined
+    const [inputDollarPrice, setInputDollarPrice] = useState<BigNumber | undefined>()
+    const [dollarValueOfInputText,setDollarValueOfInputText] = useState<string|undefined>()
+
+    const ethProvider = useProvider()
+
+    useEffect(() => {
+        if (ethProvider && chainId === ChainID.mainnet && token) {
+            const fetchDaiPrice = async () => {
+                if (daiPriceOfEth) {
+                    const daiPrice = await getDaiPriceOfToken(token.address, ethProvider, chainId, daiPriceOfEth)
+                    setInputDollarPrice(daiPrice)
+
+                } else {
+                    setInputDollarPrice(undefined)
+                }
+            }
+            fetchDaiPrice();
+        }
+
+    }, [blockNumber, chainId, ethProvider])
 
     useEffect(() => {
         if (contracts && contracts.issuer) {
-            try{
-            contracts.issuer.mintAllowance().then(setFlaxAllowance).catch()
-            contracts.issuer.lockupDuration().then(duration => setLockDuration(duration.toNumber())).catch()
-            }catch{}
+            try {
+                contracts.issuer.mintAllowance().then(setFlaxAllowance).catch()
+                contracts.issuer.lockupDuration().then(duration => setLockDuration(duration.toNumber())).catch()
+            } catch { }
         }
     }, [contracts])
 
@@ -81,6 +104,14 @@ export default function MintPanel(props: LiveProps) {
                     const daiValueWei = flxLaunchDaiPrice.mul(divTera).div(BigNumber.from(10).pow(18));
                     setMintDai(parseFloat(ethers.utils.formatEther(daiValueWei)).toFixed(2));
                     validateInput(mintWei, divTera);
+                    if(inputDollarPrice){
+                        const dollarWei =  mintWei.mul(inputDollarPrice).div(ethers.constants.WeiPerEther)
+                        const formatted = parseFloat(ethers.utils.formatEther(dollarWei)).toFixed(2)
+                        setDollarValueOfInputText(formatted)
+                    }
+                    else {
+                        setDollarValueOfInputText(undefined)
+                    }
                 }
             } else {
                 setInvalidReason("Invalid Input")
@@ -133,7 +164,7 @@ export default function MintPanel(props: LiveProps) {
     const cornerImage = !assetApproved && imagePath !== undefined ? <img src={imagePath || imagePath} style={{ height: `20px` }} /> : <div></div>
     const iconImage = <img src={imagePath} style={{ height: `40px` }} />
 
-    const iconTextBox = <IconTextBox text={mintText} setText={setMintText} cornerImage={iconImage} max={dynamic !== undefined ? ethers.utils.formatEther(dynamic.balance) : "0"} invalidReason={invalidReason} />;
+    const iconTextBox = <IconTextBox dollarValueOfInput={dollarValueOfInputText} text={mintText} setText={setMintText} cornerImage={iconImage} max={dynamic !== undefined ? ethers.utils.formatEther(dynamic.balance) : "0"} invalidReason={invalidReason} />;
 
     return (
         <Paper style={{ height: '300px', padding: '20px', backgroundColor: '#1D2833' }}>

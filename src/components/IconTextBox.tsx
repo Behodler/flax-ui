@@ -8,9 +8,11 @@ interface IconTextBoxProps {
     setText: (val: string) => void
     max: string
     invalidReason: invalidReasons
+    dollarValueOfInput: string | undefined
 }
 
 const IconTextBox = (props: IconTextBoxProps) => {
+
     return (
         <Box sx={{ width: 360, display: 'flex', flexDirection: 'column', alignItems: 'end', position: 'relative' }}>
             <Box sx={{ position: 'absolute', top: '20px', left: '0' }}>
@@ -58,11 +60,18 @@ const IconTextBox = (props: IconTextBoxProps) => {
             />
             <Grid container alignItems="center">
                 <Grid item xs={8}>
-                    {props.text.trim().length > 0 && (
-                        <Typography variant='h6' sx={{ color: 'red', mt: 1, margin: "-20px 0 0 0" }}>
-                            {props.invalidReason}
-                        </Typography>
-                    )}
+                    {props.text.trim().length > 0 ?
+
+                        (props.invalidReason !== "" ?
+                            <Typography variant='h6' sx={{ color: 'red', mt: 1, margin: "-20px 0 0 0" }}>
+                                {props.invalidReason}
+                            </Typography> :
+                            <>
+                                <Typography variant='h5' sx={{ color: 'forestgreen', mt: 1, margin: "-20px 0 0 0" }}>
+                                   {props.dollarValueOfInput?`\$${props.dollarValueOfInput}`:''} 
+                                </Typography>
+                            </>) : <></>
+                    }
                 </Grid>
                 <Grid item xs={4} sx={{ textAlign: 'right' }}>
                     <Button onClick={() => props.setText(props.max)} size="small" sx={{ minWidth: 'auto', padding: 0, fontSize: '0.75rem' }}>MAX</Button>
