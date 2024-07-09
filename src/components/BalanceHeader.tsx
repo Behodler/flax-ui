@@ -24,14 +24,14 @@ const BalanceHeader = (props: LiveProps) => {
 
     useEffect(() => {
         const fetchBalance = async () => {
-            if (account) {
+            if (account && contracts && contracts.coupon) {
                 try {
                     const balanceValue = await contracts.coupon.balanceOf(account);
                     const formattedBalance = ethers.utils.formatEther(balanceValue);
                     const balanceFixed = parseFloat(formattedBalance).toFixed(4); // Ensure it always has 4 decimal places
                     setBalance(balanceFixed);
                 } catch (error) {
-                    console.error('Failed to fetch balance:', error);
+                    //console.error('Failed to fetch balance:', error);
                 }
             }
         };
@@ -39,16 +39,20 @@ const BalanceHeader = (props: LiveProps) => {
         fetchBalance();
 
         const fetchLockupBalance = async () => {
-            if (account) {
-                const balance = await contracts.tokenLockup.lockedBalances(account, contracts.coupon.address)
+            try {
 
-                const formattedBalance = ethers.utils.formatEther(balance)
-                const balanceFixed = parseFloat(formattedBalance).toFixed(4); // Ensure it always has 4 decimal places
-                setLockedBalance(balanceFixed);
-            }
+
+                if (account && contracts && contracts.tokenLockup) {
+                    const balance = await contracts.tokenLockup.lockedBalances(account, contracts.coupon.address)
+
+                    const formattedBalance = ethers.utils.formatEther(balance)
+                    const balanceFixed = parseFloat(formattedBalance).toFixed(4); // Ensure it always has 4 decimal places
+                    setLockedBalance(balanceFixed);
+                }
+            } catch { }
         }
         fetchLockupBalance()
-    }, [account, blockNumber]); // Re-run when account or block number changes
+    }, [account, blockNumber, contracts]); // Re-run when account or block number changes
 
     return (
         <Grid

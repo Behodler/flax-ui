@@ -40,9 +40,13 @@ export default function MintPanel(props: LiveProps) {
     const dynamic = token ? dynamicTokenInfo[token.address] : undefined
 
     useEffect(() => {
-        contracts.issuer.mintAllowance().then(setFlaxAllowance)
-        contracts.issuer.lockupDuration().then(duration => setLockDuration(duration.toNumber()))
-    }, [blockNumber, chainId])
+        if (contracts && contracts.issuer) {
+            try{
+            contracts.issuer.mintAllowance().then(setFlaxAllowance).catch()
+            contracts.issuer.lockupDuration().then(duration => setLockDuration(duration.toNumber())).catch()
+            }catch{}
+        }
+    }, [contracts])
 
     useEffect(() => {
         if (mintProgress === TransactionProgress.confirmed) {
@@ -56,9 +60,11 @@ export default function MintPanel(props: LiveProps) {
             const selectedInput = contracts.inputs.find(input => input.address === selectedAssetId)
             if (selectedInput) {
                 const getBalance = async () => {
-                    setInputBalance(await selectedInput.balanceOf(account))
+                    setInputBalance(await selectedInput.balanceOf(account).catch())
                 }
-                getBalance()
+                try {
+                    getBalance()
+                } catch { }
             }
         }
     }, [selectedAssetId, account])

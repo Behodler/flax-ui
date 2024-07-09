@@ -69,9 +69,7 @@ export function Asset(props: IProps) {
                     const teraCouponPerToken = await contracts.issuer.currentPrice(selectedInput.address)
                     const { burnable } = await contracts.issuer.whitelist(selectedInput.address)
                     updateBalance(selectedInput.address, { balance, burnable, teraCouponPerToken })
-                } catch (error) {
-                    console.error('Failed to fetch balance:', error);
-                }
+                } catch {}
             }
         };
         fetchBalance();
