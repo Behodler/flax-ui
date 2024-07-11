@@ -15,6 +15,7 @@ import { isEthAddress } from '../extensions/Utils';
 import { useProvider } from '../hooks/useProvider';
 import { ChainID } from '../types/ChainID';
 import { getDaiPriceOfToken } from '../extensions/Uniswap';
+import { useDeepCompareEffect } from '../hooks/useDeepCompareEffect';
 
 const validateMintText = (text: string) => {
     const floatRegex = /^\d+(\.\d+)?$/;
@@ -42,15 +43,15 @@ export default function MintPanel(props: LiveProps) {
     const [mintDai, setMintDai] = useState<string>()
     const dynamic = token ? dynamicTokenInfo[token.address] : undefined
     const [inputDollarPrice, setInputDollarPrice] = useState<BigNumber | undefined>()
-    const [dollarValueOfInputText,setDollarValueOfInputText] = useState<string|undefined>()
+    const [dollarValueOfInputText, setDollarValueOfInputText] = useState<string | undefined>()
 
     const ethProvider = useProvider()
 
     useEffect(() => {
-        if (ethProvider && chainId === ChainID.mainnet && token) {
+        if (ethProvider && chainId === ChainID.mainnet && asset) {
             const fetchDaiPrice = async () => {
                 if (daiPriceOfEth) {
-                    const daiPrice = await getDaiPriceOfToken(token.address, ethProvider, chainId, daiPriceOfEth)
+                    const daiPrice = await getDaiPriceOfToken(asset.address, ethProvider, chainId, daiPriceOfEth)
                     setInputDollarPrice(daiPrice)
 
                 } else {
@@ -60,7 +61,7 @@ export default function MintPanel(props: LiveProps) {
             fetchDaiPrice();
         }
 
-    }, [blockNumber, chainId, ethProvider])
+    }, [blockNumber, chainId, ethProvider, selectedAssetId])
 
     useEffect(() => {
         if (contracts && contracts.issuer) {
@@ -92,7 +93,7 @@ export default function MintPanel(props: LiveProps) {
         }
     }, [selectedAssetId, account])
 
-    useEffect(() => {
+    useDeepCompareEffect(() => {
         if (dynamic) {
             if (validateMintText(mintText)) {
                 const mintWei = ethers.utils.parseUnits(mintText, 18)
@@ -104,8 +105,8 @@ export default function MintPanel(props: LiveProps) {
                     const daiValueWei = flxLaunchDaiPrice.mul(divTera).div(BigNumber.from(10).pow(18));
                     setMintDai(parseFloat(ethers.utils.formatEther(daiValueWei)).toFixed(2));
                     validateInput(mintWei, divTera);
-                    if(inputDollarPrice){
-                        const dollarWei =  mintWei.mul(inputDollarPrice).div(ethers.constants.WeiPerEther)
+                    if (inputDollarPrice) {
+                        const dollarWei = mintWei.mul(inputDollarPrice).div(ethers.constants.WeiPerEther)
                         const formatted = parseFloat(ethers.utils.formatEther(dollarWei)).toFixed(2)
                         setDollarValueOfInputText(formatted)
                     }
@@ -117,7 +118,7 @@ export default function MintPanel(props: LiveProps) {
                 setInvalidReason("Invalid Input")
             }
         }
-    }, [mintText, invalidReason, blockNumber, inputBalance])
+    }, [mintText, invalidReason, blockNumber, inputBalance, dynamic])
 
     const validateInput = (mintWei: BigNumber, flaxToMint: BigNumber) => {
         if (flaxAllowance && mintWei.gt(flaxAllowance)) {
@@ -227,9 +228,7 @@ export default function MintPanel(props: LiveProps) {
                             <Grid item style={{ width: "100%" }}>
                                 <Grid container direction="row" justifyContent="center">
                                     <Grid item xs={12} style={{ textAlign: 'right' }}>
-                                        <Tooltip title="This is the remaining amount of Flax that can be minted.
-                                     Dapps which add liquidity such as the price tilter from Flan (upcoming) will top up the Flax mint allowance.
-                                    This restriction prevents hyperinflation">
+                                        <Tooltip title="This is the maximum amount of Flax that can be minted in one transaction.">
                                             <Typography variant='h6' sx={{ fontWeight: "bold", fontSize: (theme) => theme.typography.h5.fontSize }}>Max Flax per mint: {ethers.utils.formatEther(flaxAllowance)}</Typography>
                                         </Tooltip>
                                     </Grid>

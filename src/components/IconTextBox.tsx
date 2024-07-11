@@ -62,7 +62,7 @@ const IconTextBox = (props: IconTextBoxProps) => {
                 <Grid item xs={8}>
                     {props.text.trim().length > 0 ?
 
-                        (props.invalidReason !== "" ?
+                        (props.invalidReason !== "" && props.invalidReason!=="Invalid Input"?
                             <Typography variant='h6' sx={{ color: 'red', mt: 1, margin: "-20px 0 0 0" }}>
                                 {props.invalidReason}
                             </Typography> :

@@ -42,7 +42,7 @@ interface IProps {
     children: AssetProps
 }
 export function Asset(props: IProps) {
-    const { setSelectedAssetId } = useBlockchainContext()
+    const { setSelectedAssetId ,selectedAssetId} = useBlockchainContext()
     const { contracts } = props
     const { children: asset } = props
     const imagePath = require(`../images/${getImagePath(asset.image)}`);
@@ -75,7 +75,7 @@ export function Asset(props: IProps) {
             fetchDaiPrice();
         }
 
-    }, [blockNumber, chainId, ethProvider])
+    }, [blockNumber, chainId, ethProvider,selectedAssetId])
 
     useDeepCompareEffect(() => {
         if (dynamicTokenInfo && dynamicTokenInfo[props.children.address]) {
