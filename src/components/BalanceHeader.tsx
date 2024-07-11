@@ -84,10 +84,11 @@ const BalanceHeader = (props: LiveProps) => {
                 }
             </Grid>
             <Grid item>
+               <Tooltip title="This will be the price at launch, not a future price guarantee. FLX is not a stablecoin.">
                 <Typography variant="h5" style={{ color: '#00A36C' }}>
-                    ${formattedFLXPrice} <i>minimum launch price</i>
+                    ${formattedFLXPrice} <i>launch price*</i>
                 </Typography>
-
+                </Tooltip>
             </Grid>
         </Grid>
     );

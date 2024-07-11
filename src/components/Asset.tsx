@@ -150,7 +150,7 @@ export function Asset(props: IProps) {
                             </Typography>
                         </Grid>
                         {inputDollarPrice ? <Grid item>
-                            <Tooltip title={`1 EYE = \$${inputDollarPrice}`}>
+                            <Tooltip title={`1 ${asset.friendlyName} = \$${inputDollarPrice}`}>
                                 <Typography variant="h6" style={{ cursor: 'pointer' }}>
                                     <b>${inputDollarPrice}</b>
                                 </Typography>

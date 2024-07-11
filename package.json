@@ -34,7 +34,8 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "clean": "rm -rf yarn.lock node_modules/ && yarn cache clean"
+    "clean": "rm -rf yarn.lock node_modules/ && yarn cache clean",
+    "aws:sync":"aws s3 sync build/ s3://flax.behodler.io"
   },
   "eslintConfig": {
     "extends": [
