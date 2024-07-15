@@ -21,7 +21,8 @@
                     "location": "behodler",
                     "type": "base",
                     "url": "https://app.behodler.io/"
-                },  {
+                },
+                {
                     "location": "uni",
                     "type": "base",
                     "url": "#/swap?inputCurrency=ETH&outputCurrency=0x1b8568fbb47708e9e9d31ff303254f748805bf21"
@@ -29,15 +30,19 @@
             ]
         },
         {
-            "address":"0x6dF6B57FB7c35D7C71395F77cb08b82A62635e19",
-            "image":"flaxEth",
-            "friendlyName":"Flax/Eth LP (Uni-V2)",
-            "AMMs":[
+            "address": "0x6dF6B57FB7c35D7C71395F77cb08b82A62635e19",
+            "image": "flaxEth",
+            "friendlyName": "Flax/Eth LP (Uni-V2)",
+            "AMMs": [
                 {
-                    "location":"uni",
-                    "type":"LP",
+                    "location": "uni",
+                    "type": "LP",
                     "url": "add/v2/ETH/0x0cf758D4303295C43CD95e1232f0101ADb3DA9E8"
-                
+                },
+                {
+                    "location": "uni",
+                    "type": "base",
+                    "url": "#/swap?inputCurrency=ETH&outputCurrency=0x0cf758D4303295C43CD95e1232f0101ADb3DA9E8"
                 }
             ]
         },
@@ -66,15 +71,14 @@
             ]
         },
         {
-            "address":"0x319ead06eb01e808c80c7eb9bd77c5d8d163addb",
-            "image":"scxEth",
-            "friendlyName":"SCX/ETH LP (Uni-V2)",
-            "AMMs":[
+            "address": "0x319ead06eb01e808c80c7eb9bd77c5d8d163addb",
+            "image": "scxEth",
+            "friendlyName": "SCX/ETH LP (Uni-V2)",
+            "AMMs": [
                 {
-                    "location":"uni",
-                    "type":"LP",
+                    "location": "uni",
+                    "type": "LP",
                     "url": "add/v2/ETH/0x1B8568FbB47708E9E9D31Ff303254f748805bF21"
-                
                 }
             ]
         },
@@ -145,7 +149,8 @@
                 }
             ]
         }
-    ],"11155111": [
+    ],
+    "11155111": [
         {
             "address": "0xc4171cB917Db366BBcB84aF3472CB63BB0f3a554",
             "image": "eye",
@@ -167,7 +172,8 @@
                     "location": "behodler",
                     "type": "base",
                     "url": "https://app.behodler.io/"
-                },  {
+                },
+                {
                     "location": "uni",
                     "type": "base",
                     "url": "#/swap?inputCurrency=ETH&outputCurrency=0x1b8568fbb47708e9e9d31ff303254f748805bf21"
@@ -187,15 +193,14 @@
             ]
         },
         {
-            "address":"0x1070a8B8E83A58856F6a21682868eAf0dc09e6C3",
-            "image":"scxEth",
-            "friendlyName":"SCX/ETH LP (Uni-V2)",
-            "AMMs":[
+            "address": "0x1070a8B8E83A58856F6a21682868eAf0dc09e6C3",
+            "image": "scxEth",
+            "friendlyName": "SCX/ETH LP (Uni-V2)",
+            "AMMs": [
                 {
-                    "location":"uni",
-                    "type":"LP",
+                    "location": "uni",
+                    "type": "LP",
                     "url": "add/v2/ETH/0x1B8568FbB47708E9E9D31Ff303254f748805bF21"
-                
                 }
             ]
         }
