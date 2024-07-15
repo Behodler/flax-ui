@@ -4,8 +4,11 @@ import Flax from "../images/FlaxSmall.png"
 import HedgeyIcon from "../images/hedgeyIcon.png"
 import { useBlockchainContext } from '../contexts/BlockchainContextProvider';
 import { useEthers, useBlockNumber } from '@usedapp/core';
-import { ethers } from 'ethers';
+import { BigNumber, ethers } from 'ethers';
 import { LiveProps } from '../extensions/LiveProps';
+import { useProvider } from '../hooks/useProvider';
+import { ChainID } from '../types/ChainID';
+import { getDaiPriceOfToken, getEthPrice } from '../extensions/Uniswap';
 
 
 
@@ -14,13 +17,31 @@ const BalanceHeader = (props: LiveProps) => {
     const [balance, setBalance] = useState<string>("0.0")
     const [lockedBalance, setLockedBalance] = useState<string>();
     const blockNumber = useBlockNumber();
-    const { flxLaunchDaiPrice } = useBlockchainContext()
-    const [formattedFLXPrice, setFormattedFLXPrice] = useState<string>();
+    const { chainId, daiPriceOfEth, setFlxDollarPrice, flxDollarPrice } = useBlockchainContext()
+    const [flaxPrice, setFlaxPrice] = useState<string>()
+    const ethProvider = useProvider();
 
     useEffect(() => {
-        const dollarValue = ethers.utils.formatEther(flxLaunchDaiPrice);
-        setFormattedFLXPrice(parseFloat(dollarValue).toFixed(2))
-    }, [flxLaunchDaiPrice])
+        if (ethProvider && chainId === ChainID.mainnet) {
+            const fetchDaiPrice = async () => {
+                const ethPrice = await getEthPrice('0x0cf758D4303295C43CD95e1232f0101ADb3DA9E8', ethProvider, [])
+                if (daiPriceOfEth && ethPrice) {
+
+                    const daiPrice = daiPriceOfEth.mul(ethPrice).div(ethers.constants.WeiPerEther)
+                    setFlxDollarPrice(daiPrice || BigNumber.from('0000000000000000'))
+                    if (daiPrice) {
+                        const formatted = parseFloat(ethers.utils.formatEther(daiPrice)).toFixed(2)
+                        setFlaxPrice(formatted)
+                    }
+                } else {
+                    setFlaxPrice(undefined)
+                }
+            }
+            fetchDaiPrice();
+        }
+
+    }, [blockNumber, chainId, ethProvider])
+
 
     useEffect(() => {
         const fetchBalance = async () => {
@@ -83,13 +104,21 @@ const BalanceHeader = (props: LiveProps) => {
                     </a>
                 }
             </Grid>
-            <Grid item>
-               <Tooltip title="This will be the price at launch, not a future price guarantee. FLX is not a stablecoin.">
-                <Typography variant="h5" style={{ color: '#00A36C' }}>
-                    ${formattedFLXPrice} <i>launch price*</i>
-                </Typography>
-                </Tooltip>
-            </Grid>
+            {flaxPrice ?
+                <Grid item>
+                    <Tooltip title="This will be the price at launch, not a future price guarantee. FLX is not a stablecoin.">
+                        <Typography variant="h5" style={{ color: '#00A36C' }}>
+                            ${flaxPrice}
+                        </Typography>
+                    </Tooltip>
+                </Grid> : <Grid item>
+                    <Tooltip title="This is just a fictional testnet price">
+                        <Typography variant="h5" style={{ color: '#00A36C' }}>
+                            ${ethers.utils.formatEther(flxDollarPrice.toString())}0
+                        </Typography>
+                    </Tooltip>
+                </Grid>}
+
         </Grid>
     );
 };

@@ -27,7 +27,7 @@ export default function MintPanel(props: LiveProps) {
     const [lockDuration, setLockDuration] = useState<number>()
     const [inputBalance, setInputBalance] = useState<BigNumber>();
     const { contracts, account, chainId } = props
-    const { selectedAssetId, dynamicTokenInfo, flxLaunchDaiPrice, daiPriceOfEth } = useBlockchainContext()
+    const { selectedAssetId, dynamicTokenInfo, flxDollarPrice, daiPriceOfEth } = useBlockchainContext()
     const blockNumber = useBlockNumber()
     const [asset, setAsset] = useState<AssetProps>()
     const [token, setToken] = useState<ERC20>()
@@ -102,7 +102,7 @@ export default function MintPanel(props: LiveProps) {
                 const flax = ethers.utils.formatEther(divTera.toString()).toString()
                 if (flax != flaxToMint) {
                     setFlaxToMint(flax);
-                    const daiValueWei = flxLaunchDaiPrice.mul(divTera).div(BigNumber.from(10).pow(18));
+                    const daiValueWei = flxDollarPrice.mul(divTera).div(BigNumber.from(10).pow(18));
                     setMintDai(parseFloat(ethers.utils.formatEther(daiValueWei)).toFixed(2));
                     validateInput(mintWei, divTera);
                     if (inputDollarPrice) {
@@ -163,7 +163,7 @@ export default function MintPanel(props: LiveProps) {
     }, [token, updateChecker, mintText])
 
     const cornerImage = !assetApproved && imagePath !== undefined ? <img src={imagePath || imagePath} style={{ height: `20px` }} /> : <div></div>
-    const iconImage = <img src={imagePath} style={{ height: `40px` }} />
+    const iconImage = <img src={imagePath} style={{ height: `40px`,borderRadius:"25px" }} />
 
     const iconTextBox = <IconTextBox dollarValueOfInput={dollarValueOfInputText} text={mintText} setText={setMintText} cornerImage={iconImage} max={dynamic !== undefined ? ethers.utils.formatEther(dynamic.balance) : "0"} invalidReason={invalidReason} />;
 

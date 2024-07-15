@@ -29,6 +29,19 @@
             ]
         },
         {
+            "address":"0x6dF6B57FB7c35D7C71395F77cb08b82A62635e19",
+            "image":"flaxEth",
+            "friendlyName":"Flax/Eth LP (Uni-V2)",
+            "AMMs":[
+                {
+                    "location":"uni",
+                    "type":"LP",
+                    "url": "add/v2/ETH/0x0cf758D4303295C43CD95e1232f0101ADb3DA9E8"
+                
+                }
+            ]
+        },
+        {
             "address": "0xf047ee812b21050186f86106f6cabdfec35366c6",
             "image": "scxEye",
             "friendlyName": "SCX/EYE LP (Uni-V2)",

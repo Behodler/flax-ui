@@ -32,6 +32,7 @@ const useAddresses = (chainId: ChainID): { addresses: OptionalAddresses, loading
                      
                         Inputs: ['0x155ff1a85f440ee0a382ea949f24ce4e0b751c65', //EYE price = 1
                             '0x1b8568fbb47708e9e9d31ff303254f748805bf21',   //SCX price = 20
+                            '0x6dF6B57FB7c35D7C71395F77cb08b82A62635e19',
                             '0xf047ee812b21050186f86106f6cabdfec35366c6', //SCX/EYE price = 55
                             '0x0287120f9b7d8709b4dD5b589Ae759F79fD34E62', //pyro(SCX/EYE) price =55
                             '0x319ead06eb01e808c80c7eb9bd77c5d8d163addb', //SCX/Eth price = ($1283.924375215) 16691

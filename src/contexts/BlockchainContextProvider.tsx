@@ -28,7 +28,8 @@ interface BlockchainContextType {
     contracts: Contracts | undefined;
     account: string | undefined
     selectedAssetId: string,
-    flxLaunchDaiPrice: BigNumber,
+    flxDollarPrice: BigNumber,
+    setFlxDollarPrice:(price:BigNumber) => void
     setSelectedAssetId: (assetId: string) => void
     dynamicTokenInfo: Record<string, DynamicTokenInfo>
     updateDynamicTokenInfo: (address: string, value: DynamicTokenInfo) => void
@@ -36,7 +37,8 @@ interface BlockchainContextType {
 }
 
 const BlockchainContext = createContext<BlockchainContextType>({
-    chainId: ChainID.disconnected, contracts: {} as any, account: "0x0", selectedAssetId: '', flxLaunchDaiPrice: BigNumber.from('100000000000000000'),
+    chainId: ChainID.disconnected, contracts: {} as any, account: "0x0", selectedAssetId: '', flxDollarPrice: BigNumber.from('100000000000000000'),
+    setFlxDollarPrice: (price:BigNumber) => {},
     setSelectedAssetId: (id: string) => { }, dynamicTokenInfo: {}, updateDynamicTokenInfo: (address, value) => { }, daiPriceOfEth: undefined
 });
 
@@ -56,7 +58,7 @@ export const BlockchainContextProvider: React.FC<BlockchainProviderProps> = ({ c
     const [daiPriceOfEth, setDaiPriceOfEth] = useState<BigNumber | undefined>()
     // Fetch addresses and contracts whenever chainId changes
     const { addresses } = useAddresses(derivedChainId);
-
+    const [flxDollarPrice,setFlxDollarPrice] = useState<BigNumber>(BigNumber.from('100000000000000000'))
     const contracts = useContracts(addresses);
     useEffect(() => {
         if ((!account || !active) && ethWindow.ethereum) {
@@ -122,7 +124,8 @@ export const BlockchainContextProvider: React.FC<BlockchainProviderProps> = ({ c
             selectedAssetId,
             setSelectedAssetId,
             dynamicTokenInfo,
-            flxLaunchDaiPrice: BigNumber.from('100000000000000000'),
+         flxDollarPrice,
+         setFlxDollarPrice,
             updateDynamicTokenInfo: updateBalance,
             daiPriceOfEth
         }}>

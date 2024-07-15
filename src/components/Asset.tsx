@@ -46,7 +46,7 @@ export function Asset(props: IProps) {
     const { contracts } = props
     const { children: asset } = props
     const imagePath = require(`../images/${getImagePath(asset.image)}`);
-    const { account, flxLaunchDaiPrice, chainId, daiPriceOfEth } = useBlockchainContext()
+    const { account, flxDollarPrice, chainId, daiPriceOfEth } = useBlockchainContext()
     const blockNumber = useBlockNumber();
     const { dynamicTokenInfo, updateDynamicTokenInfo: updateBalance } = useBlockchainContext()
     const [currentBalance, setCurrentBalance] = useState<string | undefined>(undefined)
@@ -81,10 +81,10 @@ export function Asset(props: IProps) {
         if (dynamicTokenInfo && dynamicTokenInfo[props.children.address]) {
             const teraCouponPerToken = dynamicTokenInfo[props.children.address].teraCouponPerToken
             const factor = BigNumber.from(10).pow(12);
-            const flxValueBig = teraCouponPerToken.mul(flxLaunchDaiPrice).div(factor)
+            const flxValueBig = teraCouponPerToken.mul(flxDollarPrice).div(factor)
             setFlxValue(parseFloat(ethers.utils.formatEther(flxValueBig)).toFixed(4));
         }
-    }, [flxLaunchDaiPrice, dynamicTokenInfo])
+    }, [flxDollarPrice, dynamicTokenInfo])
 
     useDeepCompareEffect(() => {
         const fetchBalance = async () => {
@@ -110,7 +110,7 @@ export function Asset(props: IProps) {
         }
     }, [dynamicTokenInfo])
 
-    const image = <img src={imagePath.default || imagePath} style={{ height: '40px' }} />
+    const image = <img src={imagePath.default || imagePath} style={{ height: '40px', borderRadius:"25px" }} />
     const ammLinks = asset.AMMs?.map((amm, index) => getAMMLink(amm, index))
     let burnableImage = <></>
     let mintPrice = ""
