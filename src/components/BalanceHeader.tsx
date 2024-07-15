@@ -106,7 +106,7 @@ const BalanceHeader = (props: LiveProps) => {
             </Grid>
             {flaxPrice ?
                 <Grid item>
-                    <Tooltip title="This will be the price at launch, not a future price guarantee. FLX is not a stablecoin.">
+                    <Tooltip title="This is the current Uniswap V2 price">
                         <Typography variant="h5" style={{ color: '#00A36C' }}>
                             ${flaxPrice}
                         </Typography>
