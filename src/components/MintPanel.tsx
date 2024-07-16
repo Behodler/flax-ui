@@ -162,7 +162,7 @@ export default function MintPanel(props: LiveProps) {
         }
     }, [token, updateChecker, mintText])
 
-    const cornerImage = !assetApproved && imagePath !== undefined ? <img src={imagePath || imagePath} style={{ height: `20px` }} /> : <div></div>
+    const cornerImage = !assetApproved && imagePath !== undefined ? <img src={imagePath || imagePath} style={{ height: `20px`, borderRadius:'10px' }} /> : <div></div>
     const iconImage = <img src={imagePath} style={{ height: `40px`,borderRadius:"25px" }} />
 
     const iconTextBox = <IconTextBox dollarValueOfInput={dollarValueOfInputText} text={mintText} setText={setMintText} cornerImage={iconImage} max={dynamic !== undefined ? ethers.utils.formatEther(dynamic.balance) : "0"} invalidReason={invalidReason} />;

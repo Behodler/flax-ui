@@ -52,7 +52,7 @@ const MinterPage = () => {
     <Container maxWidth={false} disableGutters>
       <Grid container spacing={0} sx={{ backgroundColor: '#0D131A', width: '100vw', minHeight: '100vh', boxSizing: 'border-box' }}>
         <Grid item xs={false} sm={1} md={true} style={{ flexGrow: 1 }} />
-        <Grid item xs={12} sm={10} md={false} style={{ maxWidth: 1170, flexBasis: 1170 }}>
+        <Grid item xs={12} sm={10} md={false} style={{ maxWidth: 1280, flexBasis: 1280 }}>
           <Box id="box" sx={{ minHeight: '100%', width: '100%', color: 'white', padding: 4, backgroundColor: '#0D131A', boxSizing: 'border-box' }}>
             <Grid
               container
@@ -72,7 +72,7 @@ const MinterPage = () => {
                   justifyContent="space-between"
                   alignItems="top"
                 >
-                  <Grid item sx={{ width: '640px' }}>
+                  <Grid item sx={{ width: '750px' }}>
                     {AssetListLive}
                   </Grid>
                   <Grid item sx={{ width: '440px' }}>

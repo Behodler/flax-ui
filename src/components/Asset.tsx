@@ -40,9 +40,11 @@ const getAMMLink = (amm: AMM, muiKey: number) => {
 interface IProps {
     contracts: Contracts
     children: AssetProps
+    APY:number,
+    setAPY:(apy:number)=>void
 }
 export function Asset(props: IProps) {
-    const { setSelectedAssetId ,selectedAssetId} = useBlockchainContext()
+    const { setSelectedAssetId, selectedAssetId } = useBlockchainContext()
     const { contracts } = props
     const { children: asset } = props
     const imagePath = require(`../images/${getImagePath(asset.image)}`);
@@ -55,8 +57,24 @@ export function Asset(props: IProps) {
     const selectedDynamic = selectedInput !== undefined ? dynamicTokenInfo[selectedInput.address] : undefined
     const [flxValue, setFlxValue] = useState<string>()
     const [inputDollarPrice, setInputDollarPrice] = useState<string | undefined>()
-
     const ethProvider = useProvider();
+
+    useEffect(() => {
+        if (inputDollarPrice && flxValue) {
+            const inputDollarFloat = parseFloat(inputDollarPrice)
+            const flxDollar = parseFloat(flxValue)
+            if (isNaN(inputDollarFloat) || isNaN(flxDollar)) {
+                props.setAPY(0)
+            } else {
+                const premium = flxDollar - inputDollarFloat
+                const ROI = premium / inputDollarFloat
+                const APY_Float = ((1 + ROI * ROI) - 1) * (ROI < 0 ? -100 : 100)
+                props.setAPY(APY_Float)
+            }
+        } else {
+            props.setAPY(0)
+        }
+    }, [inputDollarPrice, flxValue])
 
     useEffect(() => {
         if (ethProvider && chainId === ChainID.mainnet) {
@@ -75,7 +93,7 @@ export function Asset(props: IProps) {
             fetchDaiPrice();
         }
 
-    }, [blockNumber, chainId, ethProvider,selectedAssetId])
+    }, [blockNumber, chainId, ethProvider, selectedAssetId])
 
     useDeepCompareEffect(() => {
         if (dynamicTokenInfo && dynamicTokenInfo[props.children.address]) {
@@ -110,7 +128,7 @@ export function Asset(props: IProps) {
         }
     }, [dynamicTokenInfo])
 
-    const image = <img src={imagePath.default || imagePath} style={{ height: '40px', borderRadius:"25px" }} />
+    const image = <img src={imagePath.default || imagePath} style={{ height: '40px', borderRadius: "25px" }} />
     const ammLinks = asset.AMMs?.map((amm, index) => getAMMLink(amm, index))
     let burnableImage = <></>
     let mintPrice = ""
@@ -131,11 +149,11 @@ export function Asset(props: IProps) {
         onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
     >
         <ListItemButton onClick={() => setSelectedAssetId(asset.address)} style={{ width: '100%', height: '100%' }}>
-            <Grid container wrap="nowrap" alignItems="center" spacing={2}>
+            <Grid container wrap="nowrap" alignItems="center" spacing={2} >
                 <Grid item>
                     {image}
                 </Grid>
-                <Grid item xs>
+                <Grid item xs >
 
                     <Grid
                         container
@@ -143,6 +161,7 @@ export function Asset(props: IProps) {
                         justifyContent="flex-start"
                         alignItems="center"
                         spacing={1}
+                        sx={{ width: "300px" }}
                     >
                         <Grid item>
                             <Typography variant="body1" style={{ cursor: 'pointer' }}>
@@ -164,20 +183,21 @@ export function Asset(props: IProps) {
                     </Typography>
 
                 </Grid>
-                <Grid item xs >
+                <Grid item >
                     <Grid
                         container
                         direction="row"
                         justifyContent="left"
-                        alignItems="center"
+                        alignItems="space-between"
+                        sx={{ width: "350px" }}
                     >
-                        <Grid item style={{ width: "110px" }}>
+                        <Grid item style={{ width: "80px" }}>
                             {ammLinks}
                         </Grid>
                         <Grid item style={{ width: "30px" }} >
                             {burnableImage}
                         </Grid>
-                        <Grid item style={{ width: "100px" }}>
+                        <Grid item style={{ width: "120px" }}>
 
                             <Tooltip title={mintMessage}>
                                 <div>
@@ -186,9 +206,16 @@ export function Asset(props: IProps) {
                                 </div>
                             </Tooltip>
                         </Grid>
+                        <Grid item style={{ width: "70px" }}>
+                          
+                                {props.APY > 0 ? <Typography style={{ textAlign: "right", color: "forestgreen" }} variant={"h3"}>{props.APY.toFixed(2)}%</Typography> :
+                                    <Typography style={{ textAlign: "right", color: "red" }} variant={"h3"}>{props.APY.toFixed(2)}%</Typography>}
+
+                        </Grid>
                     </Grid>
 
                 </Grid>
+
             </Grid>
         </ListItemButton>
     </ListItem>
