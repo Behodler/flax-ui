@@ -44,14 +44,13 @@ export default function MintPanel(props: LiveProps) {
     const dynamic = token ? dynamicTokenInfo[token.address] : undefined
     const [inputDollarPrice, setInputDollarPrice] = useState<BigNumber | undefined>()
     const [dollarValueOfInputText, setDollarValueOfInputText] = useState<string | undefined>()
-
     const ethProvider = useProvider()
 
     useEffect(() => {
         if (ethProvider && chainId === ChainID.mainnet && asset) {
             const fetchDaiPrice = async () => {
                 if (daiPriceOfEth) {
-                    const daiPrice = await getDaiPriceOfToken(asset.address, ethProvider, chainId, daiPriceOfEth)
+                    const daiPrice = await getDaiPriceOfToken(selectedAssetId, ethProvider, chainId, daiPriceOfEth)
                     setInputDollarPrice(daiPrice)
 
                 } else {
@@ -108,6 +107,7 @@ export default function MintPanel(props: LiveProps) {
                     if (inputDollarPrice) {
                         const dollarWei = mintWei.mul(inputDollarPrice).div(ethers.constants.WeiPerEther)
                         const formatted = parseFloat(ethers.utils.formatEther(dollarWei)).toFixed(2)
+                        console.log('setting input dollar value to ' + formatted)
                         setDollarValueOfInputText(formatted)
                     }
                     else {
@@ -118,7 +118,7 @@ export default function MintPanel(props: LiveProps) {
                 setInvalidReason("Invalid Input")
             }
         }
-    }, [mintText, invalidReason, blockNumber, inputBalance, dynamic])
+    }, [mintText, invalidReason, blockNumber, inputBalance, dynamic, inputDollarPrice])
 
     const validateInput = (mintWei: BigNumber, flaxToMint: BigNumber) => {
         if (flaxAllowance && mintWei.gt(flaxAllowance)) {
@@ -162,81 +162,81 @@ export default function MintPanel(props: LiveProps) {
         }
     }, [token, updateChecker, mintText])
 
-    const cornerImage = !assetApproved && imagePath !== undefined ? <img src={imagePath || imagePath} style={{ height: `20px`, borderRadius:'10px' }} /> : <div></div>
-    const iconImage = <img src={imagePath} style={{ height: `40px`,borderRadius:"25px" }} />
+    const cornerImage = !assetApproved && imagePath !== undefined ? <img src={imagePath || imagePath} style={{ height: `20px`, borderRadius: '10px' }} /> : <div></div>
+    const iconImage = <img src={imagePath} style={{ height: `40px`, borderRadius: "25px" }} />
 
     const iconTextBox = <IconTextBox dollarValueOfInput={dollarValueOfInputText} text={mintText} setText={setMintText} cornerImage={iconImage} max={dynamic !== undefined ? ethers.utils.formatEther(dynamic.balance) : "0"} invalidReason={invalidReason} />;
 
     return (
         <Paper style={{ height: '300px', padding: '20px', backgroundColor: '#1D2833' }}>
-            <Grid
-                container
-                direction="column"
-                justifyContent="stretch"  // Ensures vertical stretching
-                alignItems="center"
-                spacing={2}
-            >
-                <Grid item style={{ width: '100%' }}>
-                    <Grid
-                        container
-                        justifyContent="space-between"
-                        alignItems="center"
-                        style={{ width: '100%' }}  // Ensures this Grid container takes full width
-                    >
-                        <Grid item>
-                            <Typography variant="h6" style={{ marginBottom: '10px' }}>
-                                Mint Flax with {asset?.friendlyName}
-                            </Typography>
-                        </Grid>
-                        <Grid item>
-                            {cornerImage}
+                <Grid
+                    container
+                    direction="column"
+                    justifyContent="stretch"  // Ensures vertical stretching
+                    alignItems="center"
+                    spacing={2}
+                >
+                    <Grid item style={{ width: '100%' }}>
+                        <Grid
+                            container
+                            justifyContent="space-between"
+                            alignItems="center"
+                            style={{ width: '100%' }}  // Ensures this Grid container takes full width
+                        >
+                            <Grid item>
+                                <Typography variant="h6" style={{ marginBottom: '10px' }}>
+                                    Mint Flax with {asset?.friendlyName}
+                                </Typography>
+                            </Grid>
+                            <Grid item>
+                                {cornerImage}
+                            </Grid>
                         </Grid>
                     </Grid>
-                </Grid>
-                <Grid item style={{ width: '100%', paddingTop: "60px" }}>
-                    <div></div>
-                </Grid>
-                <Grid item>
-                    <div>{iconTextBox}</div>
-                </Grid>
-                {token && (
-                    <>
-                        <Grid item>
-                            {assetApproved ?
-                                <Grid container
-                                    direction="column"
-                                    alignItems="center">
-                                    <Grid item>
-                                        <TransactionButton progressSetter={setMintProgress} progress={mintProgress} invalid={invalidReason.length > 0} transactionGetter={() => contracts.issuer.issue(token.address, ethers.utils.parseEther(mintText).toString())} >
-                                            Mint {flaxToMint !== "" ? parseFloat(flaxToMint).toFixed(2) : ""} Flax {mintDai && mintDai !== "" ? '($' + mintDai + ')' : ''}
-                                        </TransactionButton>
+                    <Grid item style={{ width: '100%', paddingTop: "60px" }}>
+                        <div></div>
+                    </Grid>
+                    <Grid item>
+                        <div>{iconTextBox}</div>
+                    </Grid>
+                    {token && (
+                        <>
+                            <Grid item>
+                                {assetApproved ?
+                                    <Grid container
+                                        direction="column"
+                                        alignItems="center">
+                                        <Grid item>
+                                            <TransactionButton progressSetter={setMintProgress} progress={mintProgress} invalid={invalidReason.length > 0} transactionGetter={() => contracts.issuer.issue(token.address, ethers.utils.parseEther(mintText).toString())} >
+                                                Mint {flaxToMint !== "" ? parseFloat(flaxToMint).toFixed(2) : ""} Flax {mintDai && mintDai !== "" ? '($' + mintDai + ')' : ''}
+                                            </TransactionButton>
+                                        </Grid>
+                                        <Grid item>
+                                            <Typography variant='h6'>
+                                                (streamed over {lockDuration} days)
+                                            </Typography>
+                                        </Grid>
                                     </Grid>
-                                    <Grid item>
-                                        <Typography variant='h6'>
-                                            (streamed over {lockDuration} days)
-                                        </Typography>
-                                    </Grid>
-                                </Grid>
-                                :
-                                <TransactionButton progressSetter={setApproveProgress} progress={approveProgress} transactionGetter={() => token.approve(contracts.issuer.address, ethers.constants.MaxUint256)} >
-                                    Approve {asset?.friendlyName} for minting Flax
-                                </TransactionButton>
-                            }
-                        </Grid>
+                                    :
+                                    <TransactionButton progressSetter={setApproveProgress} progress={approveProgress} transactionGetter={() => token.approve(contracts.issuer.address, ethers.constants.MaxUint256)} >
+                                        Approve {asset?.friendlyName} for minting Flax
+                                    </TransactionButton>
+                                }
+                            </Grid>
 
-                        {flaxAllowance ?
-                            <Grid item style={{ width: "100%" }}>
-                                <Grid container direction="row" justifyContent="center">
-                                    <Grid item xs={12} style={{ textAlign: 'right' }}>
-                                        <Tooltip title="This is the maximum amount of Flax that can be minted in one transaction.">
-                                            <Typography variant='h6' sx={{ fontWeight: "bold", fontSize: (theme) => theme.typography.h5.fontSize }}>Max Flax per mint: {ethers.utils.formatEther(flaxAllowance)}</Typography>
-                                        </Tooltip>
+                            {flaxAllowance ?
+                                <Grid item style={{ width: "100%" }}>
+                                    <Grid container direction="row" justifyContent="center">
+                                        <Grid item xs={12} style={{ textAlign: 'right' }}>
+                                            <Tooltip title="This is the maximum amount of Flax that can be minted in one transaction.">
+                                                <Typography variant='h6' sx={{ fontWeight: "bold", fontSize: (theme) => theme.typography.h5.fontSize }}>Max Flax per mint: {ethers.utils.formatEther(flaxAllowance)}</Typography>
+                                            </Tooltip>
+                                        </Grid>
                                     </Grid>
-                                </Grid>
-                            </Grid> : <></>}
+                                </Grid> : <></>}
 
-                    </>)}
-            </Grid>
+                        </>)}
+                </Grid>
         </Paper>
 
     );

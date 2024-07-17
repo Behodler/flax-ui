@@ -123,7 +123,7 @@ export function Asset(props: IProps) {
     useDeepCompareEffect(() => {
         if (selectedInput && selectedDynamic) {
             const formattedBalance = ethers.utils.formatEther(dynamicTokenInfo[selectedInput.address].balance);
-            const balanceFixed = parseFloat(formattedBalance).toFixed(4); // Ensure it always has 4 decimal places
+            const balanceFixed = parseFloat(formattedBalance).toFixed(8); // Ensure it always has 8 decimal places
             setCurrentBalance(balanceFixed);
         }
     }, [dynamicTokenInfo])
