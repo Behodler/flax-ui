@@ -95,7 +95,7 @@ const AssetList = (props: LiveProps) => {
                                     spacing={1}
                                 >
                                     <Grid item>
-                                        <Tooltip placement="top" title="Projected annual profit, assuming constant prices. Green is profit, red is loss.">
+                                        <Tooltip placement="top" title="Projected annual profit, assuming 180 day lockup. Green is profit, red is loss.">
                                             <Typography style={{ textAlign: "right" }} variant={"h3"}> APY  </Typography>
                                         </Tooltip>
                                     </Grid>
