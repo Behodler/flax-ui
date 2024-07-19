@@ -23,23 +23,32 @@ export interface DynamicTokenInfo {
     burnable: boolean
     teraCouponPerToken: BigNumber
 }
+export interface TokenLockupConfig {
+    threshold_size: number
+    days_multiple: number,
+    offset: number,
+}
+
+const defaultLockup: TokenLockupConfig = { threshold_size: 0, days_multiple: 0, offset: 0 }
 interface BlockchainContextType {
     chainId: ChainID;
     contracts: Contracts | undefined;
     account: string | undefined
     selectedAssetId: string,
     flxDollarPrice: BigNumber,
-    setFlxDollarPrice:(price:BigNumber) => void
+    setFlxDollarPrice: (price: BigNumber) => void
     setSelectedAssetId: (assetId: string) => void
     dynamicTokenInfo: Record<string, DynamicTokenInfo>
     updateDynamicTokenInfo: (address: string, value: DynamicTokenInfo) => void
     daiPriceOfEth: BigNumber | undefined
+    tokenLockupConfig: TokenLockupConfig
 }
 
 const BlockchainContext = createContext<BlockchainContextType>({
     chainId: ChainID.disconnected, contracts: {} as any, account: "0x0", selectedAssetId: '', flxDollarPrice: BigNumber.from('100000000000000000'),
-    setFlxDollarPrice: (price:BigNumber) => {},
-    setSelectedAssetId: (id: string) => { }, dynamicTokenInfo: {}, updateDynamicTokenInfo: (address, value) => { }, daiPriceOfEth: undefined
+    setFlxDollarPrice: (price: BigNumber) => { },
+    setSelectedAssetId: (id: string) => { }, dynamicTokenInfo: {}, updateDynamicTokenInfo: (address, value) => { }, daiPriceOfEth: undefined,
+    tokenLockupConfig: defaultLockup
 });
 
 interface BlockchainProviderProps {
@@ -58,8 +67,25 @@ export const BlockchainContextProvider: React.FC<BlockchainProviderProps> = ({ c
     const [daiPriceOfEth, setDaiPriceOfEth] = useState<BigNumber | undefined>()
     // Fetch addresses and contracts whenever chainId changes
     const { addresses } = useAddresses(derivedChainId);
-    const [flxDollarPrice,setFlxDollarPrice] = useState<BigNumber>(BigNumber.from('100000000000000000'))
+    const [flxDollarPrice, setFlxDollarPrice] = useState<BigNumber>(BigNumber.from('100000000000000000'))
+    const [tokenLockupConfig, setTokenLockupConfig] = useState<TokenLockupConfig>(defaultLockup)
     const contracts = useContracts(addresses);
+
+    useEffect(() => {
+        if (contracts && contracts.issuer) {
+            (async () => {
+                const { threshold_size: threshold_sizeBig, offset: offsetBig, days_multiple: days_multipleBig } = await contracts.issuer.lockupConfig()
+                const threshold_size = threshold_sizeBig.toNumber()
+                const offset = offsetBig.toNumber()
+                const days_multiple = days_multipleBig.toNumber()
+                const newConfig: TokenLockupConfig = { threshold_size, offset, days_multiple }
+                if (!_.isEqual(tokenLockupConfig, newConfig)) {
+                    setTokenLockupConfig(newConfig)
+                }
+
+            })()
+        }
+    }, [contracts])
     useEffect(() => {
         if ((!account || !active) && ethWindow.ethereum) {
             activateBrowserWallet();
@@ -124,10 +150,11 @@ export const BlockchainContextProvider: React.FC<BlockchainProviderProps> = ({ c
             selectedAssetId,
             setSelectedAssetId,
             dynamicTokenInfo,
-         flxDollarPrice,
-         setFlxDollarPrice,
+            flxDollarPrice,
+            setFlxDollarPrice,
             updateDynamicTokenInfo: updateBalance,
-            daiPriceOfEth
+            daiPriceOfEth,
+            tokenLockupConfig
         }}>
             {children}
         </BlockchainContext.Provider>

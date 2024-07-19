@@ -69,6 +69,11 @@ const _abi = [
         type: "uint256",
         internalType: "uint256",
       },
+      {
+        name: "recipient",
+        type: "address",
+        internalType: "address",
+      },
     ],
     outputs: [
       {
@@ -81,24 +86,21 @@ const _abi = [
   },
   {
     type: "function",
-    name: "lockupDuration",
+    name: "lockupConfig",
     inputs: [],
     outputs: [
       {
-        name: "",
+        name: "threshold_size",
         type: "uint256",
         internalType: "uint256",
       },
-    ],
-    stateMutability: "view",
-  },
-  {
-    type: "function",
-    name: "mintAllowance",
-    inputs: [],
-    outputs: [
       {
-        name: "",
+        name: "days_multiple",
+        type: "uint256",
+        internalType: "uint256",
+      },
+      {
+        name: "offset",
         type: "uint256",
         internalType: "uint256",
       },
@@ -143,17 +145,22 @@ const _abi = [
     name: "setLimits",
     inputs: [
       {
-        name: "allowance",
+        name: "threshold_size",
         type: "uint256",
         internalType: "uint256",
       },
       {
-        name: "lockupDuration_Days",
+        name: "days_multiple",
         type: "uint256",
         internalType: "uint256",
       },
       {
-        name: "_targetedMintsPerday",
+        name: "offset",
+        type: "uint256",
+        internalType: "uint256",
+      },
+      {
+        name: "_targetedMintsPerWeek",
         type: "uint256",
         internalType: "uint256",
       },
@@ -372,15 +379,20 @@ const _abi = [
   },
   {
     type: "error",
-    name: "ExcessiveMinting",
+    name: "InvalidLockConfig",
     inputs: [
       {
-        name: "attemptedAmount",
+        name: "threshold_size",
         type: "uint256",
         internalType: "uint256",
       },
       {
-        name: "remaining",
+        name: "days_multiple",
+        type: "uint256",
+        internalType: "uint256",
+      },
+      {
+        name: "offset",
         type: "uint256",
         internalType: "uint256",
       },
