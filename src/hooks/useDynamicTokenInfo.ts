@@ -34,9 +34,28 @@ const useMultiTokenInfo = (multicall3: Multicall3 | undefined, issuer: Issuer | 
     const [initialized, setInitialized] = useState<boolean>(false)
     const [info, setInfo] = useState<TokenInfoMap>()
     const blocknumber = useBlockNumber()
+    const [seconds, setSeconds] = useState(0);
 
     //keeps price real time
+    // useEffect(() => {
+    //     if (tokens && info) {
+    //         const cloned = _.cloneDeep(info)
+    //         for (let i = 0; i < tokens.length; i++) {
+    //             const currentToken = tokens[i]
+    //             const currentInfo = cloned[currentToken]
+    //             cloned[currentToken].currentPrice = getPrice(currentInfo)
+    //         }
+    //         if (!_.isEqual(cloned, info)) {
+    //             setInfo(cloned)
+    //         }
+    //     }
+    // }, [blocknumber, tokens])
+
+
+
     useEffect(() => {
+      // Set up the interval
+      const interval = setInterval(() => {
         if (tokens && info) {
             const cloned = _.cloneDeep(info)
             for (let i = 0; i < tokens.length; i++) {
@@ -47,9 +66,15 @@ const useMultiTokenInfo = (multicall3: Multicall3 | undefined, issuer: Issuer | 
             if (!_.isEqual(cloned, info)) {
                 setInfo(cloned)
             }
-        }
-    }, [blocknumber, tokens])
+        }        
+      }, 1000); // 1000 ms = 1 second
+  
 
+
+      // Clear interval on component unmount
+      return () => clearInterval(interval);
+    }, [blocknumber]);
+    
     useEffect(() => {
         if (refresh) {
             setInitialized(false)
@@ -87,7 +112,7 @@ const useMultiTokenInfo = (multicall3: Multicall3 | undefined, issuer: Issuer | 
                             acc[current.address] = current.castInfo
                             return acc
                         }, {})
-                    setInfo(results)
+                        setInfo(results)
                 })()
 
             }
@@ -124,8 +149,7 @@ const useMultiTokenBalances = (multicall3: Multicall3 | undefined, holder: strin
                             callData: tokenContract.interface.encodeFunctionData('balanceOf', [holder])
                         };
                     });
-                    // const {blockNumber,returnData}= await multicall3.aggregate(calls) as unknown as { blockNumber: number, returnData: string[] };
-                    // setBalances(returnData.map(data => ethers.BigNumber.from(data)))
+                
                     const { blockNumber, returnData } = await multicall3.callStatic.aggregate(calls);
                     setBalances(returnData.map((data, i) => ({ address: tokens[i], balance: ethers.utils.defaultAbiCoder.decode(['uint256'], data)[0] }))
                         .reduce((acc, current) => {
