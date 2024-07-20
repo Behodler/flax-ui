@@ -8,6 +8,7 @@ import { Contracts } from '../contexts/BlockchainContextProvider';
 import _ from 'lodash'
 import useHedgey from './useHedgey';
 import useTokenLockUpPlans from './useTokenLockup';
+import useMulticall3 from './useMulticall3';
 // Custom hook to manage contracts based on addresses
 export function useContracts(addresses: ContractAddresses | null): Contracts | undefined {
     const [contracts, setContracts] = useState<Contracts | undefined>();
@@ -17,11 +18,12 @@ export function useContracts(addresses: ContractAddresses | null): Contracts | u
     const faucet = useFaucet(addresses);
     const hedgey = useHedgey(addresses);
     const tokenLockup = useTokenLockUpPlans(hedgey);
+    const multicall3 = useMulticall3(addresses);
 
-    const newContracts = { coupon, issuer, inputs, faucet, hedgey,tokenLockup }
+    const newContracts = { coupon, issuer, inputs, faucet, hedgey, tokenLockup, multicall3 }
     const isNew: boolean = !_.isEqual(newContracts, contracts)
-    if (coupon && issuer && hedgey && tokenLockup && inputs && isNew) {
-        setContracts({ coupon, issuer, inputs, faucet, hedgey, tokenLockup });
+    if (coupon && issuer && hedgey && tokenLockup && multicall3 && inputs && isNew) {
+        setContracts({ coupon, issuer, inputs, faucet, hedgey, tokenLockup, multicall3 });
     }
     return contracts;
 }

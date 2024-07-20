@@ -10,6 +10,7 @@ import { useMemo } from 'react';
 
 //Never import this directly. Call the blockchain context
 const useIssuer = (addresses: ContractAddresses | null): Issuer | undefined => {
+  
     const provider = useProvider();
     // Create a Contract instance and assert the correct type
     return useMemo(() => {

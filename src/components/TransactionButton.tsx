@@ -1,6 +1,7 @@
 import { ContractTransaction } from 'ethers';
 import { Broadcast, IProgressSetter, TransactionProgress } from '../extensions/Broadcast'
 import { Box, Button, CircularProgress } from '@mui/material';
+import { useBlockchainContext } from '../contexts/BlockchainContextProvider';
 
 interface TransactionButtonProps {
     transactionGetter: () => Promise<ContractTransaction>,
@@ -12,9 +13,10 @@ interface TransactionButtonProps {
 
 export default function TransactionButton(props: TransactionButtonProps
 ) {
+    const {refreshMultiCalls} = useBlockchainContext()
     const enabled = props.progress === TransactionProgress.dormant && !props.invalid
     let child: any = getChildProps(props.progress, props.children)
-    return <Button disabled={!enabled} onClick={() => Broadcast(props.transactionGetter(), props.progressSetter, 5)}>
+    return <Button disabled={!enabled} onClick={() => Broadcast(props.transactionGetter(), props.progressSetter, 5,refreshMultiCalls)}>
         {child}
     </Button>
 }

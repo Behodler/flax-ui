@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import assetJSON from "../constants/AssetLists.json"
 import { useBlockchainContext } from '../contexts/BlockchainContextProvider';
 import { useBlockNumber, useEthers } from '@usedapp/core';
@@ -14,11 +14,22 @@ import sortAsc from "../images/sortAscending.svg"
 import sortDesc from '../images/sortDescending.svg'
 import _ from 'lodash';
 const assetList = assetJSON as Assets
+type Dictionary = {
+    [key: string]: number;
+};
 const loadList = (chainId: number | undefined) => {
     if (chainId) {
         return assetList[chainId.toString()]
     }
     return []
+}
+
+const sortAlgorithmFactory = (assetAPYs: Dictionary, sortDirection: boolean | undefined) => (a: AssetProps, b: AssetProps) => {
+    if (sortDirection === undefined)
+        return 0
+    const apyA = assetAPYs[a.address]
+    const apyB = assetAPYs[b.address]
+    return sortDirection ? apyA - apyB : apyB - apyA
 }
 
 const AssetList = (props: LiveProps) => {
@@ -29,9 +40,7 @@ const AssetList = (props: LiveProps) => {
 
     const [sortDirection, setSortDirection] = useState<boolean>()
     const [approveProgress, setApproveProgress] = useState<TransactionProgress>(TransactionProgress.dormant)
-    type Dictionary = {
-        [key: string]: number;
-    };
+
     const initialDictionary: Dictionary = assets.map(asset => asset.address).reduce((acc, address) => {
         acc[address] = 0;
         return acc;
@@ -39,6 +48,10 @@ const AssetList = (props: LiveProps) => {
 
     // Use useState hook with the Dictionary type
     const [assetAPYs, setAssetAPYs] = useState<Dictionary>(initialDictionary);
+
+    const sortAlgorithm = useMemo(() => {
+        return sortAlgorithmFactory(assetAPYs, sortDirection)
+    }, [assetAPYs, sortDirection])
 
     // Function to add or update a key-value pair in the dictionary
     const updateDictionary = (key: string) => (value: number) => {
@@ -101,7 +114,7 @@ const AssetList = (props: LiveProps) => {
                                     </Grid>
                                     <Grid item>
                                         <Tooltip placement="top" title={`Sort by APY ${sortDirection ? 'descending' : 'ascending'}. (Button created by Arren. Please thank him)`}>
-                                            <img onClick={() => setSortDirection(!sortDirection)} style={{ cursor: "pointer", width: "25px" }} src={sortDirection ?   sortAsc:sortDesc} />
+                                            <img onClick={() => setSortDirection(!sortDirection)} style={{ cursor: "pointer", width: "25px" }} src={sortDirection ? sortAsc : sortDesc} />
                                         </Tooltip>
                                     </Grid>
                                 </Grid>
@@ -112,13 +125,7 @@ const AssetList = (props: LiveProps) => {
                     </Grid>
                 </Grid>
             </ListItem>
-            {assets.sort((a, b) => {
-                if (sortDirection === undefined)
-                    return 0
-                const apyA = assetAPYs[a.address]
-                const apyB = assetAPYs[b.address]
-                return sortDirection ? apyA - apyB : apyB - apyA
-            }).map((asset, index) => (
+            {assets.sort(sortAlgorithm).map((asset, index) => (
                 <Asset APY={assetAPYs[asset.address]} setAPY={updateDictionary(asset.address)} contracts={props.contracts} key={asset.address}>
                     {asset}
                 </Asset>

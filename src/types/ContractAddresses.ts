@@ -5,4 +5,5 @@ export interface ContractAddresses {
     Inputs: string[];
     HedgeyAdapter:string
     Faucet?:string
+    Multicall3:string
 }

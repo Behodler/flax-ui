@@ -1,6 +1,6 @@
 import { Grid, Link, ListItem, ListItemButton, Tooltip, Typography } from '@mui/material';
 import React, { useEffect, useState } from 'react';
-import { Contracts, DynamicTokenInfo, useBlockchainContext } from '../contexts/BlockchainContextProvider';
+import { Contracts, useBlockchainContext } from '../contexts/BlockchainContextProvider';
 
 import burn from "../images/burn.png"
 import lock from "../images/padlock.png"
@@ -40,21 +40,21 @@ const getAMMLink = (amm: AMM, muiKey: number) => {
 interface IProps {
     contracts: Contracts
     children: AssetProps
-    APY:number,
-    setAPY:(apy:number)=>void
+    APY: number,
+    setAPY: (apy: number) => void
 }
 export function Asset(props: IProps) {
-    const { setSelectedAssetId, selectedAssetId } = useBlockchainContext()
     const { contracts } = props
     const { children: asset } = props
     const imagePath = require(`../images/${getImagePath(asset.image)}`);
-    const { account, flxDollarPrice, chainId, daiPriceOfEth } = useBlockchainContext()
     const blockNumber = useBlockNumber();
-    const { dynamicTokenInfo, updateDynamicTokenInfo: updateBalance } = useBlockchainContext()
+    const { dynamicTokenInfo,
+        account, flxDollarPrice, chainId, daiPriceOfEth ,setSelectedAssetId, selectedAssetId 
+     } = useBlockchainContext()
     const [currentBalance, setCurrentBalance] = useState<string | undefined>(undefined)
     const inputs = contracts.inputs
     const selectedInput = inputs.filter(input => input.address === asset.address)[0]
-    const selectedDynamic = selectedInput !== undefined ? dynamicTokenInfo[selectedInput.address] : undefined
+    const selectedDynamic = (selectedInput !== undefined && dynamicTokenInfo)? dynamicTokenInfo[selectedInput.address] : undefined
     const [flxValue, setFlxValue] = useState<string>()
     const [inputDollarPrice, setInputDollarPrice] = useState<string | undefined>()
     const ethProvider = useProvider();
@@ -90,7 +90,8 @@ export function Asset(props: IProps) {
                     setInputDollarPrice(undefined)
                 }
             }
-            fetchDaiPrice();
+            if (blockNumber && (blockNumber % 3 == 0 || inputDollarPrice !== undefined))
+                fetchDaiPrice();
         }
 
     }, [blockNumber, chainId, ethProvider, selectedAssetId])
@@ -105,23 +106,7 @@ export function Asset(props: IProps) {
     }, [flxDollarPrice, dynamicTokenInfo])
 
     useDeepCompareEffect(() => {
-        const fetchBalance = async () => {
-            if (account && selectedInput && inputs.length > 0) {
-                try {
-                    const balance = await selectedInput.balanceOf(account);
-                    const teraCouponPerToken = await contracts.issuer.currentPrice(selectedInput.address)
-                    const { burnable } = await contracts.issuer.whitelist(selectedInput.address)
-                    updateBalance(selectedInput.address, { balance, burnable, teraCouponPerToken })
-                } catch { }
-            }
-        };
-        fetchBalance();
-    }, [account, blockNumber, dynamicTokenInfo]); // NOTE:if list grows long and rendering gets too heavy, remove balanceMap dependency
-
-
-
-    useDeepCompareEffect(() => {
-        if (selectedInput && selectedDynamic) {
+        if (selectedInput && dynamicTokenInfo) {
             const formattedBalance = ethers.utils.formatEther(dynamicTokenInfo[selectedInput.address].balance);
             const balanceFixed = parseFloat(formattedBalance).toFixed(8); // Ensure it always has 8 decimal places
             setCurrentBalance(balanceFixed);
@@ -207,9 +192,9 @@ export function Asset(props: IProps) {
                             </Tooltip>
                         </Grid>
                         <Grid item style={{ width: "70px" }}>
-                          
-                                {props.APY > 0 ? <Typography style={{ textAlign: "right", color: "forestgreen" }} variant={"h3"}>{props.APY.toFixed(2)}%</Typography> :
-                                    <Typography style={{ textAlign: "right", color: "red" }} variant={"h3"}>{props.APY.toFixed(2)}%</Typography>}
+
+                            {props.APY > 0 ? <Typography style={{ textAlign: "right", color: "forestgreen" }} variant={"h3"}>{props.APY.toFixed(2)}%</Typography> :
+                                <Typography style={{ textAlign: "right", color: "red" }} variant={"h3"}>{props.APY.toFixed(2)}%</Typography>}
 
                         </Grid>
                     </Grid>

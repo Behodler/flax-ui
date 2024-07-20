@@ -1,5 +1,4 @@
 import { ContractTransaction } from 'ethers';
-
 export enum TransactionProgress {
     dormant,
     triggered,
@@ -13,7 +12,7 @@ export interface IProgressSetter {
     (state: TransactionProgress): void
 }
 
-export function Broadcast(transaction: Promise<ContractTransaction>, setProgress: IProgressSetter, endTimeout: number) {
+export function Broadcast(transaction: Promise<ContractTransaction>, setProgress: IProgressSetter, endTimeout: number, refreshMultiCalls: () => void) {
     setProgress(TransactionProgress.triggered)
     transaction.then((tx) => {
         setProgress(TransactionProgress.signed)
@@ -21,6 +20,7 @@ export function Broadcast(transaction: Promise<ContractTransaction>, setProgress
             setProgress(TransactionProgress.confirmed)
             setTimeout(() => {
                 setProgress(TransactionProgress.dormant)
+                refreshMultiCalls()
             }, endTimeout * 1000)
         })
             .catch(() => {

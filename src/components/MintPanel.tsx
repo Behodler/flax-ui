@@ -39,7 +39,7 @@ export default function MintPanel(props: LiveProps) {
 
     const [flaxToMint, setFlaxToMint] = useState<string>("")
     const [mintDai, setMintDai] = useState<string>()
-    const dynamic = token ? dynamicTokenInfo[token.address] : undefined
+    const dynamic = token && dynamicTokenInfo ? dynamicTokenInfo[token.address] : undefined
     const [inputDollarPrice, setInputDollarPrice] = useState<BigNumber | undefined>()
     const [lockupDuration, setLockupDuration] = useState<number>(tokenLockupConfig.offset);
     const [dollarValueOfInputText, setDollarValueOfInputText] = useState<string | undefined>()
@@ -208,7 +208,7 @@ export default function MintPanel(props: LiveProps) {
                                     {
                                         lockupDuration > tokenLockupConfig.offset ? <Grid item>
                                             <Typography variant='h5' sx={{ color: '#FA8072', mt: 1 }}>
-                                                Warning: lock time extended for large minting. 
+                                                Warning: lock time extended for large minting.
                                             </Typography>
                                         </Grid>
                                             : <></>
