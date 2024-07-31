@@ -4,8 +4,11 @@
 import type {
   BaseContract,
   BigNumber,
+  BigNumberish,
   BytesLike,
   CallOverrides,
+  ContractTransaction,
+  Overrides,
   PopulatedTransaction,
   Signer,
   utils,
@@ -49,19 +52,37 @@ export declare namespace StdInvariant {
   };
 }
 
-export interface TestInterface extends utils.Interface {
+export interface TiltInterface extends utils.Interface {
   functions: {
     "IS_TEST()": FunctionFragment;
     "excludeArtifacts()": FunctionFragment;
     "excludeContracts()": FunctionFragment;
     "excludeSenders()": FunctionFragment;
     "failed()": FunctionFragment;
+    "getEnvUint(string)": FunctionFragment;
+    "roiArray(uint256)": FunctionFragment;
+    "setUp()": FunctionFragment;
     "targetArtifactSelectors()": FunctionFragment;
     "targetArtifacts()": FunctionFragment;
     "targetContracts()": FunctionFragment;
     "targetInterfaces()": FunctionFragment;
     "targetSelectors()": FunctionFragment;
     "targetSenders()": FunctionFragment;
+    "termLength(uint256)": FunctionFragment;
+    "test2xFlxDeduction()": FunctionFragment;
+    "testAddingFlaxToTilterAsNotOwnerFails()": FunctionFragment;
+    "testChoice0()": FunctionFragment;
+    "testChoice1()": FunctionFragment;
+    "testChoice2()": FunctionFragment;
+    "testChoice3()": FunctionFragment;
+    "testChoice4()": FunctionFragment;
+    "testEthWhale()": FunctionFragment;
+    "testInvalidTermChoiceFails()": FunctionFragment;
+    "testMinimumEth()": FunctionFragment;
+    "testRepeatTilting()": FunctionFragment;
+    "testSetupWorked()": FunctionFragment;
+    "testTooLittleEthFails()": FunctionFragment;
+    "test_try_tilt_by_adding_flax_via_regular_ERC20_transfer()": FunctionFragment;
   };
 
   getFunction(
@@ -71,12 +92,30 @@ export interface TestInterface extends utils.Interface {
       | "excludeContracts"
       | "excludeSenders"
       | "failed"
+      | "getEnvUint"
+      | "roiArray"
+      | "setUp"
       | "targetArtifactSelectors"
       | "targetArtifacts"
       | "targetContracts"
       | "targetInterfaces"
       | "targetSelectors"
       | "targetSenders"
+      | "termLength"
+      | "test2xFlxDeduction"
+      | "testAddingFlaxToTilterAsNotOwnerFails"
+      | "testChoice0"
+      | "testChoice1"
+      | "testChoice2"
+      | "testChoice3"
+      | "testChoice4"
+      | "testEthWhale"
+      | "testInvalidTermChoiceFails"
+      | "testMinimumEth"
+      | "testRepeatTilting"
+      | "testSetupWorked"
+      | "testTooLittleEthFails"
+      | "test_try_tilt_by_adding_flax_via_regular_ERC20_transfer"
   ): FunctionFragment;
 
   encodeFunctionData(functionFragment: "IS_TEST", values?: undefined): string;
@@ -93,6 +132,12 @@ export interface TestInterface extends utils.Interface {
     values?: undefined
   ): string;
   encodeFunctionData(functionFragment: "failed", values?: undefined): string;
+  encodeFunctionData(functionFragment: "getEnvUint", values: [string]): string;
+  encodeFunctionData(
+    functionFragment: "roiArray",
+    values: [BigNumberish]
+  ): string;
+  encodeFunctionData(functionFragment: "setUp", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "targetArtifactSelectors",
     values?: undefined
@@ -115,6 +160,66 @@ export interface TestInterface extends utils.Interface {
   ): string;
   encodeFunctionData(
     functionFragment: "targetSenders",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "termLength",
+    values: [BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "test2xFlxDeduction",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "testAddingFlaxToTilterAsNotOwnerFails",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "testChoice0",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "testChoice1",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "testChoice2",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "testChoice3",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "testChoice4",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "testEthWhale",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "testInvalidTermChoiceFails",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "testMinimumEth",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "testRepeatTilting",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "testSetupWorked",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "testTooLittleEthFails",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "test_try_tilt_by_adding_flax_via_regular_ERC20_transfer",
     values?: undefined
   ): string;
 
@@ -132,6 +237,9 @@ export interface TestInterface extends utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "failed", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "getEnvUint", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "roiArray", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "setUp", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "targetArtifactSelectors",
     data: BytesLike
@@ -156,8 +264,68 @@ export interface TestInterface extends utils.Interface {
     functionFragment: "targetSenders",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(functionFragment: "termLength", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "test2xFlxDeduction",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "testAddingFlaxToTilterAsNotOwnerFails",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "testChoice0",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "testChoice1",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "testChoice2",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "testChoice3",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "testChoice4",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "testEthWhale",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "testInvalidTermChoiceFails",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "testMinimumEth",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "testRepeatTilting",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "testSetupWorked",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "testTooLittleEthFails",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "test_try_tilt_by_adding_flax_via_regular_ERC20_transfer",
+    data: BytesLike
+  ): Result;
 
   events: {
+    "amountOut(uint256)": EventFragment;
+    "ethPurchased(uint256,uint256)": EventFragment;
+    "flaxPerEth(uint256,uint256)": EventFragment;
     "log(string)": EventFragment;
     "log_address(address)": EventFragment;
     "log_array(uint256[])": EventFragment;
@@ -180,8 +348,15 @@ export interface TestInterface extends utils.Interface {
     "log_string(string)": EventFragment;
     "log_uint(uint256)": EventFragment;
     "logs(bytes)": EventFragment;
+    "oracleFlaxValueOfEth(uint256)": EventFragment;
+    "planID(uint256)": EventFragment;
+    "priceGrowth(uint256)": EventFragment;
+    "tiltGrowth(uint256,uint256,uint256)": EventFragment;
   };
 
+  getEvent(nameOrSignatureOrTopic: "amountOut"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "ethPurchased"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "flaxPerEth"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "log"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "log_address"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "log_array(uint256[])"): EventFragment;
@@ -210,7 +385,40 @@ export interface TestInterface extends utils.Interface {
   getEvent(nameOrSignatureOrTopic: "log_string"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "log_uint"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "logs"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "oracleFlaxValueOfEth"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "planID"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "priceGrowth"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "tiltGrowth"): EventFragment;
 }
+
+export interface amountOutEventObject {
+  amount: BigNumber;
+}
+export type amountOutEvent = TypedEvent<[BigNumber], amountOutEventObject>;
+
+export type amountOutEventFilter = TypedEventFilter<amountOutEvent>;
+
+export interface ethPurchasedEventObject {
+  eth: BigNumber;
+  reserveRemaining: BigNumber;
+}
+export type ethPurchasedEvent = TypedEvent<
+  [BigNumber, BigNumber],
+  ethPurchasedEventObject
+>;
+
+export type ethPurchasedEventFilter = TypedEventFilter<ethPurchasedEvent>;
+
+export interface flaxPerEthEventObject {
+  oracleVal: BigNumber;
+  average: BigNumber;
+}
+export type flaxPerEthEvent = TypedEvent<
+  [BigNumber, BigNumber],
+  flaxPerEthEventObject
+>;
+
+export type flaxPerEthEventFilter = TypedEventFilter<flaxPerEthEvent>;
 
 export interface logEventObject {
   arg0: string;
@@ -432,12 +640,49 @@ export type logsEvent = TypedEvent<[string], logsEventObject>;
 
 export type logsEventFilter = TypedEventFilter<logsEvent>;
 
-export interface Test extends BaseContract {
+export interface oracleFlaxValueOfEthEventObject {
+  val: BigNumber;
+}
+export type oracleFlaxValueOfEthEvent = TypedEvent<
+  [BigNumber],
+  oracleFlaxValueOfEthEventObject
+>;
+
+export type oracleFlaxValueOfEthEventFilter =
+  TypedEventFilter<oracleFlaxValueOfEthEvent>;
+
+export interface planIDEventObject {
+  id: BigNumber;
+}
+export type planIDEvent = TypedEvent<[BigNumber], planIDEventObject>;
+
+export type planIDEventFilter = TypedEventFilter<planIDEvent>;
+
+export interface priceGrowthEventObject {
+  growth: BigNumber;
+}
+export type priceGrowthEvent = TypedEvent<[BigNumber], priceGrowthEventObject>;
+
+export type priceGrowthEventFilter = TypedEventFilter<priceGrowthEvent>;
+
+export interface tiltGrowthEventObject {
+  roi: BigNumber;
+  priceGrowth: BigNumber;
+  wethGrowth: BigNumber;
+}
+export type tiltGrowthEvent = TypedEvent<
+  [BigNumber, BigNumber, BigNumber],
+  tiltGrowthEventObject
+>;
+
+export type tiltGrowthEventFilter = TypedEventFilter<tiltGrowthEvent>;
+
+export interface Tilt extends BaseContract {
   connect(signerOrProvider: Signer | Provider | string): this;
   attach(addressOrName: string): this;
   deployed(): Promise<this>;
 
-  interface: TestInterface;
+  interface: TiltInterface;
 
   queryFilter<TEvent extends TypedEvent>(
     event: TypedEventFilter<TEvent>,
@@ -475,6 +720,17 @@ export interface Test extends BaseContract {
 
     failed(overrides?: CallOverrides): Promise<[boolean]>;
 
+    getEnvUint(key: string, overrides?: CallOverrides): Promise<[BigNumber]>;
+
+    roiArray(
+      arg0: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<[BigNumber]>;
+
+    setUp(
+      overrides?: Overrides & { from?: string }
+    ): Promise<ContractTransaction>;
+
     targetArtifactSelectors(
       overrides?: CallOverrides
     ): Promise<
@@ -510,6 +766,67 @@ export interface Test extends BaseContract {
     targetSenders(
       overrides?: CallOverrides
     ): Promise<[string[]] & { targetedSenders_: string[] }>;
+
+    termLength(
+      arg0: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<[BigNumber]>;
+
+    test2xFlxDeduction(
+      overrides?: Overrides & { from?: string }
+    ): Promise<ContractTransaction>;
+
+    testAddingFlaxToTilterAsNotOwnerFails(
+      overrides?: Overrides & { from?: string }
+    ): Promise<ContractTransaction>;
+
+    testChoice0(
+      overrides?: Overrides & { from?: string }
+    ): Promise<ContractTransaction>;
+
+    testChoice1(
+      overrides?: Overrides & { from?: string }
+    ): Promise<ContractTransaction>;
+
+    testChoice2(
+      overrides?: Overrides & { from?: string }
+    ): Promise<ContractTransaction>;
+
+    testChoice3(
+      overrides?: Overrides & { from?: string }
+    ): Promise<ContractTransaction>;
+
+    testChoice4(
+      overrides?: Overrides & { from?: string }
+    ): Promise<ContractTransaction>;
+
+    testEthWhale(
+      overrides?: Overrides & { from?: string }
+    ): Promise<ContractTransaction>;
+
+    testInvalidTermChoiceFails(
+      overrides?: Overrides & { from?: string }
+    ): Promise<ContractTransaction>;
+
+    testMinimumEth(
+      overrides?: Overrides & { from?: string }
+    ): Promise<ContractTransaction>;
+
+    testRepeatTilting(
+      overrides?: Overrides & { from?: string }
+    ): Promise<ContractTransaction>;
+
+    testSetupWorked(
+      overrides?: Overrides & { from?: string }
+    ): Promise<ContractTransaction>;
+
+    testTooLittleEthFails(
+      overrides?: Overrides & { from?: string }
+    ): Promise<ContractTransaction>;
+
+    test_try_tilt_by_adding_flax_via_regular_ERC20_transfer(
+      overrides?: Overrides & { from?: string }
+    ): Promise<ContractTransaction>;
   };
 
   IS_TEST(overrides?: CallOverrides): Promise<boolean>;
@@ -521,6 +838,14 @@ export interface Test extends BaseContract {
   excludeSenders(overrides?: CallOverrides): Promise<string[]>;
 
   failed(overrides?: CallOverrides): Promise<boolean>;
+
+  getEnvUint(key: string, overrides?: CallOverrides): Promise<BigNumber>;
+
+  roiArray(arg0: BigNumberish, overrides?: CallOverrides): Promise<BigNumber>;
+
+  setUp(
+    overrides?: Overrides & { from?: string }
+  ): Promise<ContractTransaction>;
 
   targetArtifactSelectors(
     overrides?: CallOverrides
@@ -540,6 +865,64 @@ export interface Test extends BaseContract {
 
   targetSenders(overrides?: CallOverrides): Promise<string[]>;
 
+  termLength(arg0: BigNumberish, overrides?: CallOverrides): Promise<BigNumber>;
+
+  test2xFlxDeduction(
+    overrides?: Overrides & { from?: string }
+  ): Promise<ContractTransaction>;
+
+  testAddingFlaxToTilterAsNotOwnerFails(
+    overrides?: Overrides & { from?: string }
+  ): Promise<ContractTransaction>;
+
+  testChoice0(
+    overrides?: Overrides & { from?: string }
+  ): Promise<ContractTransaction>;
+
+  testChoice1(
+    overrides?: Overrides & { from?: string }
+  ): Promise<ContractTransaction>;
+
+  testChoice2(
+    overrides?: Overrides & { from?: string }
+  ): Promise<ContractTransaction>;
+
+  testChoice3(
+    overrides?: Overrides & { from?: string }
+  ): Promise<ContractTransaction>;
+
+  testChoice4(
+    overrides?: Overrides & { from?: string }
+  ): Promise<ContractTransaction>;
+
+  testEthWhale(
+    overrides?: Overrides & { from?: string }
+  ): Promise<ContractTransaction>;
+
+  testInvalidTermChoiceFails(
+    overrides?: Overrides & { from?: string }
+  ): Promise<ContractTransaction>;
+
+  testMinimumEth(
+    overrides?: Overrides & { from?: string }
+  ): Promise<ContractTransaction>;
+
+  testRepeatTilting(
+    overrides?: Overrides & { from?: string }
+  ): Promise<ContractTransaction>;
+
+  testSetupWorked(
+    overrides?: Overrides & { from?: string }
+  ): Promise<ContractTransaction>;
+
+  testTooLittleEthFails(
+    overrides?: Overrides & { from?: string }
+  ): Promise<ContractTransaction>;
+
+  test_try_tilt_by_adding_flax_via_regular_ERC20_transfer(
+    overrides?: Overrides & { from?: string }
+  ): Promise<ContractTransaction>;
+
   callStatic: {
     IS_TEST(overrides?: CallOverrides): Promise<boolean>;
 
@@ -550,6 +933,12 @@ export interface Test extends BaseContract {
     excludeSenders(overrides?: CallOverrides): Promise<string[]>;
 
     failed(overrides?: CallOverrides): Promise<boolean>;
+
+    getEnvUint(key: string, overrides?: CallOverrides): Promise<BigNumber>;
+
+    roiArray(arg0: BigNumberish, overrides?: CallOverrides): Promise<BigNumber>;
+
+    setUp(overrides?: CallOverrides): Promise<void>;
 
     targetArtifactSelectors(
       overrides?: CallOverrides
@@ -568,9 +957,61 @@ export interface Test extends BaseContract {
     ): Promise<StdInvariant.FuzzSelectorStructOutput[]>;
 
     targetSenders(overrides?: CallOverrides): Promise<string[]>;
+
+    termLength(
+      arg0: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    test2xFlxDeduction(overrides?: CallOverrides): Promise<void>;
+
+    testAddingFlaxToTilterAsNotOwnerFails(
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    testChoice0(overrides?: CallOverrides): Promise<void>;
+
+    testChoice1(overrides?: CallOverrides): Promise<void>;
+
+    testChoice2(overrides?: CallOverrides): Promise<void>;
+
+    testChoice3(overrides?: CallOverrides): Promise<void>;
+
+    testChoice4(overrides?: CallOverrides): Promise<void>;
+
+    testEthWhale(overrides?: CallOverrides): Promise<void>;
+
+    testInvalidTermChoiceFails(overrides?: CallOverrides): Promise<void>;
+
+    testMinimumEth(overrides?: CallOverrides): Promise<void>;
+
+    testRepeatTilting(overrides?: CallOverrides): Promise<void>;
+
+    testSetupWorked(overrides?: CallOverrides): Promise<void>;
+
+    testTooLittleEthFails(overrides?: CallOverrides): Promise<void>;
+
+    test_try_tilt_by_adding_flax_via_regular_ERC20_transfer(
+      overrides?: CallOverrides
+    ): Promise<void>;
   };
 
   filters: {
+    "amountOut(uint256)"(amount?: null): amountOutEventFilter;
+    amountOut(amount?: null): amountOutEventFilter;
+
+    "ethPurchased(uint256,uint256)"(
+      eth?: null,
+      reserveRemaining?: null
+    ): ethPurchasedEventFilter;
+    ethPurchased(eth?: null, reserveRemaining?: null): ethPurchasedEventFilter;
+
+    "flaxPerEth(uint256,uint256)"(
+      oracleVal?: null,
+      average?: null
+    ): flaxPerEthEventFilter;
+    flaxPerEth(oracleVal?: null, average?: null): flaxPerEthEventFilter;
+
     "log(string)"(arg0?: null): logEventFilter;
     log(arg0?: null): logEventFilter;
 
@@ -669,6 +1110,28 @@ export interface Test extends BaseContract {
 
     "logs(bytes)"(arg0?: null): logsEventFilter;
     logs(arg0?: null): logsEventFilter;
+
+    "oracleFlaxValueOfEth(uint256)"(
+      val?: null
+    ): oracleFlaxValueOfEthEventFilter;
+    oracleFlaxValueOfEth(val?: null): oracleFlaxValueOfEthEventFilter;
+
+    "planID(uint256)"(id?: null): planIDEventFilter;
+    planID(id?: null): planIDEventFilter;
+
+    "priceGrowth(uint256)"(growth?: null): priceGrowthEventFilter;
+    priceGrowth(growth?: null): priceGrowthEventFilter;
+
+    "tiltGrowth(uint256,uint256,uint256)"(
+      roi?: null,
+      priceGrowth?: null,
+      wethGrowth?: null
+    ): tiltGrowthEventFilter;
+    tiltGrowth(
+      roi?: null,
+      priceGrowth?: null,
+      wethGrowth?: null
+    ): tiltGrowthEventFilter;
   };
 
   estimateGas: {
@@ -682,6 +1145,12 @@ export interface Test extends BaseContract {
 
     failed(overrides?: CallOverrides): Promise<BigNumber>;
 
+    getEnvUint(key: string, overrides?: CallOverrides): Promise<BigNumber>;
+
+    roiArray(arg0: BigNumberish, overrides?: CallOverrides): Promise<BigNumber>;
+
+    setUp(overrides?: Overrides & { from?: string }): Promise<BigNumber>;
+
     targetArtifactSelectors(overrides?: CallOverrides): Promise<BigNumber>;
 
     targetArtifacts(overrides?: CallOverrides): Promise<BigNumber>;
@@ -693,6 +1162,55 @@ export interface Test extends BaseContract {
     targetSelectors(overrides?: CallOverrides): Promise<BigNumber>;
 
     targetSenders(overrides?: CallOverrides): Promise<BigNumber>;
+
+    termLength(
+      arg0: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    test2xFlxDeduction(
+      overrides?: Overrides & { from?: string }
+    ): Promise<BigNumber>;
+
+    testAddingFlaxToTilterAsNotOwnerFails(
+      overrides?: Overrides & { from?: string }
+    ): Promise<BigNumber>;
+
+    testChoice0(overrides?: Overrides & { from?: string }): Promise<BigNumber>;
+
+    testChoice1(overrides?: Overrides & { from?: string }): Promise<BigNumber>;
+
+    testChoice2(overrides?: Overrides & { from?: string }): Promise<BigNumber>;
+
+    testChoice3(overrides?: Overrides & { from?: string }): Promise<BigNumber>;
+
+    testChoice4(overrides?: Overrides & { from?: string }): Promise<BigNumber>;
+
+    testEthWhale(overrides?: Overrides & { from?: string }): Promise<BigNumber>;
+
+    testInvalidTermChoiceFails(
+      overrides?: Overrides & { from?: string }
+    ): Promise<BigNumber>;
+
+    testMinimumEth(
+      overrides?: Overrides & { from?: string }
+    ): Promise<BigNumber>;
+
+    testRepeatTilting(
+      overrides?: Overrides & { from?: string }
+    ): Promise<BigNumber>;
+
+    testSetupWorked(
+      overrides?: Overrides & { from?: string }
+    ): Promise<BigNumber>;
+
+    testTooLittleEthFails(
+      overrides?: Overrides & { from?: string }
+    ): Promise<BigNumber>;
+
+    test_try_tilt_by_adding_flax_via_regular_ERC20_transfer(
+      overrides?: Overrides & { from?: string }
+    ): Promise<BigNumber>;
   };
 
   populateTransaction: {
@@ -705,6 +1223,20 @@ export interface Test extends BaseContract {
     excludeSenders(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     failed(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    getEnvUint(
+      key: string,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    roiArray(
+      arg0: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    setUp(
+      overrides?: Overrides & { from?: string }
+    ): Promise<PopulatedTransaction>;
 
     targetArtifactSelectors(
       overrides?: CallOverrides
@@ -719,5 +1251,66 @@ export interface Test extends BaseContract {
     targetSelectors(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     targetSenders(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    termLength(
+      arg0: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    test2xFlxDeduction(
+      overrides?: Overrides & { from?: string }
+    ): Promise<PopulatedTransaction>;
+
+    testAddingFlaxToTilterAsNotOwnerFails(
+      overrides?: Overrides & { from?: string }
+    ): Promise<PopulatedTransaction>;
+
+    testChoice0(
+      overrides?: Overrides & { from?: string }
+    ): Promise<PopulatedTransaction>;
+
+    testChoice1(
+      overrides?: Overrides & { from?: string }
+    ): Promise<PopulatedTransaction>;
+
+    testChoice2(
+      overrides?: Overrides & { from?: string }
+    ): Promise<PopulatedTransaction>;
+
+    testChoice3(
+      overrides?: Overrides & { from?: string }
+    ): Promise<PopulatedTransaction>;
+
+    testChoice4(
+      overrides?: Overrides & { from?: string }
+    ): Promise<PopulatedTransaction>;
+
+    testEthWhale(
+      overrides?: Overrides & { from?: string }
+    ): Promise<PopulatedTransaction>;
+
+    testInvalidTermChoiceFails(
+      overrides?: Overrides & { from?: string }
+    ): Promise<PopulatedTransaction>;
+
+    testMinimumEth(
+      overrides?: Overrides & { from?: string }
+    ): Promise<PopulatedTransaction>;
+
+    testRepeatTilting(
+      overrides?: Overrides & { from?: string }
+    ): Promise<PopulatedTransaction>;
+
+    testSetupWorked(
+      overrides?: Overrides & { from?: string }
+    ): Promise<PopulatedTransaction>;
+
+    testTooLittleEthFails(
+      overrides?: Overrides & { from?: string }
+    ): Promise<PopulatedTransaction>;
+
+    test_try_tilt_by_adding_flax_via_regular_ERC20_transfer(
+      overrides?: Overrides & { from?: string }
+    ): Promise<PopulatedTransaction>;
   };
 }

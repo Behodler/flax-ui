@@ -12,7 +12,7 @@ const _abi = [
     name: "supportsInterface",
     inputs: [
       {
-        name: "interfaceId",
+        name: "interfaceID",
         type: "bytes4",
         internalType: "bytes4",
       },

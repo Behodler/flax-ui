@@ -19,32 +19,32 @@ import type {
   OnEvent,
 } from "./common";
 
-export interface IERC165Interface extends utils.Interface {
+export interface FixedPointInterface extends utils.Interface {
   functions: {
-    "supportsInterface(bytes4)": FunctionFragment;
+    "Q112()": FunctionFragment;
+    "RESOLUTION()": FunctionFragment;
   };
 
-  getFunction(nameOrSignatureOrTopic: "supportsInterface"): FunctionFragment;
+  getFunction(nameOrSignatureOrTopic: "Q112" | "RESOLUTION"): FunctionFragment;
 
+  encodeFunctionData(functionFragment: "Q112", values?: undefined): string;
   encodeFunctionData(
-    functionFragment: "supportsInterface",
-    values: [BytesLike]
+    functionFragment: "RESOLUTION",
+    values?: undefined
   ): string;
 
-  decodeFunctionResult(
-    functionFragment: "supportsInterface",
-    data: BytesLike
-  ): Result;
+  decodeFunctionResult(functionFragment: "Q112", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "RESOLUTION", data: BytesLike): Result;
 
   events: {};
 }
 
-export interface IERC165 extends BaseContract {
+export interface FixedPoint extends BaseContract {
   connect(signerOrProvider: Signer | Provider | string): this;
   attach(addressOrName: string): this;
   deployed(): Promise<this>;
 
-  interface: IERC165Interface;
+  interface: FixedPointInterface;
 
   queryFilter<TEvent extends TypedEvent>(
     event: TypedEventFilter<TEvent>,
@@ -66,37 +66,32 @@ export interface IERC165 extends BaseContract {
   removeListener: OnEvent<this>;
 
   functions: {
-    supportsInterface(
-      interfaceID: BytesLike,
-      overrides?: CallOverrides
-    ): Promise<[boolean]>;
+    Q112(overrides?: CallOverrides): Promise<[BigNumber]>;
+
+    RESOLUTION(overrides?: CallOverrides): Promise<[number]>;
   };
 
-  supportsInterface(
-    interfaceID: BytesLike,
-    overrides?: CallOverrides
-  ): Promise<boolean>;
+  Q112(overrides?: CallOverrides): Promise<BigNumber>;
+
+  RESOLUTION(overrides?: CallOverrides): Promise<number>;
 
   callStatic: {
-    supportsInterface(
-      interfaceID: BytesLike,
-      overrides?: CallOverrides
-    ): Promise<boolean>;
+    Q112(overrides?: CallOverrides): Promise<BigNumber>;
+
+    RESOLUTION(overrides?: CallOverrides): Promise<number>;
   };
 
   filters: {};
 
   estimateGas: {
-    supportsInterface(
-      interfaceID: BytesLike,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
+    Q112(overrides?: CallOverrides): Promise<BigNumber>;
+
+    RESOLUTION(overrides?: CallOverrides): Promise<BigNumber>;
   };
 
   populateTransaction: {
-    supportsInterface(
-      interfaceID: BytesLike,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
+    Q112(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    RESOLUTION(overrides?: CallOverrides): Promise<PopulatedTransaction>;
   };
 }

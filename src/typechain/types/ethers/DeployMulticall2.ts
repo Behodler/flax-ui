@@ -79,7 +79,7 @@ export interface DeployMulticall2 extends BaseContract {
   callStatic: {
     IS_SCRIPT(overrides?: CallOverrides): Promise<boolean>;
 
-    run(overrides?: CallOverrides): Promise<void>;
+    run(overrides?: CallOverrides): Promise<string>;
   };
 
   filters: {};

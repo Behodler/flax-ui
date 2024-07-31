@@ -4,8 +4,11 @@
 import type {
   BaseContract,
   BigNumber,
+  BigNumberish,
   BytesLike,
   CallOverrides,
+  ContractTransaction,
+  Overrides,
   PopulatedTransaction,
   Signer,
   utils,
@@ -19,32 +22,32 @@ import type {
   OnEvent,
 } from "./common";
 
-export interface IERC165Interface extends utils.Interface {
+export interface IUniswapV2CalleeInterface extends utils.Interface {
   functions: {
-    "supportsInterface(bytes4)": FunctionFragment;
+    "uniswapV2Call(address,uint256,uint256,bytes)": FunctionFragment;
   };
 
-  getFunction(nameOrSignatureOrTopic: "supportsInterface"): FunctionFragment;
+  getFunction(nameOrSignatureOrTopic: "uniswapV2Call"): FunctionFragment;
 
   encodeFunctionData(
-    functionFragment: "supportsInterface",
-    values: [BytesLike]
+    functionFragment: "uniswapV2Call",
+    values: [string, BigNumberish, BigNumberish, BytesLike]
   ): string;
 
   decodeFunctionResult(
-    functionFragment: "supportsInterface",
+    functionFragment: "uniswapV2Call",
     data: BytesLike
   ): Result;
 
   events: {};
 }
 
-export interface IERC165 extends BaseContract {
+export interface IUniswapV2Callee extends BaseContract {
   connect(signerOrProvider: Signer | Provider | string): this;
   attach(addressOrName: string): this;
   deployed(): Promise<this>;
 
-  interface: IERC165Interface;
+  interface: IUniswapV2CalleeInterface;
 
   queryFilter<TEvent extends TypedEvent>(
     event: TypedEventFilter<TEvent>,
@@ -66,37 +69,52 @@ export interface IERC165 extends BaseContract {
   removeListener: OnEvent<this>;
 
   functions: {
-    supportsInterface(
-      interfaceID: BytesLike,
-      overrides?: CallOverrides
-    ): Promise<[boolean]>;
+    uniswapV2Call(
+      sender: string,
+      amount0: BigNumberish,
+      amount1: BigNumberish,
+      data: BytesLike,
+      overrides?: Overrides & { from?: string }
+    ): Promise<ContractTransaction>;
   };
 
-  supportsInterface(
-    interfaceID: BytesLike,
-    overrides?: CallOverrides
-  ): Promise<boolean>;
+  uniswapV2Call(
+    sender: string,
+    amount0: BigNumberish,
+    amount1: BigNumberish,
+    data: BytesLike,
+    overrides?: Overrides & { from?: string }
+  ): Promise<ContractTransaction>;
 
   callStatic: {
-    supportsInterface(
-      interfaceID: BytesLike,
+    uniswapV2Call(
+      sender: string,
+      amount0: BigNumberish,
+      amount1: BigNumberish,
+      data: BytesLike,
       overrides?: CallOverrides
-    ): Promise<boolean>;
+    ): Promise<void>;
   };
 
   filters: {};
 
   estimateGas: {
-    supportsInterface(
-      interfaceID: BytesLike,
-      overrides?: CallOverrides
+    uniswapV2Call(
+      sender: string,
+      amount0: BigNumberish,
+      amount1: BigNumberish,
+      data: BytesLike,
+      overrides?: Overrides & { from?: string }
     ): Promise<BigNumber>;
   };
 
   populateTransaction: {
-    supportsInterface(
-      interfaceID: BytesLike,
-      overrides?: CallOverrides
+    uniswapV2Call(
+      sender: string,
+      amount0: BigNumberish,
+      amount1: BigNumberish,
+      data: BytesLike,
+      overrides?: Overrides & { from?: string }
     ): Promise<PopulatedTransaction>;
   };
 }

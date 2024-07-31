@@ -6,6 +6,8 @@ import type {
   BigNumber,
   BytesLike,
   CallOverrides,
+  ContractTransaction,
+  Overrides,
   PopulatedTransaction,
   Signer,
   utils,
@@ -49,19 +51,25 @@ export declare namespace StdInvariant {
   };
 }
 
-export interface TestInterface extends utils.Interface {
+export interface FactoryInterface extends utils.Interface {
   functions: {
     "IS_TEST()": FunctionFragment;
     "excludeArtifacts()": FunctionFragment;
     "excludeContracts()": FunctionFragment;
     "excludeSenders()": FunctionFragment;
     "failed()": FunctionFragment;
+    "setUp()": FunctionFragment;
     "targetArtifactSelectors()": FunctionFragment;
     "targetArtifacts()": FunctionFragment;
     "targetContracts()": FunctionFragment;
     "targetInterfaces()": FunctionFragment;
     "targetSelectors()": FunctionFragment;
     "targetSenders()": FunctionFragment;
+    "test_access_control()": FunctionFragment;
+    "test_adopt_and_abandon_tilter()": FunctionFragment;
+    "test_configure()": FunctionFragment;
+    "test_deploy()": FunctionFragment;
+    "test_setup()": FunctionFragment;
   };
 
   getFunction(
@@ -71,12 +79,18 @@ export interface TestInterface extends utils.Interface {
       | "excludeContracts"
       | "excludeSenders"
       | "failed"
+      | "setUp"
       | "targetArtifactSelectors"
       | "targetArtifacts"
       | "targetContracts"
       | "targetInterfaces"
       | "targetSelectors"
       | "targetSenders"
+      | "test_access_control"
+      | "test_adopt_and_abandon_tilter"
+      | "test_configure"
+      | "test_deploy"
+      | "test_setup"
   ): FunctionFragment;
 
   encodeFunctionData(functionFragment: "IS_TEST", values?: undefined): string;
@@ -93,6 +107,7 @@ export interface TestInterface extends utils.Interface {
     values?: undefined
   ): string;
   encodeFunctionData(functionFragment: "failed", values?: undefined): string;
+  encodeFunctionData(functionFragment: "setUp", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "targetArtifactSelectors",
     values?: undefined
@@ -115,6 +130,26 @@ export interface TestInterface extends utils.Interface {
   ): string;
   encodeFunctionData(
     functionFragment: "targetSenders",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "test_access_control",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "test_adopt_and_abandon_tilter",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "test_configure",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "test_deploy",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "test_setup",
     values?: undefined
   ): string;
 
@@ -132,6 +167,7 @@ export interface TestInterface extends utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "failed", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "setUp", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "targetArtifactSelectors",
     data: BytesLike
@@ -156,6 +192,23 @@ export interface TestInterface extends utils.Interface {
     functionFragment: "targetSenders",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(
+    functionFragment: "test_access_control",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "test_adopt_and_abandon_tilter",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "test_configure",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "test_deploy",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(functionFragment: "test_setup", data: BytesLike): Result;
 
   events: {
     "log(string)": EventFragment;
@@ -432,12 +485,12 @@ export type logsEvent = TypedEvent<[string], logsEventObject>;
 
 export type logsEventFilter = TypedEventFilter<logsEvent>;
 
-export interface Test extends BaseContract {
+export interface Factory extends BaseContract {
   connect(signerOrProvider: Signer | Provider | string): this;
   attach(addressOrName: string): this;
   deployed(): Promise<this>;
 
-  interface: TestInterface;
+  interface: FactoryInterface;
 
   queryFilter<TEvent extends TypedEvent>(
     event: TypedEventFilter<TEvent>,
@@ -475,6 +528,10 @@ export interface Test extends BaseContract {
 
     failed(overrides?: CallOverrides): Promise<[boolean]>;
 
+    setUp(
+      overrides?: Overrides & { from?: string }
+    ): Promise<ContractTransaction>;
+
     targetArtifactSelectors(
       overrides?: CallOverrides
     ): Promise<
@@ -510,6 +567,26 @@ export interface Test extends BaseContract {
     targetSenders(
       overrides?: CallOverrides
     ): Promise<[string[]] & { targetedSenders_: string[] }>;
+
+    test_access_control(
+      overrides?: Overrides & { from?: string }
+    ): Promise<ContractTransaction>;
+
+    test_adopt_and_abandon_tilter(
+      overrides?: Overrides & { from?: string }
+    ): Promise<ContractTransaction>;
+
+    test_configure(
+      overrides?: Overrides & { from?: string }
+    ): Promise<ContractTransaction>;
+
+    test_deploy(
+      overrides?: Overrides & { from?: string }
+    ): Promise<ContractTransaction>;
+
+    test_setup(
+      overrides?: Overrides & { from?: string }
+    ): Promise<ContractTransaction>;
   };
 
   IS_TEST(overrides?: CallOverrides): Promise<boolean>;
@@ -521,6 +598,10 @@ export interface Test extends BaseContract {
   excludeSenders(overrides?: CallOverrides): Promise<string[]>;
 
   failed(overrides?: CallOverrides): Promise<boolean>;
+
+  setUp(
+    overrides?: Overrides & { from?: string }
+  ): Promise<ContractTransaction>;
 
   targetArtifactSelectors(
     overrides?: CallOverrides
@@ -540,6 +621,26 @@ export interface Test extends BaseContract {
 
   targetSenders(overrides?: CallOverrides): Promise<string[]>;
 
+  test_access_control(
+    overrides?: Overrides & { from?: string }
+  ): Promise<ContractTransaction>;
+
+  test_adopt_and_abandon_tilter(
+    overrides?: Overrides & { from?: string }
+  ): Promise<ContractTransaction>;
+
+  test_configure(
+    overrides?: Overrides & { from?: string }
+  ): Promise<ContractTransaction>;
+
+  test_deploy(
+    overrides?: Overrides & { from?: string }
+  ): Promise<ContractTransaction>;
+
+  test_setup(
+    overrides?: Overrides & { from?: string }
+  ): Promise<ContractTransaction>;
+
   callStatic: {
     IS_TEST(overrides?: CallOverrides): Promise<boolean>;
 
@@ -550,6 +651,8 @@ export interface Test extends BaseContract {
     excludeSenders(overrides?: CallOverrides): Promise<string[]>;
 
     failed(overrides?: CallOverrides): Promise<boolean>;
+
+    setUp(overrides?: CallOverrides): Promise<void>;
 
     targetArtifactSelectors(
       overrides?: CallOverrides
@@ -568,6 +671,16 @@ export interface Test extends BaseContract {
     ): Promise<StdInvariant.FuzzSelectorStructOutput[]>;
 
     targetSenders(overrides?: CallOverrides): Promise<string[]>;
+
+    test_access_control(overrides?: CallOverrides): Promise<void>;
+
+    test_adopt_and_abandon_tilter(overrides?: CallOverrides): Promise<void>;
+
+    test_configure(overrides?: CallOverrides): Promise<void>;
+
+    test_deploy(overrides?: CallOverrides): Promise<void>;
+
+    test_setup(overrides?: CallOverrides): Promise<void>;
   };
 
   filters: {
@@ -682,6 +795,8 @@ export interface Test extends BaseContract {
 
     failed(overrides?: CallOverrides): Promise<BigNumber>;
 
+    setUp(overrides?: Overrides & { from?: string }): Promise<BigNumber>;
+
     targetArtifactSelectors(overrides?: CallOverrides): Promise<BigNumber>;
 
     targetArtifacts(overrides?: CallOverrides): Promise<BigNumber>;
@@ -693,6 +808,22 @@ export interface Test extends BaseContract {
     targetSelectors(overrides?: CallOverrides): Promise<BigNumber>;
 
     targetSenders(overrides?: CallOverrides): Promise<BigNumber>;
+
+    test_access_control(
+      overrides?: Overrides & { from?: string }
+    ): Promise<BigNumber>;
+
+    test_adopt_and_abandon_tilter(
+      overrides?: Overrides & { from?: string }
+    ): Promise<BigNumber>;
+
+    test_configure(
+      overrides?: Overrides & { from?: string }
+    ): Promise<BigNumber>;
+
+    test_deploy(overrides?: Overrides & { from?: string }): Promise<BigNumber>;
+
+    test_setup(overrides?: Overrides & { from?: string }): Promise<BigNumber>;
   };
 
   populateTransaction: {
@@ -705,6 +836,10 @@ export interface Test extends BaseContract {
     excludeSenders(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     failed(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    setUp(
+      overrides?: Overrides & { from?: string }
+    ): Promise<PopulatedTransaction>;
 
     targetArtifactSelectors(
       overrides?: CallOverrides
@@ -719,5 +854,25 @@ export interface Test extends BaseContract {
     targetSelectors(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     targetSenders(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    test_access_control(
+      overrides?: Overrides & { from?: string }
+    ): Promise<PopulatedTransaction>;
+
+    test_adopt_and_abandon_tilter(
+      overrides?: Overrides & { from?: string }
+    ): Promise<PopulatedTransaction>;
+
+    test_configure(
+      overrides?: Overrides & { from?: string }
+    ): Promise<PopulatedTransaction>;
+
+    test_deploy(
+      overrides?: Overrides & { from?: string }
+    ): Promise<PopulatedTransaction>;
+
+    test_setup(
+      overrides?: Overrides & { from?: string }
+    ): Promise<PopulatedTransaction>;
   };
 }

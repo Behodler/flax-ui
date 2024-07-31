@@ -4,7 +4,7 @@
 
 import { Contract, Signer, utils } from "ethers";
 import type { Provider } from "@ethersproject/providers";
-import type { Test, TestInterface } from "../Test";
+import type { GasMeasurment, GasMeasurmentInterface } from "../GasMeasurment";
 
 const _abi = [
   {
@@ -71,6 +71,13 @@ const _abi = [
       },
     ],
     stateMutability: "view",
+  },
+  {
+    type: "function",
+    name: "setUp",
+    inputs: [],
+    outputs: [],
+    stateMutability: "nonpayable",
   },
   {
     type: "function",
@@ -184,6 +191,27 @@ const _abi = [
         internalType: "address[]",
       },
     ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    name: "test_gas_of_bonfire",
+    inputs: [],
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    name: "test_gas_of_tilter",
+    inputs: [],
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    name: "test_setup_works",
+    inputs: [],
+    outputs: [],
     stateMutability: "view",
   },
   {
@@ -552,12 +580,15 @@ const _abi = [
   },
 ] as const;
 
-export class Test__factory {
+export class GasMeasurment__factory {
   static readonly abi = _abi;
-  static createInterface(): TestInterface {
-    return new utils.Interface(_abi) as TestInterface;
+  static createInterface(): GasMeasurmentInterface {
+    return new utils.Interface(_abi) as GasMeasurmentInterface;
   }
-  static connect(address: string, signerOrProvider: Signer | Provider): Test {
-    return new Contract(address, _abi, signerOrProvider) as Test;
+  static connect(
+    address: string,
+    signerOrProvider: Signer | Provider
+  ): GasMeasurment {
+    return new Contract(address, _abi, signerOrProvider) as GasMeasurment;
   }
 }

@@ -4,7 +4,7 @@
 
 import { Contract, Signer, utils } from "ethers";
 import type { Provider } from "@ethersproject/providers";
-import type { Test, TestInterface } from "../Test";
+import type { TilterTest, TilterTestInterface } from "../TilterTest";
 
 const _abi = [
   {
@@ -71,6 +71,13 @@ const _abi = [
       },
     ],
     stateMutability: "view",
+  },
+  {
+    type: "function",
+    name: "setUp",
+    inputs: [],
+    outputs: [],
+    stateMutability: "nonpayable",
   },
   {
     type: "function",
@@ -185,6 +192,54 @@ const _abi = [
       },
     ],
     stateMutability: "view",
+  },
+  {
+    type: "function",
+    name: "test_disable_tilter",
+    inputs: [],
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    name: "test_ownable_access_control",
+    inputs: [],
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    name: "test_ref_value_of_tilt_matches_reality",
+    inputs: [
+      {
+        name: "purchaseAmount",
+        type: "uint256",
+        internalType: "uint256",
+      },
+    ],
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    name: "test_setup_works",
+    inputs: [],
+    outputs: [],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    name: "test_use_incorrect_token_fails",
+    inputs: [],
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    name: "test_works_with_eth",
+    inputs: [],
+    outputs: [],
+    stateMutability: "nonpayable",
   },
   {
     type: "event",
@@ -552,12 +607,15 @@ const _abi = [
   },
 ] as const;
 
-export class Test__factory {
+export class TilterTest__factory {
   static readonly abi = _abi;
-  static createInterface(): TestInterface {
-    return new utils.Interface(_abi) as TestInterface;
+  static createInterface(): TilterTestInterface {
+    return new utils.Interface(_abi) as TilterTestInterface;
   }
-  static connect(address: string, signerOrProvider: Signer | Provider): Test {
-    return new Contract(address, _abi, signerOrProvider) as Test;
+  static connect(
+    address: string,
+    signerOrProvider: Signer | Provider
+  ): TilterTest {
+    return new Contract(address, _abi, signerOrProvider) as TilterTest;
   }
 }

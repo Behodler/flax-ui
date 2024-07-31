@@ -15,22 +15,22 @@ const _abi = [
     name: "onERC721Received",
     inputs: [
       {
-        name: "",
+        name: "_operator",
         type: "address",
         internalType: "address",
       },
       {
-        name: "",
+        name: "_from",
         type: "address",
         internalType: "address",
       },
       {
-        name: "",
+        name: "_tokenId",
         type: "uint256",
         internalType: "uint256",
       },
       {
-        name: "",
+        name: "_data",
         type: "bytes",
         internalType: "bytes",
       },

@@ -20,13 +20,6 @@ import type {
 } from "./common";
 
 export declare namespace StdInvariant {
-  export type FuzzSelectorStruct = { addr: string; selectors: BytesLike[] };
-
-  export type FuzzSelectorStructOutput = [string, string[]] & {
-    addr: string;
-    selectors: string[];
-  };
-
   export type FuzzArtifactSelectorStruct = {
     artifact: string;
     selectors: BytesLike[];
@@ -43,13 +36,19 @@ export declare namespace StdInvariant {
     addr: string;
     artifacts: string[];
   };
+
+  export type FuzzSelectorStruct = { addr: string; selectors: BytesLike[] };
+
+  export type FuzzSelectorStructOutput = [string, string[]] & {
+    addr: string;
+    selectors: string[];
+  };
 }
 
 export interface StdInvariantInterface extends utils.Interface {
   functions: {
     "excludeArtifacts()": FunctionFragment;
     "excludeContracts()": FunctionFragment;
-    "excludeSelectors()": FunctionFragment;
     "excludeSenders()": FunctionFragment;
     "targetArtifactSelectors()": FunctionFragment;
     "targetArtifacts()": FunctionFragment;
@@ -63,7 +62,6 @@ export interface StdInvariantInterface extends utils.Interface {
     nameOrSignatureOrTopic:
       | "excludeArtifacts"
       | "excludeContracts"
-      | "excludeSelectors"
       | "excludeSenders"
       | "targetArtifactSelectors"
       | "targetArtifacts"
@@ -79,10 +77,6 @@ export interface StdInvariantInterface extends utils.Interface {
   ): string;
   encodeFunctionData(
     functionFragment: "excludeContracts",
-    values?: undefined
-  ): string;
-  encodeFunctionData(
-    functionFragment: "excludeSelectors",
     values?: undefined
   ): string;
   encodeFunctionData(
@@ -120,10 +114,6 @@ export interface StdInvariantInterface extends utils.Interface {
   ): Result;
   decodeFunctionResult(
     functionFragment: "excludeContracts",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "excludeSelectors",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -193,14 +183,6 @@ export interface StdInvariant extends BaseContract {
       overrides?: CallOverrides
     ): Promise<[string[]] & { excludedContracts_: string[] }>;
 
-    excludeSelectors(
-      overrides?: CallOverrides
-    ): Promise<
-      [StdInvariant.FuzzSelectorStructOutput[]] & {
-        excludedSelectors_: StdInvariant.FuzzSelectorStructOutput[];
-      }
-    >;
-
     excludeSenders(
       overrides?: CallOverrides
     ): Promise<[string[]] & { excludedSenders_: string[] }>;
@@ -246,10 +228,6 @@ export interface StdInvariant extends BaseContract {
 
   excludeContracts(overrides?: CallOverrides): Promise<string[]>;
 
-  excludeSelectors(
-    overrides?: CallOverrides
-  ): Promise<StdInvariant.FuzzSelectorStructOutput[]>;
-
   excludeSenders(overrides?: CallOverrides): Promise<string[]>;
 
   targetArtifactSelectors(
@@ -274,10 +252,6 @@ export interface StdInvariant extends BaseContract {
     excludeArtifacts(overrides?: CallOverrides): Promise<string[]>;
 
     excludeContracts(overrides?: CallOverrides): Promise<string[]>;
-
-    excludeSelectors(
-      overrides?: CallOverrides
-    ): Promise<StdInvariant.FuzzSelectorStructOutput[]>;
 
     excludeSenders(overrides?: CallOverrides): Promise<string[]>;
 
@@ -307,8 +281,6 @@ export interface StdInvariant extends BaseContract {
 
     excludeContracts(overrides?: CallOverrides): Promise<BigNumber>;
 
-    excludeSelectors(overrides?: CallOverrides): Promise<BigNumber>;
-
     excludeSenders(overrides?: CallOverrides): Promise<BigNumber>;
 
     targetArtifactSelectors(overrides?: CallOverrides): Promise<BigNumber>;
@@ -328,8 +300,6 @@ export interface StdInvariant extends BaseContract {
     excludeArtifacts(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     excludeContracts(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    excludeSelectors(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     excludeSenders(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 

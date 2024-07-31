@@ -542,11 +542,7 @@ export interface VmInterface extends utils.Interface {
     "prompt(string)": FunctionFragment;
     "promptAddress(string)": FunctionFragment;
     "promptSecret(string)": FunctionFragment;
-    "promptSecretUint(string)": FunctionFragment;
     "promptUint(string)": FunctionFragment;
-    "randomAddress()": FunctionFragment;
-    "randomUint()": FunctionFragment;
-    "randomUint(uint256,uint256)": FunctionFragment;
     "readCallers()": FunctionFragment;
     "readDir(string,uint64)": FunctionFragment;
     "readDir(string,uint64,bool)": FunctionFragment;
@@ -938,11 +934,7 @@ export interface VmInterface extends utils.Interface {
       | "prompt"
       | "promptAddress"
       | "promptSecret"
-      | "promptSecretUint"
       | "promptUint"
-      | "randomAddress"
-      | "randomUint()"
-      | "randomUint(uint256,uint256)"
       | "readCallers"
       | "readDir(string,uint64)"
       | "readDir(string,uint64,bool)"
@@ -2136,23 +2128,7 @@ export interface VmInterface extends utils.Interface {
     functionFragment: "promptSecret",
     values: [string]
   ): string;
-  encodeFunctionData(
-    functionFragment: "promptSecretUint",
-    values: [string]
-  ): string;
   encodeFunctionData(functionFragment: "promptUint", values: [string]): string;
-  encodeFunctionData(
-    functionFragment: "randomAddress",
-    values?: undefined
-  ): string;
-  encodeFunctionData(
-    functionFragment: "randomUint()",
-    values?: undefined
-  ): string;
-  encodeFunctionData(
-    functionFragment: "randomUint(uint256,uint256)",
-    values: [BigNumberish, BigNumberish]
-  ): string;
   encodeFunctionData(
     functionFragment: "readCallers",
     values?: undefined
@@ -3540,23 +3516,7 @@ export interface VmInterface extends utils.Interface {
     functionFragment: "promptSecret",
     data: BytesLike
   ): Result;
-  decodeFunctionResult(
-    functionFragment: "promptSecretUint",
-    data: BytesLike
-  ): Result;
   decodeFunctionResult(functionFragment: "promptUint", data: BytesLike): Result;
-  decodeFunctionResult(
-    functionFragment: "randomAddress",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "randomUint()",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "randomUint(uint256,uint256)",
-    data: BytesLike
-  ): Result;
   decodeFunctionResult(
     functionFragment: "readCallers",
     data: BytesLike
@@ -5675,27 +5635,8 @@ export interface Vm extends BaseContract {
       overrides?: Overrides & { from?: string }
     ): Promise<ContractTransaction>;
 
-    promptSecretUint(
-      promptText: string,
-      overrides?: Overrides & { from?: string }
-    ): Promise<ContractTransaction>;
-
     promptUint(
       promptText: string,
-      overrides?: Overrides & { from?: string }
-    ): Promise<ContractTransaction>;
-
-    randomAddress(
-      overrides?: Overrides & { from?: string }
-    ): Promise<ContractTransaction>;
-
-    "randomUint()"(
-      overrides?: Overrides & { from?: string }
-    ): Promise<ContractTransaction>;
-
-    "randomUint(uint256,uint256)"(
-      min: BigNumberish,
-      max: BigNumberish,
       overrides?: Overrides & { from?: string }
     ): Promise<ContractTransaction>;
 
@@ -7980,27 +7921,8 @@ export interface Vm extends BaseContract {
     overrides?: Overrides & { from?: string }
   ): Promise<ContractTransaction>;
 
-  promptSecretUint(
-    promptText: string,
-    overrides?: Overrides & { from?: string }
-  ): Promise<ContractTransaction>;
-
   promptUint(
     promptText: string,
-    overrides?: Overrides & { from?: string }
-  ): Promise<ContractTransaction>;
-
-  randomAddress(
-    overrides?: Overrides & { from?: string }
-  ): Promise<ContractTransaction>;
-
-  "randomUint()"(
-    overrides?: Overrides & { from?: string }
-  ): Promise<ContractTransaction>;
-
-  "randomUint(uint256,uint256)"(
-    min: BigNumberish,
-    max: BigNumberish,
     overrides?: Overrides & { from?: string }
   ): Promise<ContractTransaction>;
 
@@ -10223,23 +10145,8 @@ export interface Vm extends BaseContract {
       overrides?: CallOverrides
     ): Promise<string>;
 
-    promptSecretUint(
-      promptText: string,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
     promptUint(
       promptText: string,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    randomAddress(overrides?: CallOverrides): Promise<string>;
-
-    "randomUint()"(overrides?: CallOverrides): Promise<BigNumber>;
-
-    "randomUint(uint256,uint256)"(
-      min: BigNumberish,
-      max: BigNumberish,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
@@ -12475,27 +12382,8 @@ export interface Vm extends BaseContract {
       overrides?: Overrides & { from?: string }
     ): Promise<BigNumber>;
 
-    promptSecretUint(
-      promptText: string,
-      overrides?: Overrides & { from?: string }
-    ): Promise<BigNumber>;
-
     promptUint(
       promptText: string,
-      overrides?: Overrides & { from?: string }
-    ): Promise<BigNumber>;
-
-    randomAddress(
-      overrides?: Overrides & { from?: string }
-    ): Promise<BigNumber>;
-
-    "randomUint()"(
-      overrides?: Overrides & { from?: string }
-    ): Promise<BigNumber>;
-
-    "randomUint(uint256,uint256)"(
-      min: BigNumberish,
-      max: BigNumberish,
       overrides?: Overrides & { from?: string }
     ): Promise<BigNumber>;
 
@@ -14771,27 +14659,8 @@ export interface Vm extends BaseContract {
       overrides?: Overrides & { from?: string }
     ): Promise<PopulatedTransaction>;
 
-    promptSecretUint(
-      promptText: string,
-      overrides?: Overrides & { from?: string }
-    ): Promise<PopulatedTransaction>;
-
     promptUint(
       promptText: string,
-      overrides?: Overrides & { from?: string }
-    ): Promise<PopulatedTransaction>;
-
-    randomAddress(
-      overrides?: Overrides & { from?: string }
-    ): Promise<PopulatedTransaction>;
-
-    "randomUint()"(
-      overrides?: Overrides & { from?: string }
-    ): Promise<PopulatedTransaction>;
-
-    "randomUint(uint256,uint256)"(
-      min: BigNumberish,
-      max: BigNumberish,
       overrides?: Overrides & { from?: string }
     ): Promise<PopulatedTransaction>;
 

@@ -6448,81 +6448,12 @@ const _abi = [
   },
   {
     type: "function",
-    name: "promptSecretUint",
-    inputs: [
-      {
-        name: "promptText",
-        type: "string",
-        internalType: "string",
-      },
-    ],
-    outputs: [
-      {
-        name: "",
-        type: "uint256",
-        internalType: "uint256",
-      },
-    ],
-    stateMutability: "nonpayable",
-  },
-  {
-    type: "function",
     name: "promptUint",
     inputs: [
       {
         name: "promptText",
         type: "string",
         internalType: "string",
-      },
-    ],
-    outputs: [
-      {
-        name: "",
-        type: "uint256",
-        internalType: "uint256",
-      },
-    ],
-    stateMutability: "nonpayable",
-  },
-  {
-    type: "function",
-    name: "randomAddress",
-    inputs: [],
-    outputs: [
-      {
-        name: "",
-        type: "address",
-        internalType: "address",
-      },
-    ],
-    stateMutability: "nonpayable",
-  },
-  {
-    type: "function",
-    name: "randomUint",
-    inputs: [],
-    outputs: [
-      {
-        name: "",
-        type: "uint256",
-        internalType: "uint256",
-      },
-    ],
-    stateMutability: "nonpayable",
-  },
-  {
-    type: "function",
-    name: "randomUint",
-    inputs: [
-      {
-        name: "min",
-        type: "uint256",
-        internalType: "uint256",
-      },
-      {
-        name: "max",
-        type: "uint256",
-        internalType: "uint256",
       },
     ],
     outputs: [

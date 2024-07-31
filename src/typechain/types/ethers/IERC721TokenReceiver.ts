@@ -70,28 +70,28 @@ export interface IERC721TokenReceiver extends BaseContract {
 
   functions: {
     onERC721Received(
-      arg0: string,
-      arg1: string,
-      arg2: BigNumberish,
-      arg3: BytesLike,
+      _operator: string,
+      _from: string,
+      _tokenId: BigNumberish,
+      _data: BytesLike,
       overrides?: Overrides & { from?: string }
     ): Promise<ContractTransaction>;
   };
 
   onERC721Received(
-    arg0: string,
-    arg1: string,
-    arg2: BigNumberish,
-    arg3: BytesLike,
+    _operator: string,
+    _from: string,
+    _tokenId: BigNumberish,
+    _data: BytesLike,
     overrides?: Overrides & { from?: string }
   ): Promise<ContractTransaction>;
 
   callStatic: {
     onERC721Received(
-      arg0: string,
-      arg1: string,
-      arg2: BigNumberish,
-      arg3: BytesLike,
+      _operator: string,
+      _from: string,
+      _tokenId: BigNumberish,
+      _data: BytesLike,
       overrides?: CallOverrides
     ): Promise<string>;
   };
@@ -100,20 +100,20 @@ export interface IERC721TokenReceiver extends BaseContract {
 
   estimateGas: {
     onERC721Received(
-      arg0: string,
-      arg1: string,
-      arg2: BigNumberish,
-      arg3: BytesLike,
+      _operator: string,
+      _from: string,
+      _tokenId: BigNumberish,
+      _data: BytesLike,
       overrides?: Overrides & { from?: string }
     ): Promise<BigNumber>;
   };
 
   populateTransaction: {
     onERC721Received(
-      arg0: string,
-      arg1: string,
-      arg2: BigNumberish,
-      arg3: BytesLike,
+      _operator: string,
+      _from: string,
+      _tokenId: BigNumberish,
+      _data: BytesLike,
       overrides?: Overrides & { from?: string }
     ): Promise<PopulatedTransaction>;
   };

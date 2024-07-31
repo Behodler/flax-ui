@@ -4,7 +4,7 @@
 
 import { Contract, Signer, utils } from "ethers";
 import type { Provider } from "@ethersproject/providers";
-import type { IERC20, IERC20Interface } from "../IERC20";
+import type { WETH9, WETH9Interface } from "../WETH9";
 
 const _abi = [
   {
@@ -12,12 +12,12 @@ const _abi = [
     name: "allowance",
     inputs: [
       {
-        name: "owner",
+        name: "",
         type: "address",
         internalType: "address",
       },
       {
-        name: "spender",
+        name: "",
         type: "address",
         internalType: "address",
       },
@@ -36,12 +36,12 @@ const _abi = [
     name: "approve",
     inputs: [
       {
-        name: "spender",
+        name: "guy",
         type: "address",
         internalType: "address",
       },
       {
-        name: "value",
+        name: "wad",
         type: "uint256",
         internalType: "uint256",
       },
@@ -60,7 +60,7 @@ const _abi = [
     name: "balanceOf",
     inputs: [
       {
-        name: "account",
+        name: "",
         type: "address",
         internalType: "address",
       },
@@ -70,6 +70,52 @@ const _abi = [
         name: "",
         type: "uint256",
         internalType: "uint256",
+      },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    name: "decimals",
+    inputs: [],
+    outputs: [
+      {
+        name: "",
+        type: "uint8",
+        internalType: "uint8",
+      },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    name: "deposit",
+    inputs: [],
+    outputs: [],
+    stateMutability: "payable",
+  },
+  {
+    type: "function",
+    name: "name",
+    inputs: [],
+    outputs: [
+      {
+        name: "",
+        type: "string",
+        internalType: "string",
+      },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    name: "symbol",
+    inputs: [],
+    outputs: [
+      {
+        name: "",
+        type: "string",
+        internalType: "string",
       },
     ],
     stateMutability: "view",
@@ -92,12 +138,12 @@ const _abi = [
     name: "transfer",
     inputs: [
       {
-        name: "to",
+        name: "dst",
         type: "address",
         internalType: "address",
       },
       {
-        name: "value",
+        name: "wad",
         type: "uint256",
         internalType: "uint256",
       },
@@ -116,17 +162,17 @@ const _abi = [
     name: "transferFrom",
     inputs: [
       {
-        name: "from",
+        name: "src",
         type: "address",
         internalType: "address",
       },
       {
-        name: "to",
+        name: "dst",
         type: "address",
         internalType: "address",
       },
       {
-        name: "value",
+        name: "wad",
         type: "uint256",
         internalType: "uint256",
       },
@@ -141,23 +187,55 @@ const _abi = [
     stateMutability: "nonpayable",
   },
   {
+    type: "function",
+    name: "withdraw",
+    inputs: [
+      {
+        name: "wad",
+        type: "uint256",
+        internalType: "uint256",
+      },
+    ],
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
     type: "event",
     name: "Approval",
     inputs: [
       {
-        name: "owner",
+        name: "src",
         type: "address",
         indexed: true,
         internalType: "address",
       },
       {
-        name: "spender",
+        name: "guy",
         type: "address",
         indexed: true,
         internalType: "address",
       },
       {
-        name: "value",
+        name: "wad",
+        type: "uint256",
+        indexed: false,
+        internalType: "uint256",
+      },
+    ],
+    anonymous: false,
+  },
+  {
+    type: "event",
+    name: "Deposit",
+    inputs: [
+      {
+        name: "dst",
+        type: "address",
+        indexed: true,
+        internalType: "address",
+      },
+      {
+        name: "wad",
         type: "uint256",
         indexed: false,
         internalType: "uint256",
@@ -170,19 +248,38 @@ const _abi = [
     name: "Transfer",
     inputs: [
       {
-        name: "from",
+        name: "src",
         type: "address",
         indexed: true,
         internalType: "address",
       },
       {
-        name: "to",
+        name: "dst",
         type: "address",
         indexed: true,
         internalType: "address",
       },
       {
-        name: "value",
+        name: "wad",
+        type: "uint256",
+        indexed: false,
+        internalType: "uint256",
+      },
+    ],
+    anonymous: false,
+  },
+  {
+    type: "event",
+    name: "Withdrawal",
+    inputs: [
+      {
+        name: "src",
+        type: "address",
+        indexed: true,
+        internalType: "address",
+      },
+      {
+        name: "wad",
         type: "uint256",
         indexed: false,
         internalType: "uint256",
@@ -192,12 +289,12 @@ const _abi = [
   },
 ] as const;
 
-export class IERC20__factory {
+export class WETH9__factory {
   static readonly abi = _abi;
-  static createInterface(): IERC20Interface {
-    return new utils.Interface(_abi) as IERC20Interface;
+  static createInterface(): WETH9Interface {
+    return new utils.Interface(_abi) as WETH9Interface;
   }
-  static connect(address: string, signerOrProvider: Signer | Provider): IERC20 {
-    return new Contract(address, _abi, signerOrProvider) as IERC20;
+  static connect(address: string, signerOrProvider: Signer | Provider): WETH9 {
+    return new Contract(address, _abi, signerOrProvider) as WETH9;
   }
 }
