@@ -97,7 +97,7 @@
     ],
     "31337": [
         {
-            "address": "0x712516e61c8b383df4a63cfe83d7701bce54b03e",
+            "address": "0xbcf26943c0197d2ee0e5d05c716be60cc2761508",
             "image": "eye",
             "friendlyName": "Eye",
             "AMMs": [
@@ -114,7 +114,7 @@
             ]
         },
         {
-            "address": "0x05aa229aec102f78ce0e852a812a388f076aa555",
+            "address": "0x59f2f1fcfe2474fd5f0b9ba1e73ca90b143eb8d0",
             "image": "scx",
             "friendlyName": "Scarcity",
             "AMMs": [
@@ -138,7 +138,7 @@
             ]
         },
         {
-            "address": "0x0f5d1ef48f12b6f691401bfe88c2037c690a6afe",
+            "address": "0x59f2f1fcfe2474fd5f0b9ba1e73ca90b143eb8d0",
             "image": "pyroScxEth",
             "friendlyName": "Pyro (SCX/ETH)",
             "AMMs": [
