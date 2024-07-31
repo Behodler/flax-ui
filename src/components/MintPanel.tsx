@@ -196,7 +196,7 @@ export default function MintPanel(props: LiveProps) {
                                     direction="column"
                                     alignItems="center">
                                     <Grid item>
-                                        <TransactionButton progressSetter={setMintProgress} progress={mintProgress} invalid={invalidReason.length > 0} transactionGetter={() => contracts.issuer.issue(token.address, ethers.utils.parseEther(mintText).toString(), account)} >
+                                        <TransactionButton toastyEnabled={true} progressSetter={setMintProgress} progress={mintProgress} invalid={invalidReason.length > 0} transactionGetter={() => contracts.issuer.issue(token.address, ethers.utils.parseEther(mintText).toString(), account)} >
                                             Mint {flaxToMint !== "" ? parseFloat(flaxToMint).toFixed(2) : ""} Flax {mintDai && mintDai !== "" ? '($' + mintDai + ')' : ''}
                                         </TransactionButton>
                                     </Grid>
@@ -215,7 +215,7 @@ export default function MintPanel(props: LiveProps) {
                                     }
                                 </Grid>
                                 :
-                                <TransactionButton progressSetter={setApproveProgress} progress={approveProgress} transactionGetter={() => token.approve(contracts.issuer.address, ethers.constants.MaxUint256)} >
+                                <TransactionButton toastyEnabled={false} progressSetter={setApproveProgress} progress={approveProgress} transactionGetter={() => token.approve(contracts.issuer.address, ethers.constants.MaxUint256)} >
                                     Approve {asset?.friendlyName} for minting Flax
                                 </TransactionButton>
                             }

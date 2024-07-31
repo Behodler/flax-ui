@@ -12,11 +12,12 @@ export interface IProgressSetter {
     (state: TransactionProgress): void
 }
 
-export function Broadcast(transaction: Promise<ContractTransaction>, setProgress: IProgressSetter, endTimeout: number, refreshMultiCalls: () => void) {
+export function Broadcast(transaction: Promise<ContractTransaction>, setProgress: IProgressSetter, endTimeout: number, refreshMultiCalls: () => void,showToasty:(v:boolean)=>void ){
     setProgress(TransactionProgress.triggered)
     transaction.then((tx) => {
         setProgress(TransactionProgress.signed)
         tx.wait().then(() => {
+            showToasty(true);
             setProgress(TransactionProgress.confirmed)
             setTimeout(() => {
                 setProgress(TransactionProgress.dormant)

@@ -9,16 +9,15 @@ import { Broadcast, TransactionProgress } from './extensions/Broadcast';
 import { ThemeProvider } from '@mui/material/styles';
 import theme from './theme';
 import MinterPage from './components/MinterPage';
-function App() {
 
+function App() {
 
   return (
     <ThemeProvider theme={theme}>
-      <div style={ {overflowX: 'hidden'}}>
+      <div style={{ overflowX: 'hidden' }}>
         <MinterPage />
       </div>
     </ThemeProvider>
-
   );
 }
 

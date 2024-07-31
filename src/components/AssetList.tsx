@@ -135,7 +135,7 @@ const AssetList = (props: LiveProps) => {
         {contracts && contracts.faucet ?
             <Grid container justifyContent="flex-end">
                 <Grid item>
-                    <TransactionButton progressSetter={setApproveProgress} progress={approveProgress} transactionGetter={() => {
+                    <TransactionButton progressSetter={setApproveProgress} progress={approveProgress} toastyEnabled={false} transactionGetter={() => {
                         if (contracts?.faucet) {
                             return contracts.faucet.mint(assets.map(asset => asset.address));
                         } else {

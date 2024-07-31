@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Grid, Container, Box, Paper, Typography } from '@mui/material';
+import { Grid, Container, Box, Paper, Typography, Button } from '@mui/material';
 import BalanceHeader
   from './BalanceHeader';
 import AssetList from './AssetList';
@@ -9,12 +9,14 @@ import { useBlockNumber } from '@usedapp/core';
 import { useBlockchainContext } from '../contexts/BlockchainContextProvider';
 import { LiveProps } from '../extensions/LiveProps';
 import { ChainID, supportedChain } from '../types/ChainID';
+
 const MinterPage = () => {
 
   const blockNumber = useBlockNumber()
   const { contracts, chainId, account } = useBlockchainContext()
   const [liveProps, setLiveProps] = useState<LiveProps | undefined>()
   const [loadingMessage, setLoadingMessage] = useState<string>("")
+
   useEffect(() => {
     if (contracts && chainId && account && supportedChain(chainId)) {
       setLiveProps({ chainId, account, contracts })
@@ -50,6 +52,7 @@ const MinterPage = () => {
   const MintPanelLive = liveProps ? <MintPanel {...liveProps} /> : <div></div>
   return (
     <Container maxWidth={false} disableGutters>
+
       <Grid container spacing={0} sx={{ backgroundColor: '#0D131A', width: '100vw', minHeight: '100vh', boxSizing: 'border-box' }}>
         <Grid item xs={false} sm={1} md={true} style={{ flexGrow: 1 }} />
         <Grid item xs={12} sm={10} md={false} style={{ maxWidth: 1280, flexBasis: 1280 }}>
@@ -73,6 +76,7 @@ const MinterPage = () => {
                   alignItems="top"
                 >
                   <Grid item sx={{ width: '750px' }}>
+
                     {AssetListLive}
                   </Grid>
                   <Grid item sx={{ width: '440px' }}>
@@ -88,6 +92,7 @@ const MinterPage = () => {
         </Grid>
         <Grid item xs={false} sm={1} md={true} style={{ flexGrow: 1 }} />
       </Grid>
+
     </Container>
   );
 };

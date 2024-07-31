@@ -2,23 +2,34 @@ import { ContractTransaction } from 'ethers';
 import { Broadcast, IProgressSetter, TransactionProgress } from '../extensions/Broadcast'
 import { Box, Button, CircularProgress } from '@mui/material';
 import { useBlockchainContext } from '../contexts/BlockchainContextProvider';
+import Toasty from './Toasty';
+import { useState } from 'react';
 
 interface TransactionButtonProps {
     transactionGetter: () => Promise<ContractTransaction>,
     progress: TransactionProgress
     progressSetter: IProgressSetter,
-    invalid?:boolean
+    toastyEnabled: boolean,
+    invalid?: boolean
     children: any
 }
 
 export default function TransactionButton(props: TransactionButtonProps
 ) {
-    const {refreshMultiCalls} = useBlockchainContext()
+
+    const { refreshMultiCalls } = useBlockchainContext()
+    const [showToasty, setShowToasty] = useState<boolean>(false)
+    const triggerToasty = props.toastyEnabled ? setShowToasty : (v: boolean) => { }
     const enabled = props.progress === TransactionProgress.dormant && !props.invalid
     let child: any = getChildProps(props.progress, props.children)
-    return <Button disabled={!enabled} onClick={() => Broadcast(props.transactionGetter(), props.progressSetter, 5,refreshMultiCalls)}>
-        {child}
-    </Button>
+    return <>
+        <Toasty show={showToasty} setShow={setShowToasty} />
+        <Button disabled={!enabled} onClick={() => Broadcast(props.transactionGetter(), props.progressSetter, 5, refreshMultiCalls, triggerToasty)}>
+            {child}
+        </Button>
+    </>
+
+
 }
 
 

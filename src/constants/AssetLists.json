@@ -4,6 +4,7 @@
             "address": "0x155ff1a85f440ee0a382ea949f24ce4e0b751c65",
             "image": "eye",
             "friendlyName": "Eye",
+            "category":"Behodler",
             "AMMs": [
                 {
                     "location": "uni",
@@ -16,6 +17,7 @@
             "address": "0x1b8568fbb47708e9e9d31ff303254f748805bf21",
             "image": "scx",
             "friendlyName": "Scarcity",
+            "category":"Behodler",
             "AMMs": [
                 {
                     "location": "behodler",
@@ -33,6 +35,7 @@
             "address": "0x6dF6B57FB7c35D7C71395F77cb08b82A62635e19",
             "image": "flaxEth",
             "friendlyName": "Flax/Eth LP (Uni-V2)",
+            "category":"Behodler",
             "AMMs": [
                 {
                     "location": "uni",
@@ -50,6 +53,7 @@
             "address": "0xf047ee812b21050186f86106f6cabdfec35366c6",
             "image": "scxEye",
             "friendlyName": "SCX/EYE LP (Uni-V2)",
+            "category":"Behodler",
             "AMMs": [
                 {
                     "location": "uni",
@@ -62,6 +66,7 @@
             "address": "0x0287120f9b7d8709b4dD5b589Ae759F79fD34E62",
             "image": "pyroScxEye",
             "friendlyName": "Pyro(SCX/EYE)",
+            "category":"Behodler",
             "AMMs": [
                 {
                     "location": "behodler",
@@ -74,6 +79,7 @@
             "address": "0x319ead06eb01e808c80c7eb9bd77c5d8d163addb",
             "image": "scxEth",
             "friendlyName": "SCX/ETH LP (Uni-V2)",
+            "category":"Behodler",
             "AMMs": [
                 {
                     "location": "uni",
@@ -86,6 +92,7 @@
             "address": "0xa9EEA8723FffD923F6908586455411159B525d23",
             "image": "pyroScxEth",
             "friendlyName": "Pyro (SCX/ETH)",
+            "category":"Behodler",
             "AMMs": [
                 {
                     "location": "behodler",
@@ -100,6 +107,7 @@
             "address": "0xbcf26943c0197d2ee0e5d05c716be60cc2761508",
             "image": "eye",
             "friendlyName": "Eye",
+            "category":"Behodler",
             "AMMs": [
                 {
                     "location": "uni",
@@ -117,6 +125,7 @@
             "address": "0x59f2f1fcfe2474fd5f0b9ba1e73ca90b143eb8d0",
             "image": "scx",
             "friendlyName": "Scarcity",
+            "category":"Behodler",
             "AMMs": [
                 {
                     "location": "behodler",
@@ -126,9 +135,10 @@
             ]
         },
         {
-            "address": "0xbcf26943c0197d2ee0e5d05c716be60cc2761508",
+            "address": "0x0b48af34f4c854f5ae1a3d587da471fea45bad52",
             "image": "scxEye",
             "friendlyName": "SCX/EYE LP (Uni-V2)",
+            "category":"Behodler",
             "AMMs": [
                 {
                     "location": "uni",
@@ -138,9 +148,10 @@
             ]
         },
         {
-            "address": "0x59f2f1fcfe2474fd5f0b9ba1e73ca90b143eb8d0",
+            "address": "0x90118d110b07abb82ba8980d1c5cc96eea810d2c",
             "image": "pyroScxEth",
             "friendlyName": "Pyro (SCX/ETH)",
+            "category":"Behodler",
             "AMMs": [
                 {
                     "location": "behodler",
@@ -155,6 +166,7 @@
             "address": "0xc4171cB917Db366BBcB84aF3472CB63BB0f3a554",
             "image": "eye",
             "friendlyName": "Eye",
+            "category":"Behodler",
             "AMMs": [
                 {
                     "location": "uni",
@@ -167,6 +179,7 @@
             "address": "0x594d83f99a0339d7FA867F746f8Af91DC4562FC9",
             "image": "scx",
             "friendlyName": "Scarcity",
+            "category":"Behodler",
             "AMMs": [
                 {
                     "location": "behodler",
@@ -184,6 +197,7 @@
             "address": "0xdA479c034876Ee72105a7E536d9077d0b18A68a5",
             "image": "scxEye",
             "friendlyName": "SCX/EYE LP (Uni-V2)",
+            "category":"Behodler",
             "AMMs": [
                 {
                     "location": "uni",
@@ -196,6 +210,7 @@
             "address": "0x1070a8B8E83A58856F6a21682868eAf0dc09e6C3",
             "image": "scxEth",
             "friendlyName": "SCX/ETH LP (Uni-V2)",
+            "category":"Behodler",
             "AMMs": [
                 {
                     "location": "uni",
