@@ -1,4 +1,4 @@
-import { Grid, Link, ListItem, ListItemButton, Tooltip, Typography } from '@mui/material';
+import { Container, Grid, Link, ListItem, ListItemButton, Tooltip, Typography } from '@mui/material';
 import React, { useEffect, useState } from 'react';
 import { Contracts, useBlockchainContext } from '../contexts/BlockchainContextProvider';
 
@@ -16,6 +16,7 @@ import _ from 'lodash';
 import { getDaiPriceOfToken } from '../extensions/Uniswap';
 import { useProvider } from '../hooks/useProvider';
 import { ChainID } from '../types/ChainID';
+import TilterRatio from './common/TilterRatio';
 
 
 
@@ -41,6 +42,7 @@ interface IProps {
     contracts: Contracts
     children: AssetProps
     APY: number,
+    tempFunny: boolean
     setAPY: (apy: number) => void
 }
 export function Asset(props: IProps) {
@@ -49,12 +51,12 @@ export function Asset(props: IProps) {
     const imagePath = require(`../images/${getImagePath(asset.image)}`);
     const blockNumber = useBlockNumber();
     const { dynamicTokenInfo,
-        account, flxDollarPrice, chainId, daiPriceOfEth ,setSelectedAssetId, selectedAssetId 
-     } = useBlockchainContext()
+        account, flxDollarPrice, chainId, daiPriceOfEth, setSelectedAssetId, selectedAssetId
+    } = useBlockchainContext()
     const [currentBalance, setCurrentBalance] = useState<string | undefined>(undefined)
     const inputs = contracts.inputs
     const selectedInput = inputs.filter(input => input.address === asset.address)[0]
-    const selectedDynamic = (selectedInput !== undefined && dynamicTokenInfo)? dynamicTokenInfo[selectedInput.address] : undefined
+    const selectedDynamic = (selectedInput !== undefined && dynamicTokenInfo) ? dynamicTokenInfo[selectedInput.address] : undefined
     const [flxValue, setFlxValue] = useState<string>()
     const [inputDollarPrice, setInputDollarPrice] = useState<string | undefined>()
     const ethProvider = useProvider();
@@ -120,8 +122,9 @@ export function Asset(props: IProps) {
     if (selectedDynamic !== undefined) {
         const burnMessage = `Deposit ${selectedDynamic.burnable ? "burnt" : "permanently locked"} on Flax minting`
         const burnSource = selectedDynamic.burnable ? burn : lock
-        burnableImage = <Tooltip title={burnMessage}><img width="30px" src={burnSource} style={{ margin: "5px 0 0 0" }} />
-        </Tooltip>
+        burnableImage = !props.tempFunny ? <Tooltip title={burnMessage}>
+            <img width="30px" src={burnSource} style={{ margin: "5px 0 0 0" }} />
+        </Tooltip> : <TilterRatio title="70% price tilt" />
         mintPrice = TeraToString(selectedDynamic.teraCouponPerToken)
     }
     const mintMessage = `1 ${asset.friendlyName} mints ${mintPrice} Flax (\$${flxValue})`
@@ -134,38 +137,44 @@ export function Asset(props: IProps) {
         onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
     >
         <ListItemButton onClick={() => setSelectedAssetId(asset.address)} style={{ width: '100%', height: '100%' }}>
-            <Grid container wrap="nowrap" alignItems="center" spacing={2} >
+            <Grid container wrap="nowrap" alignItems="flex-start" spacing={1} >
                 <Grid item>
                     {image}
                 </Grid>
-                <Grid item xs >
-
-                    <Grid
-                        container
-                        direction="row"
-                        justifyContent="flex-start"
-                        alignItems="center"
-                        spacing={1}
-                        sx={{ width: "300px" }}
-                    >
+                <Grid item xs  >
+                    <Grid container direction="column" >
                         <Grid item>
-                            <Typography variant="body1" style={{ cursor: 'pointer' }}>
-                                {asset.friendlyName}
+                            <Grid
+                                container
+                                direction="row"
+                                justifyContent="flex-start"
+                                alignItems="center"
+                                spacing={1}
+                            >
+                                <Grid item>
+                                    <Typography variant="body1" style={{ cursor: 'pointer' }}>
+                                        {asset.friendlyName}
+                                    </Typography>
+                                </Grid>
+                                {inputDollarPrice ? <Grid item>
+                                    <Tooltip title={`1 ${asset.friendlyName} = \$${inputDollarPrice}`}>
+                                        <Typography variant="h6" style={{ cursor: 'pointer' }}>
+                                            <b>${inputDollarPrice}</b>
+                                        </Typography>
+                                    </Tooltip>
+                                </Grid> : <></>}
+
+                            </Grid>
+                        </Grid>
+                        <Grid item>
+                            <Typography variant="subtitle1" style={{ cursor: 'pointer' }}>
+                                Wallet balance: {currentBalance === undefined ? <i>fetching...</i> : <>{currentBalance}</>}
                             </Typography>
                         </Grid>
-                        {inputDollarPrice ? <Grid item>
-                            <Tooltip title={`1 ${asset.friendlyName} = \$${inputDollarPrice}`}>
-                                <Typography variant="h6" style={{ cursor: 'pointer' }}>
-                                    <b>${inputDollarPrice}</b>
-                                </Typography>
-                            </Tooltip>
-                        </Grid> : <></>}
-
                     </Grid>
 
-                    <Typography variant="subtitle1" style={{ cursor: 'pointer' }}>
-                        Wallet balance: {currentBalance === undefined ? <i>fetching...</i> : <>{currentBalance}</>}
-                    </Typography>
+
+
 
                 </Grid>
                 <Grid item >
@@ -174,13 +183,25 @@ export function Asset(props: IProps) {
                         direction="row"
                         justifyContent="left"
                         alignItems="space-between"
-                        sx={{ width: "350px" }}
+                        sx={{ width: "500px" }}
                     >
-                        <Grid item style={{ width: "80px" }}>
+                        <Grid item style={{ width: "150px" }}>
                             {ammLinks}
                         </Grid>
-                        <Grid item style={{ width: "30px" }} >
-                            {burnableImage}
+                        <Grid item style={{ width: "150px" }} >
+                            <Grid
+                                container
+                                direction="column"
+                                justifyContent="center"
+                                alignItems="center"
+                            >
+                                <Grid item >
+
+
+                                    {burnableImage}
+                                </Grid>
+                            </Grid>
+
                         </Grid>
                         <Grid item style={{ width: "120px" }}>
 

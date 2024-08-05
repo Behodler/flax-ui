@@ -1,4 +1,4 @@
-import { useBlockNumber, useContractFunction, useEthers } from '@usedapp/core';
+import { useBlockNumber, useContractFunction, useEtherBalance, useEthers } from '@usedapp/core';
 import { Issuer, Multicall3 } from "../typechain/types/ethers";  // Import TypeChain-generated type
 import { ethers, Contract, BigNumber } from 'ethers';
 import ABIs from "../constants/ABIs.json"
@@ -8,6 +8,8 @@ import { useProvider } from './useProvider';
 import { useEffect, useMemo, useState } from 'react';
 import { useDeepCompareEffect } from './useDeepCompareEffect';
 import _ from 'lodash';
+import { OptionalAddresses } from './useAddresses';
+import useEthBalance from './useEthBalance';
 
 interface TokenInfo {
     currentPrice: BigNumber,
@@ -54,27 +56,27 @@ const useMultiTokenInfo = (multicall3: Multicall3 | undefined, issuer: Issuer | 
 
 
     useEffect(() => {
-      // Set up the interval
-      const interval = setInterval(() => {
-        if (tokens && info) {
-            const cloned = _.cloneDeep(info)
-            for (let i = 0; i < tokens.length; i++) {
-                const currentToken = tokens[i]
-                const currentInfo = cloned[currentToken]
-                cloned[currentToken].currentPrice = getPrice(currentInfo)
+        // Set up the interval
+        const interval = setInterval(() => {
+            if (tokens && info) {
+                const cloned = _.cloneDeep(info)
+                for (let i = 0; i < tokens.length; i++) {
+                    const currentToken = tokens[i]
+                    const currentInfo = cloned[currentToken]
+                    cloned[currentToken].currentPrice = getPrice(currentInfo)
+                }
+                if (!_.isEqual(cloned, info)) {
+                    setInfo(cloned)
+                }
             }
-            if (!_.isEqual(cloned, info)) {
-                setInfo(cloned)
-            }
-        }        
-      }, 1000); // 1000 ms = 1 second
-  
+        }, 1000); // 1000 ms = 1 second
 
 
-      // Clear interval on component unmount
-      return () => clearInterval(interval);
+
+        // Clear interval on component unmount
+        return () => clearInterval(interval);
     }, [blocknumber]);
-    
+
     useEffect(() => {
         if (refresh) {
             setInitialized(false)
@@ -112,7 +114,7 @@ const useMultiTokenInfo = (multicall3: Multicall3 | undefined, issuer: Issuer | 
                             acc[current.address] = current.castInfo
                             return acc
                         }, {})
-                        setInfo(results)
+                    setInfo(results)
                 })()
 
             }
@@ -123,10 +125,12 @@ const useMultiTokenInfo = (multicall3: Multicall3 | undefined, issuer: Issuer | 
     return info
 }
 
-const useMultiTokenBalances = (multicall3: Multicall3 | undefined, holder: string | undefined, tokens: string[] | undefined, refresh: boolean): Record<string, BigNumber> | undefined => {
+const useMultiTokenBalances = (multicall3: Multicall3 | undefined, holder: string | undefined, tokens: string[] | undefined, weth: string | undefined, refresh: boolean): Record<string, BigNumber> | undefined => {
     const provider = useProvider()
     const [initialized, setInitialized] = useState<boolean>(false)
     const [balances, setBalances] = useState<Record<string, BigNumber> | undefined>()
+    //TODO:change
+    const ethBalance = useEthBalance(holder)
     const blocknumber = useBlockNumber()
 
     useEffect(() => {
@@ -139,23 +143,31 @@ const useMultiTokenBalances = (multicall3: Multicall3 | undefined, holder: strin
         setInitialized(false)
     }, [holder, tokens])
     useDeepCompareEffect(() => {
-        if (blocknumber && (!initialized || blocknumber % 5 == 0)) {
-            if (provider && holder && tokens && multicall3) {
+        if (blocknumber && (!initialized || blocknumber % 3 == 0)) {
+            if (provider && holder && tokens && multicall3 && ethBalance && weth) {
                 (async () => {
-                    const calls = tokens.map(tokenAddress => {
+                    const wethless = tokens.filter(t => t.toLowerCase() != weth.toLowerCase())
+        
+                    const calls = wethless.map(tokenAddress => {
                         const tokenContract = new ethers.Contract(tokenAddress, ABIs.ERC20, provider);
                         return {
                             target: tokenAddress,
                             callData: tokenContract.interface.encodeFunctionData('balanceOf', [holder])
                         };
                     });
-                
+
                     const { blockNumber, returnData } = await multicall3.callStatic.aggregate(calls);
-                    setBalances(returnData.map((data, i) => ({ address: tokens[i], balance: ethers.utils.defaultAbiCoder.decode(['uint256'], data)[0] }))
+                    const tokenBalances = (returnData.map((data, i) => ({ address: wethless[i], balance: ethers.utils.defaultAbiCoder.decode(['uint256'], data)[0] }))
                         .reduce((acc, current) => {
                             acc[current.address] = current.balance;
                             return acc;
                         }, {} as Record<string, BigNumber>))
+                    if (wethless.length < tokens.length) {
+                        tokenBalances[weth] = ethBalance
+                    }
+              
+                    setBalances(tokenBalances)
+
                     setInitialized(true)
                 })()
             }
@@ -173,11 +185,12 @@ export interface DynamicTokenInfo {
     teraCouponPerToken: BigNumber
 }
 type DynamicInfoMap = Record<string, DynamicTokenInfo>
-export const useDynamicTokenInfo = (contracts: Contracts | undefined, account: string | undefined, tokens: string[] | undefined, refresh: boolean): DynamicInfoMap | undefined => {
+export const useDynamicTokenInfo = (contracts: Contracts | undefined, account: string | undefined, addresses: OptionalAddresses, refresh: boolean): DynamicInfoMap | undefined => {
+    const tokens = addresses?.Inputs
     const [dynamicInfo, setDynamicInfo] = useState<DynamicInfoMap>()
 
     const tokenInfo = useMultiTokenInfo(contracts?.multicall3, contracts?.issuer, tokens, refresh)
-    const balances = useMultiTokenBalances(contracts?.multicall3, account, tokens, refresh)
+    const balances = useMultiTokenBalances(contracts?.multicall3, account, tokens, addresses?.Weth, refresh)
 
     useEffect(() => {
         if (balances && tokenInfo && tokens) {

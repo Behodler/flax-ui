@@ -1,10 +1,14 @@
 import { ToggleButton, ToggleButtonGroup, Box } from "@mui/material";
-import { styled } from "@mui/material/styles"; // Update to use from @mui/material/styles
+import { styled } from "@mui/material/styles";
+
+interface ScalableProps {
+  scale: number;
+}
 
 const StyledToggleButtonGroup = styled(ToggleButtonGroup)(({ theme }) => ({
   backgroundColor: theme.palette.background.default,
   borderRadius: "14px",
-  padding: "0px",
+  padding: "1px",
   width: "400px",
   display: "flex",
   justifyContent: "space-between",
@@ -13,8 +17,8 @@ const StyledToggleButtonGroup = styled(ToggleButtonGroup)(({ theme }) => ({
 
 const StyledToggleButton = styled(ToggleButton)(({ theme }) => ({
   flex: 1,
-  border: "none",
-  borderRadius: "10px !important",
+
+  borderRadius: "12px !important",
   margin: "4px",
   lineHeight: "20px",
   fontFamily: theme.typography.fontFamily,
@@ -35,40 +39,40 @@ const StyledToggleButton = styled(ToggleButton)(({ theme }) => ({
   },
 }));
 
-const ImageBox = styled(Box)(({ theme }) => ({
+const ImageBox = styled(Box)<{ scale: number }>(({ scale }) => ({
   display: "flex",
   alignItems: "center",
   justifyContent: "space-between",
-  width: "400px",
-  height: "50px",
+  width: `${20 * scale}px`,
+  height: `${5 * scale}px`,
   backgroundColor: "#1D2833",
-  borderRadius: "24px",
-  padding: "0px 10px",
-  marginTop: "20px",
+  borderRadius: `${2.4 * scale}px`,
+  padding: `${0 * scale}px ${1 * scale}px`,
+  marginTop: `${2 * scale}px`,
 }));
 
-const Image = styled("img")({
-  height: "50px",
+const Image = styled("img")<{ scale: number }>(({ scale }) => ({
+  height: `${5 * scale}px`,
   borderRadius: "50%",
-});
-
-const Bar = styled(Box)({
-  flex: 1,
-  height: "30px",
-  display: "flex",
-  margin: "0 10px",
-});
-
-const BarLeft = styled(Box)<{ color: string; width: string }>(({ color, width }) => ({
-  width: width,
-  backgroundColor: color,
-  borderRadius: "24px 0 0 24px",
 }));
 
-const BarRight = styled(Box)<{ color: string; width: string }>(({ color, width }) => ({
+const Bar = styled(Box)<{ scale: number }>(({ scale }) => ({
+  flex: 1,
+  height: `${3 * scale}px`,
+  display: "flex",
+  margin: `0 ${scale}px`,
+}));
+
+const BarLeft = styled(Box)<{ color: string; width: string, scale: number }>(({ color, width, scale }) => ({
   width: width,
   backgroundColor: color,
-  borderRadius: "0 24px 24px 0",
+  borderRadius: `${scale}px 0 0 ${scale}px`,
+}));
+
+const BarRight = styled(Box)<{ color: string; width: string, scale: number }>(({ color, width, scale }) => ({
+  width: width,
+  backgroundColor: color,
+  borderRadius: `0 ${scale}px ${scale}px 0`,
 }));
 
 export { StyledToggleButtonGroup, StyledToggleButton, ImageBox, Image, Bar, BarLeft, BarRight };

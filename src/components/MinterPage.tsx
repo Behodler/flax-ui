@@ -10,6 +10,7 @@ import { useBlockchainContext } from '../contexts/BlockchainContextProvider';
 import { LiveProps } from '../extensions/LiveProps';
 import { ChainID, supportedChain } from '../types/ChainID';
 import MultiStateSwitch from './common/MultiStateSwitch';
+import TilterRatio from './common/TilterRatio';
 
 const MinterPage = () => {
 
@@ -53,10 +54,10 @@ const MinterPage = () => {
   const MintPanelLive = liveProps ? <MintPanel {...liveProps} /> : <div></div>
   return (
     <Container maxWidth={false} disableGutters>
-      <MultiStateSwitch />
+  
       <Grid container spacing={0} sx={{ backgroundColor: '#0D131A', width: '100vw', minHeight: '100vh', boxSizing: 'border-box' }}>
         <Grid item xs={false} sm={1} md={true} style={{ flexGrow: 1 }} />
-        <Grid item xs={12} sm={10} md={false} style={{ maxWidth: 1280, flexBasis: 1280 }}>
+        <Grid item xs={12} sm={10} md={false} style={{ maxWidth: 1400, flexBasis: 1400 }}>
           <Box id="box" sx={{ minHeight: '100%', width: '100%', color: 'white', padding: 4, backgroundColor: '#0D131A', boxSizing: 'border-box' }}>
             <Grid
               container
@@ -76,7 +77,7 @@ const MinterPage = () => {
                   justifyContent="space-between"
                   alignItems="top"
                 >
-                  <Grid item sx={{ width: '750px' }}>
+                  <Grid item sx={{ width: '850px' }}>
 
                     {AssetListLive}
                   </Grid>

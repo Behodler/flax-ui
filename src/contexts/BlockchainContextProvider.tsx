@@ -46,7 +46,7 @@ interface BlockchainContextType {
 const BlockchainContext = createContext<BlockchainContextType>({
     chainId: ChainID.disconnected, contracts: {} as any, account: "0x0", selectedAssetId: '', flxDollarPrice: BigNumber.from('100000000000000000'),
     setFlxDollarPrice: (price: BigNumber) => { },
-    setSelectedAssetId: (id: string) => { }, dynamicTokenInfo:undefined, daiPriceOfEth: undefined,
+    setSelectedAssetId: (id: string) => { }, dynamicTokenInfo: undefined, daiPriceOfEth: undefined,
     tokenLockupConfig: defaultLockup, refreshMultiCalls: () => { }
 });
 
@@ -70,8 +70,7 @@ export const BlockchainContextProvider: React.FC<BlockchainProviderProps> = ({ c
     const [tokenLockupConfig, setTokenLockupConfig] = useState<TokenLockupConfig>(defaultLockup)
     const contracts = useContracts(addresses);
     const [refresh, setRefresh] = useState<boolean>(false)
-
-    const dynamicTokenInfo = useDynamicTokenInfo(contracts, account, addresses?.Inputs, refresh)
+    const dynamicTokenInfo = useDynamicTokenInfo(contracts, account, addresses, refresh)
 
     useEffect(() => {
         if (contracts && contracts.issuer) {
@@ -118,11 +117,11 @@ export const BlockchainContextProvider: React.FC<BlockchainProviderProps> = ({ c
 
         getChainIdFromMetamask();
         ethWindow.ethereum?.on('chainChanged', handleChainChanged);
-        ethWindow.ethereum?.on('accountsChanged',handleChainChanged)
+        ethWindow.ethereum?.on('accountsChanged', handleChainChanged)
         return () => {
             ethWindow.ethereum?.removeListener('chainChanged', handleChainChanged);
             ethWindow.ethereum?.removeListener('accountsChanged', handleChainChanged);
-            
+
         };
     }, [active, account, ethWindow.ethereum]);
 

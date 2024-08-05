@@ -1,6 +1,8 @@
 import { acceptableImages } from "../extensions/ImageMapper";
 
-export type TokenCategory = 'Behodler' | 'Blue Chip'
+export type TokenCategory = 'Behodler' | 'BlueChip' | 'LP' |'PyroToken'
+
+
 
 export interface AMM {
     location: "uni" | "behodler"

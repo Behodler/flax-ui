@@ -32,28 +32,16 @@
             ]
         },
         {
-            "address": "0x6dF6B57FB7c35D7C71395F77cb08b82A62635e19",
-            "image": "flaxEth",
-            "friendlyName": "Flax/Eth LP (Uni-V2)",
-            "category":"Behodler",
-            "AMMs": [
-                {
-                    "location": "uni",
-                    "type": "LP",
-                    "url": "add/v2/ETH/0x0cf758D4303295C43CD95e1232f0101ADb3DA9E8"
-                },
-                {
-                    "location": "uni",
-                    "type": "base",
-                    "url": "#/swap?inputCurrency=ETH&outputCurrency=0x0cf758D4303295C43CD95e1232f0101ADb3DA9E8"
-                }
-            ]
+            "address":"0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+            "image":"eth",
+            "category":"BlueChip",
+            "friendlyName":"Ether"
         },
         {
             "address": "0xf047ee812b21050186f86106f6cabdfec35366c6",
             "image": "scxEye",
             "friendlyName": "SCX/EYE LP (Uni-V2)",
-            "category":"Behodler",
+            "category":"LP",
             "AMMs": [
                 {
                     "location": "uni",
@@ -66,7 +54,7 @@
             "address": "0x0287120f9b7d8709b4dD5b589Ae759F79fD34E62",
             "image": "pyroScxEye",
             "friendlyName": "Pyro(SCX/EYE)",
-            "category":"Behodler",
+            "category":"PyroToken",
             "AMMs": [
                 {
                     "location": "behodler",
@@ -79,7 +67,7 @@
             "address": "0x319ead06eb01e808c80c7eb9bd77c5d8d163addb",
             "image": "scxEth",
             "friendlyName": "SCX/ETH LP (Uni-V2)",
-            "category":"Behodler",
+            "category":"LP",
             "AMMs": [
                 {
                     "location": "uni",
@@ -92,7 +80,7 @@
             "address": "0xa9EEA8723FffD923F6908586455411159B525d23",
             "image": "pyroScxEth",
             "friendlyName": "Pyro (SCX/ETH)",
-            "category":"Behodler",
+            "category":"PyroToken",
             "AMMs": [
                 {
                     "location": "behodler",
@@ -138,7 +126,7 @@
             "address": "0x0b48af34f4c854f5ae1a3d587da471fea45bad52",
             "image": "scxEye",
             "friendlyName": "SCX/EYE LP (Uni-V2)",
-            "category":"Behodler",
+            "category":"LP",
             "AMMs": [
                 {
                     "location": "uni",
@@ -151,7 +139,7 @@
             "address": "0x90118d110b07abb82ba8980d1c5cc96eea810d2c",
             "image": "pyroScxEth",
             "friendlyName": "Pyro (SCX/ETH)",
-            "category":"Behodler",
+            "category":"PyroToken",
             "AMMs": [
                 {
                     "location": "behodler",
@@ -159,6 +147,12 @@
                     "url": "https://app.behodler.io/"
                 }
             ]
+        },
+        {
+            "address":"0xed17543171c1459714cdc6519b58ffcc29a3c3c9",
+            "image":"eth",
+            "category":"BlueChip",
+            "friendlyName":"Ether"
         }
     ],
     "11155111": [
@@ -197,7 +191,7 @@
             "address": "0xdA479c034876Ee72105a7E536d9077d0b18A68a5",
             "image": "scxEye",
             "friendlyName": "SCX/EYE LP (Uni-V2)",
-            "category":"Behodler",
+            "category":"LP",
             "AMMs": [
                 {
                     "location": "uni",
@@ -210,7 +204,7 @@
             "address": "0x1070a8B8E83A58856F6a21682868eAf0dc09e6C3",
             "image": "scxEth",
             "friendlyName": "SCX/ETH LP (Uni-V2)",
-            "category":"Behodler",
+            "category":"LP",
             "AMMs": [
                 {
                     "location": "uni",

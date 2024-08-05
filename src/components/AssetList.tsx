@@ -13,6 +13,7 @@ import { TransactionProgress } from '../extensions/Broadcast';
 import sortAsc from "../images/sortAscending.svg"
 import sortDesc from '../images/sortDescending.svg'
 import _ from 'lodash';
+import MultiStateSwitch from './common/MultiStateSwitch';
 const assetList = assetJSON as Assets
 type Dictionary = {
     [key: string]: number;
@@ -74,9 +75,11 @@ const AssetList = (props: LiveProps) => {
         marginTop: '100px'
     });
 
+    const categories = [{ text: 'Blue Chip', value: 'BlueChip' }, { text: 'Behodler', value: 'Behodler' }, { text: 'LPs', value: 'LP' }, { text: 'PyroTokens', value: 'PyroToken' }]
+    const [filterCategories, setFilterCategories] = useState<string[]>([])
 
     return <Paper style={{ padding: '20px', backgroundColor: '#1D2833', color: 'white', minHeight: "500px" }}>
-
+        <MultiStateSwitch categories={categories} selectedVals={filterCategories} setSelectedVal={setFilterCategories} />
         <List>
             <ListItem >
                 <Grid container wrap="nowrap" alignItems="center" spacing={2}>
@@ -98,7 +101,7 @@ const AssetList = (props: LiveProps) => {
                             <Grid item style={{ width: "30px" }} >
 
                             </Grid>
-                            <Grid item style={{ width: "110px" }}>
+                            <Grid item style={{ width: "150px" }}>
 
                                 <Grid
                                     container
@@ -125,8 +128,8 @@ const AssetList = (props: LiveProps) => {
                     </Grid>
                 </Grid>
             </ListItem>
-            {assets.sort(sortAlgorithm).map((asset, index) => (
-                <Asset APY={assetAPYs[asset.address]} setAPY={updateDictionary(asset.address)} contracts={props.contracts} key={asset.address}>
+            {assets.filter(asset=>filterCategories.length==0|| filterCategories.findIndex(c=>asset.category==c)!==-1).sort(sortAlgorithm).map((asset, index) => (
+                <Asset tempFunny={index == 2} APY={assetAPYs[asset.address]} setAPY={updateDictionary(asset.address)} contracts={props.contracts} key={asset.address}>
                     {asset}
                 </Asset>
             ))}
