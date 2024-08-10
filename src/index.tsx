@@ -24,6 +24,8 @@ root.render(
     <DAppProvider config={config}>
       <BlockchainContextProvider>
         <App />
+        
+
       </BlockchainContextProvider>
     </DAppProvider>
 );

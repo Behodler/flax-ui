@@ -1,7 +1,7 @@
 import React, { ReactNode, createContext, useContext, useEffect, useState } from 'react';
 import { useEthers } from '@usedapp/core';
 import { ChainID, supportedChain } from '../types/ChainID'
-import { Coupon, ERC20, HedgeyAdapter, Issuer, Multicall3, Test, TestnetFaucet, TokenLockupPlans } from "../typechain/types/ethers";
+import { Coupon, ERC20, HedgeyAdapter, Issuer, Multicall3, Test, TestnetFaucet, TilterFactory, TokenLockupPlans, UniswapV2Factory, UniswapV2Router02 } from "../typechain/types/ethers";
 import useAddresses from '../hooks/useAddresses'; // Updated import for renamed hook
 import { useContracts } from '../hooks/useContracts';
 import { BigNumber } from 'ethers';
@@ -9,6 +9,7 @@ import _, { add } from 'lodash';
 import { getDaiPriceOfEth } from '../extensions/Uniswap';
 import { useProvider } from '../hooks/useProvider';
 import { DynamicTokenInfo, useDynamicTokenInfo } from '../hooks/useDynamicTokenInfo';
+import { isTiltingTokenFactory } from '../extensions/Utils';
 // import { useMultipleTokenBalances } from '../hooks/useMultipleTokenBalances';
 
 
@@ -17,6 +18,9 @@ export interface Contracts {
     issuer: Issuer;
     inputs: ERC20[];
     hedgey: HedgeyAdapter
+    uniswapRouter: UniswapV2Router02,
+    uniswapFactory: UniswapV2Factory
+    tilterFactory: TilterFactory
     tokenLockup: TokenLockupPlans
     multicall3: Multicall3
     faucet?: TestnetFaucet
@@ -29,6 +33,9 @@ export interface TokenLockupConfig {
 }
 
 const defaultLockup: TokenLockupConfig = { threshold_size: 0, days_multiple: 0, offset: 0 }
+const defaultIsEth = (token: string) => false
+const defaultIsTiltingToken = defaultIsEth
+
 interface BlockchainContextType {
     chainId: ChainID;
     contracts: Contracts | undefined;
@@ -41,13 +48,15 @@ interface BlockchainContextType {
     daiPriceOfEth: BigNumber | undefined
     tokenLockupConfig: TokenLockupConfig,
     refreshMultiCalls: () => void
+    isEth: (token: string) => boolean
+    isTiltingToken: (token: string) => boolean
 }
 
 const BlockchainContext = createContext<BlockchainContextType>({
     chainId: ChainID.disconnected, contracts: {} as any, account: "0x0", selectedAssetId: '', flxDollarPrice: BigNumber.from('100000000000000000'),
     setFlxDollarPrice: (price: BigNumber) => { },
     setSelectedAssetId: (id: string) => { }, dynamicTokenInfo: undefined, daiPriceOfEth: undefined,
-    tokenLockupConfig: defaultLockup, refreshMultiCalls: () => { }
+    tokenLockupConfig: defaultLockup, refreshMultiCalls: () => { }, isEth: defaultIsEth, isTiltingToken: defaultIsTiltingToken
 });
 
 interface BlockchainProviderProps {
@@ -69,7 +78,9 @@ export const BlockchainContextProvider: React.FC<BlockchainProviderProps> = ({ c
     const [flxDollarPrice, setFlxDollarPrice] = useState<BigNumber>(BigNumber.from('100000000000000000'))
     const [tokenLockupConfig, setTokenLockupConfig] = useState<TokenLockupConfig>(defaultLockup)
     const contracts = useContracts(addresses);
-    const [refresh, setRefresh] = useState<boolean>(false)
+    const [refresh, setRefresh] = useState<number>(0) //TODO:possibly default this to true
+
+    const isTiltingToken = isTiltingTokenFactory(derivedChainId)
     const dynamicTokenInfo = useDynamicTokenInfo(contracts, account, addresses, refresh)
 
     useEffect(() => {
@@ -150,7 +161,9 @@ export const BlockchainContextProvider: React.FC<BlockchainProviderProps> = ({ c
             setFlxDollarPrice,
             daiPriceOfEth,
             tokenLockupConfig,
-            refreshMultiCalls: () => { setRefresh(true) }
+            refreshMultiCalls: () => { console.log('Refreshed at ' + Date()); setTimeout(() => setRefresh(refresh + 1), 4000) },
+            isEth: addresses ? (token: string) => token === addresses.Weth : defaultIsEth,
+            isTiltingToken
         }}>
             {children}
         </BlockchainContext.Provider>

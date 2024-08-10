@@ -1,6 +1,6 @@
 import { acceptableImages } from "../extensions/ImageMapper";
 
-export type TokenCategory = 'Behodler' | 'BlueChip' | 'LP' |'PyroToken'
+export type TokenCategory = 'Behodler' | 'BlueChip' | 'LP' |'PyroToken'|'Meme'
 
 
 

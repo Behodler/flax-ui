@@ -25,7 +25,7 @@ const validateMintText = (text: string) => {
 export default function MintPanel(props: LiveProps) {
     const [inputBalance, setInputBalance] = useState<BigNumber>();
     const { contracts, account, chainId } = props
-    const { selectedAssetId, dynamicTokenInfo, flxDollarPrice, daiPriceOfEth, tokenLockupConfig } = useBlockchainContext()
+    const { selectedAssetId, dynamicTokenInfo, flxDollarPrice, daiPriceOfEth, tokenLockupConfig, isEth } = useBlockchainContext()
     const blockNumber = useBlockNumber()
     const [asset, setAsset] = useState<AssetProps>()
     const [token, setToken] = useState<ERC20>()
@@ -63,7 +63,7 @@ export default function MintPanel(props: LiveProps) {
 
     useEffect(() => {
         if (mintProgress === TransactionProgress.confirmed) {
-            setMintText("")
+            setMintText("0")
             setFlaxToMint("")
         }
     }, [mintProgress])
@@ -123,7 +123,7 @@ export default function MintPanel(props: LiveProps) {
             const currentAssets = (assetJSON as Assets)[chainId]
             const selectedAsset = currentAssets.filter(asset => asset.address === selectedAssetId)[0]
             setAsset(selectedAsset)
-            setMintText("")
+            setMintText("0")
         }
     }, [selectedAssetId, chainId])
 
@@ -141,13 +141,20 @@ export default function MintPanel(props: LiveProps) {
     }, [asset])
 
     useEffect(() => {
-        if (token && validateMintText(mintText)) {
-            const getApproval = async () => {
-                const allowance = await token.allowance(account, contracts.issuer.address)
-                const mintWei = ethers.utils.parseUnits(mintText, 18)
-                setAssetApproved(allowance.gte(mintWei))
+        const effectiveMintText = mintText.trim()===""?"0":mintText
+        
+        if (token && validateMintText(effectiveMintText) ) {
+            if (isEth(token.address)) {
+                setAssetApproved(true)
+            } else {
+
+                const getApproval = async () => {
+                    const allowance = await token.allowance(account, contracts.issuer.address)
+                    const mintWei = ethers.utils.parseUnits(effectiveMintText, 18)
+                    setAssetApproved(allowance.gte(mintWei))
+                }
+                getApproval()
             }
-            getApproval()
         }
     }, [token, updateChecker, mintText])
 
@@ -197,7 +204,7 @@ export default function MintPanel(props: LiveProps) {
                                     alignItems="center">
                                     <Grid item>
                                         <TransactionButton toastyEnabled={true} progressSetter={setMintProgress} progress={mintProgress} invalid={invalidReason.length > 0} transactionGetter={() => contracts.issuer.issue(token.address, ethers.utils.parseEther(mintText).toString(), account)} >
-                                            Mint {flaxToMint !== "" ? parseFloat(flaxToMint).toFixed(2) : ""} Flax {mintDai && mintDai !== "" ? '($' + mintDai + ')' : ''}
+                                            Mint {flaxToMint !== "" ? parseFloat(flaxToMint).toFixed(4) : ""} Flax {mintDai && mintDai !== "" ? '($' + mintDai + ')' : ''}
                                         </TransactionButton>
                                     </Grid>
                                     <Grid item>

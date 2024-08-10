@@ -75,7 +75,7 @@ const AssetList = (props: LiveProps) => {
         marginTop: '100px'
     });
 
-    const categories = [{ text: 'Blue Chip', value: 'BlueChip' }, { text: 'Behodler', value: 'Behodler' }, { text: 'LPs', value: 'LP' }, { text: 'PyroTokens', value: 'PyroToken' }]
+    const categories = [{ text: 'Blue Chip', value: 'BlueChip' },{text:'Meme',value:'Meme'}, { text: 'Behodler', value: 'Behodler' }, { text: 'LPs', value: 'LP' }, { text: 'PyroTokens', value: 'PyroToken' }]
     const [filterCategories, setFilterCategories] = useState<string[]>([])
 
     return <Paper style={{ padding: '20px', backgroundColor: '#1D2833', color: 'white', minHeight: "500px" }}>

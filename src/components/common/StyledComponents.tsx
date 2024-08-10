@@ -9,7 +9,7 @@ const StyledToggleButtonGroup = styled(ToggleButtonGroup)(({ theme }) => ({
   backgroundColor: theme.palette.background.default,
   borderRadius: "14px",
   padding: "1px",
-  width: "400px",
+  width: "500px",
   display: "flex",
   justifyContent: "space-between",
   marginBottom: "10px",

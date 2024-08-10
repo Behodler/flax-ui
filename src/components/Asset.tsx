@@ -61,10 +61,11 @@ export function Asset(props: IProps) {
     const [inputDollarPrice, setInputDollarPrice] = useState<string | undefined>()
     const ethProvider = useProvider();
 
-    useEffect(() => {
+    useDeepCompareEffect(() => {
         if (inputDollarPrice && flxValue) {
             const inputDollarFloat = parseFloat(inputDollarPrice)
             const flxDollar = parseFloat(flxValue)
+
             if (isNaN(inputDollarFloat) || isNaN(flxDollar)) {
                 props.setAPY(0)
             } else {
@@ -76,7 +77,7 @@ export function Asset(props: IProps) {
         } else {
             props.setAPY(0)
         }
-    }, [inputDollarPrice, flxValue])
+    }, [inputDollarPrice, flxValue, dynamicTokenInfo])
 
     useEffect(() => {
         if (ethProvider && chainId === ChainID.mainnet) {
@@ -96,7 +97,7 @@ export function Asset(props: IProps) {
                 fetchDaiPrice();
         }
 
-    }, [blockNumber, chainId, ethProvider, selectedAssetId])
+    }, [blockNumber, chainId, ethProvider, selectedAssetId, daiPriceOfEth])
 
     useDeepCompareEffect(() => {
         if (dynamicTokenInfo && dynamicTokenInfo[props.children.address]) {
@@ -117,17 +118,25 @@ export function Asset(props: IProps) {
 
     const image = <img src={imagePath.default || imagePath} style={{ height: '40px', borderRadius: "25px" }} />
     const ammLinks = asset.AMMs?.map((amm, index) => getAMMLink(amm, index))
-    let burnableImage = <></>
-    let mintPrice = ""
-    if (selectedDynamic !== undefined) {
-        const burnMessage = `Deposit ${selectedDynamic.burnable ? "burnt" : "permanently locked"} on Flax minting`
-        const burnSource = selectedDynamic.burnable ? burn : lock
-        burnableImage = !props.tempFunny ? <Tooltip title={burnMessage}>
-            <img width="30px" src={burnSource} style={{ margin: "5px 0 0 0" }} />
-        </Tooltip> : <TilterRatio title="70% price tilt" />
-        mintPrice = TeraToString(selectedDynamic.teraCouponPerToken)
-    }
-    const mintMessage = `1 ${asset.friendlyName} mints ${mintPrice} Flax (\$${flxValue})`
+    const [burnableImage, setBurnableImage] = useState<React.ReactElement>(<></>)
+
+    const [mintPrice, setMintPrice] = useState<string>("")
+    const [burnMessage, setBurnMessage] = useState<string>("")
+    const [mintMessage, setMintMessage] = useState<string>(`1 ${asset.friendlyName} mints ${mintPrice} Flax (\$${flxValue})`)
+    useEffect(() => {
+        if (selectedDynamic) {
+            setBurnMessage(`Deposit ${selectedDynamic.burnable ? "burnt" : "permanently locked"} on Flax minting`)
+            setMintPrice(TeraToString(selectedDynamic.teraCouponPerToken))
+            const burnSource = selectedDynamic.burnable ? burn : lock
+            setBurnableImage(!props.tempFunny ? <Tooltip title={burnMessage}>
+                <img width="30px" src={burnSource} style={{ margin: "5px 0 0 0" }} />
+            </Tooltip> : <TilterRatio title="70% price tilt" />)
+            setMintMessage(`1 ${asset.friendlyName} mints ${mintPrice} Flax (\$${flxValue})`)
+        }
+    }, [selectedDynamic])
+
+    const APYtext = props.APY === 0 ? '--.- ' : props.APY.toFixed(4);
+
     //carry on here
     return <ListItem
         key={asset.address}
@@ -214,8 +223,8 @@ export function Asset(props: IProps) {
                         </Grid>
                         <Grid item style={{ width: "70px" }}>
 
-                            {props.APY > 0 ? <Typography style={{ textAlign: "right", color: "forestgreen" }} variant={"h3"}>{props.APY.toFixed(2)}%</Typography> :
-                                <Typography style={{ textAlign: "right", color: "red" }} variant={"h3"}>{props.APY.toFixed(2)}%</Typography>}
+                            {props.APY > 0 ? <Typography style={{ textAlign: "right", color: "forestgreen" }} variant={"h3"}>{APYtext}%</Typography> :
+                                <Typography style={{ textAlign: "right", color: "red" }} variant={"h3"}>{APYtext}%</Typography>}
 
                         </Grid>
                     </Grid>

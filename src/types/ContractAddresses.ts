@@ -4,7 +4,9 @@ export interface ContractAddresses {
     Multicall:string
     Inputs: string[];
     HedgeyAdapter:string
+    UniswapV2Router:string
     Weth:string,
+    TilterFactory:string
     Faucet?:string
     Multicall3:string
 }
