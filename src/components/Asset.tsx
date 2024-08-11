@@ -9,6 +9,7 @@ import { useBlockNumber, useTokenBalance } from '@usedapp/core';
 import { BigNumber, ethers } from 'ethers';
 import behodler from "../images/behodler.png"
 import uniswap from "../images/uniswap.png"
+import shibaswap from "../images/shibaswap.png"
 import { AMM, AssetProps } from '../types/Assets';
 import { useDeepCompareEffect } from '../hooks/useDeepCompareEffect';
 import { TeraToString } from '../extensions/Utils';
@@ -18,31 +19,42 @@ import { useProvider } from '../hooks/useProvider';
 import { ChainID } from '../types/ChainID';
 import TilterRatio from './common/TilterRatio';
 
-
-
-const baseAMMURL = (amm: AMM) => {
-    const isUni = amm.type == "LP" || amm.location == "uni"
-    let domain = isUni ? "https://app.uniswap.org/" : "https://app.behodler.io/"
-    if (!isUni) {
-        let page = amm.type === "pyro" ? "pyrotokens" : "swap"
-        return { url: domain + page, isUni: false }
+enum swapperType {
+    behoder,
+    uni,
+    shib
+}
+const baseAMMURL = (amm: AMM): { swapper: swapperType, url: string } => {
+    let swapper: swapperType = swapperType.behoder
+    let url: string = ""
+    if (amm.location === 'shiba') {
+        url = 'https://shibaswap.com/'
+        swapper = swapperType.shib
     }
-    return { url: domain + amm.url, isUni }
+    else if (amm.location === 'uni') {
+        url = 'https://app.uniswap.org/'
+        swapper = swapperType.uni
+    }
+    else {
+        url = 'https://app.behodler.io/pyro'
+        swapper = swapperType.behoder
+    }
+    url += amm.url
+    return { swapper, url }
 }
 
 
 const getAMMLink = (amm: AMM, muiKey: number) => {
-    const { url, isUni } = baseAMMURL(amm)
+    const { swapper, url } = baseAMMURL(amm)
     const buyPhrase = amm.type === "LP" || amm.type === "pyro" ? "Mint on " : "Buy from ";
-    const title = buyPhrase + (isUni ? "Uniswap" : "Behodler")
-    return <Tooltip key={muiKey} title={title}><img width="30px" src={isUni ? uniswap : behodler} style={{ margin: "0 5px 0 0" }} onClick={() => window.open(url, "_blank")} />
+    const title = buyPhrase + (swapper === swapperType.uni ? "Uniswap" : (swapper === swapperType.behoder ? "Behodler" : "Shibaswap"))
+    return <Tooltip key={muiKey} title={title}><img width="30px" src={swapper === swapperType.uni ? uniswap : (swapper === swapperType.behoder ? behodler : shibaswap)} style={{ margin: "0 5px 0 0" }} onClick={() => window.open(url, "_blank")} />
     </Tooltip>
 }
 interface IProps {
     contracts: Contracts
     children: AssetProps
     APY: number,
-    tempFunny: boolean
     setAPY: (apy: number) => void
 }
 export function Asset(props: IProps) {
@@ -128,7 +140,8 @@ export function Asset(props: IProps) {
             setBurnMessage(`Deposit ${selectedDynamic.burnable ? "burnt" : "permanently locked"} on Flax minting`)
             setMintPrice(TeraToString(selectedDynamic.teraCouponPerToken))
             const burnSource = selectedDynamic.burnable ? burn : lock
-            setBurnableImage(!props.tempFunny ? <Tooltip title={burnMessage}>
+            const tilting = selectedDynamic.issuerToApprove!==contracts.issuer.address
+            setBurnableImage(!tilting ? <Tooltip title={burnMessage}>
                 <img width="30px" src={burnSource} style={{ margin: "5px 0 0 0" }} />
             </Tooltip> : <TilterRatio title="70% price tilt" />)
             setMintMessage(`1 ${asset.friendlyName} mints ${mintPrice} Flax (\$${flxValue})`)

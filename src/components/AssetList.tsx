@@ -75,7 +75,7 @@ const AssetList = (props: LiveProps) => {
         marginTop: '100px'
     });
 
-    const categories = [{ text: 'Blue Chip', value: 'BlueChip' },{text:'Meme',value:'Meme'}, { text: 'Behodler', value: 'Behodler' }, { text: 'LPs', value: 'LP' }, { text: 'PyroTokens', value: 'PyroToken' }]
+    const categories = [{ text: 'Blue Chip', value: 'BlueChip' },{text:'Meme',value:'Meme'},{text:'Governance',value:'Governance'}, { text: 'Behodler', value: 'Behodler' }, { text: 'LPs', value: 'LP' }, { text: 'PyroTokens', value: 'PyroToken' }]
     const [filterCategories, setFilterCategories] = useState<string[]>([])
 
     return <Paper style={{ padding: '20px', backgroundColor: '#1D2833', color: 'white', minHeight: "500px" }}>
@@ -129,7 +129,7 @@ const AssetList = (props: LiveProps) => {
                 </Grid>
             </ListItem>
             {assets.filter(asset=>filterCategories.length==0|| filterCategories.findIndex(c=>asset.category==c)!==-1).sort(sortAlgorithm).map((asset, index) => (
-                <Asset tempFunny={index == 2} APY={assetAPYs[asset.address]} setAPY={updateDictionary(asset.address)} contracts={props.contracts} key={asset.address}>
+                <Asset APY={assetAPYs[asset.address]} setAPY={updateDictionary(asset.address)} contracts={props.contracts} key={asset.address}>
                     {asset}
                 </Asset>
             ))}

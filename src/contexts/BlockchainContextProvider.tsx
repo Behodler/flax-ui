@@ -161,7 +161,7 @@ export const BlockchainContextProvider: React.FC<BlockchainProviderProps> = ({ c
             setFlxDollarPrice,
             daiPriceOfEth,
             tokenLockupConfig,
-            refreshMultiCalls: () => { console.log('Refreshed at ' + Date()); setTimeout(() => setRefresh(refresh + 1), 4000) },
+            refreshMultiCalls: () => { console.log('Refreshed at ' + Date()); setTimeout(() => setRefresh(refresh + 1), 10000) },
             isEth: addresses ? (token: string) => token === addresses.Weth : defaultIsEth,
             isTiltingToken
         }}>

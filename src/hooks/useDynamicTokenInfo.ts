@@ -1,6 +1,6 @@
 import { multicall, useBlockNumber, useContractFunction, useEtherBalance, useEthers } from '@usedapp/core';
 import { Issuer, Multicall3, Tilter, TilterFactory } from "../typechain/types/ethers";  // Import TypeChain-generated type
-import { ethers, Contract, BigNumber } from 'ethers';
+import { ethers, Contract, BigNumber, Overrides, PayableOverrides } from 'ethers';
 import ABIs from "../constants/ABIs.json"
 import { Contracts, useBlockchainContext } from '../contexts/BlockchainContextProvider';
 import { ContractAddresses } from '../types/ContractAddresses';
@@ -28,6 +28,7 @@ interface TokenInfoFlat extends TokenInfo {
 interface TokenFeatures extends TokenInfo {
     currentPrice: BigNumber,
     issue: (inputToken: string, amount: BigNumber, recipient: string) => Promise<any>
+    issuerToApprove:string
 }
 
 interface TokenFeatureMap {
@@ -167,11 +168,10 @@ const useTokenInfo = (contracts: Contracts | undefined, priceMultiples: TokenTil
     const [updateStalePrice, setUpdateStalePrice] = useState<number>(0)
     const [lastBlockUpdated, setLastBlockUpdated] = useState<number>(0)
     useEffect(() => {
-        console.log('block: ' + blockNumber)
         if (blockNumber && blockNumber - lastBlockUpdated > 50) {
             setUpdateStalePrice(updateStalePrice + 1)
             setLastBlockUpdated(blockNumber)
-            console.log('updating stale price')
+            console.log(`Block ${blockNumber}: updating stale price`)
         }
     }, [blockNumber])
 
@@ -225,7 +225,6 @@ const useMultiTokenInfo = (contracts: Contracts | undefined,
     //1 ether for non tilters
     const priceMultiple: TokenTilterPair[] | undefined = usePriceMultiples(contracts, inputTilterReferencePairs);
     const tokenInfoFlat: TokenInfoFlat[] | undefined = useTokenInfo(contracts, priceMultiple, blockNumber || 0);
-    const [update, setUpdate] = useState<boolean>(false)
 
     useEffect(() => {
 
@@ -240,13 +239,16 @@ const useMultiTokenInfo = (contracts: Contracts | undefined,
                     throw "UI error: useDynamicTokenInfo algorithm should have eliminated nulls"
                 const newTera = t.teraCouponPerTokenPerSecond.mul(matchingPriceMultiple.priceMultiple).div(ONE)
                 const { burnable, enabled, lastminted_timestamp } = t
+                const issuer = matchingPriceMultiple.tilter===undefined?contracts.issuer:matchingPriceMultiple.tilter
+
                 let feature: TokenFeatures = {
                     currentPrice: BigNumber.from(0),
                     burnable,
                     enabled,
                     lastminted_timestamp,
                     teraCouponPerTokenPerSecond: newTera,
-                    issue: matchingPriceMultiple.tilter === undefined ? contracts.issuer.issue : matchingPriceMultiple.tilter.issue
+                    issue: issuer.issue,
+                    issuerToApprove:issuer.address
                 }
                 const currentPrice = getPrice(feature)
                 feature.currentPrice = currentPrice
@@ -322,9 +324,9 @@ const useMultiTokenBalances = (multicall3: Multicall3 | undefined, holder: strin
                             acc[current.address] = current.balance;
                             return acc;
                         }, {} as Record<string, BigNumber>))
-                    if (wethless.length < tokens.length) {
+                 //   if (wethless.length < tokens.length) {
                         tokenBalances[weth] = ethBalance
-                    }
+                   // }
 
                     setBalances(tokenBalances)
 
@@ -338,11 +340,16 @@ const useMultiTokenBalances = (multicall3: Multicall3 | undefined, holder: strin
     return balances;
 };
 
+export interface IssueSignature {
+    (inputToken: string, amount: BigNumber, recipient: string, overrides?: PayableOverrides & { from?: string }): Promise<any>
+}
 
 export interface DynamicTokenInfo {
     balance: BigNumber
     burnable: boolean
     teraCouponPerToken: BigNumber
+    issue: IssueSignature,
+    issuerToApprove:string
 }
 type DynamicInfoMap = Record<string, DynamicTokenInfo>
 export const useDynamicTokenInfo = (contracts: Contracts | undefined, account: string | undefined, addresses: OptionalAddresses, refresh: number): DynamicInfoMap | undefined => {
@@ -359,7 +366,9 @@ export const useDynamicTokenInfo = (contracts: Contracts | undefined, account: s
                 const info: DynamicTokenInfo = {
                     balance: balances[token],
                     burnable: tokenInfo[token].burnable,
-                    teraCouponPerToken: tokenInfo[token].currentPrice
+                    teraCouponPerToken: tokenInfo[token].currentPrice,
+                    issue: tokenInfo[token].issue,
+                    issuerToApprove:tokenInfo[token].issuerToApprove
                 }
                 return { token, info }
             }).reduce((acc, current) => {

@@ -4,17 +4,11 @@ import BalanceHeader
   from './BalanceHeader';
 import AssetList from './AssetList';
 import MintPanel from './MintPanel';
-import { BigNumber } from 'ethers';
-import { useBlockNumber } from '@usedapp/core';
 import { useBlockchainContext } from '../contexts/BlockchainContextProvider';
 import { LiveProps } from '../extensions/LiveProps';
 import { ChainID, supportedChain } from '../types/ChainID';
-import MultiStateSwitch from './common/MultiStateSwitch';
-import TilterRatio from './common/TilterRatio';
 
 const MinterPage = () => {
-
-  const blockNumber = useBlockNumber()
   const { contracts, chainId, account } = useBlockchainContext()
   const [liveProps, setLiveProps] = useState<LiveProps | undefined>()
   const [loadingMessage, setLoadingMessage] = useState<string>("")

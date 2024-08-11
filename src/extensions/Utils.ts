@@ -29,12 +29,12 @@ export const isTiltingTokenFactory = (chainId: ChainID) => (address: string): bo
         return false
     const assets = assetList as Assets
     const chain = assets[chainId]
-    if(!chain)
+    if (!chain)
         return false
 
     const asset = chain.find(asset => asset.address === address) as AssetProps
     if (asset) {
-        return asset.category === 'BlueChip'
+        return asset.category === 'BlueChip' || asset.category === 'Meme'
     }
     return false
 }

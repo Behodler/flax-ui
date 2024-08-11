@@ -1,11 +1,14 @@
 {
     "eye": "eye.png",
     "flax": "FlaxSmall.png",
-    "scxEth":"scx-eth.png",
-    "flaxEth":"flax-eth.png",
+    "scxEth": "scx-eth.png",
+    "flaxEth": "flax-eth.png",
     "pyroScxEth": "pyro-scx-eth.png",
     "scx": "scarcity.png",
     "scxEye": "scx-eye.png",
-    "pyroScxEye":"pyro-scx-eye.png",
-    "eth":"ether.png"
+    "pyroScxEye": "pyro-scx-eye.png",
+    "eth": "ether.png",
+    "shiba": "shibaInu.png",
+    "uni": "uniToken.png",
+    "shipaswap":"shibaswap.png"
 }

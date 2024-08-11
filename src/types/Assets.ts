@@ -5,7 +5,7 @@ export type TokenCategory = 'Behodler' | 'BlueChip' | 'LP' |'PyroToken'|'Meme'
 
 
 export interface AMM {
-    location: "uni" | "behodler"
+    location: "uni" | "behodler"|'shiba'
     type: "base" | "LP" | "pyro",
     url: string
 }

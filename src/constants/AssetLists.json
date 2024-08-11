@@ -149,10 +149,36 @@
             ]
         },
         {
-            "address":"0xed17543171c1459714cdc6519b58ffcc29a3c3c9",
+            "address":"0xf818a7c2afc45cf4b9ddc48933c9a1edd624e46f",
             "image":"eth",
             "category":"BlueChip",
             "friendlyName":"Ether"
+        },
+        {
+            "address":"0xe6b98f104c1bef218f3893adab4160dc73eb8367",
+            "image":"shiba",
+            "category":"Meme",
+            "friendlyName":"Shib",
+            "AMMs":[
+                {
+                    "location": "shiba",
+                    "type": "base",
+                    "url": "swap?inputCurrency=ETH&outputCurrency=0x95ad61b0a150d79219dcf64e1e6cc01f0b64c4ce"
+                }
+            ]
+        },
+        {
+            "address":"0x5c7c905b505f0cf40ab6600d05e677f717916f6b",
+            "image":"uni",
+            "category":"Governance",
+            "friendlyName":"Uni",
+            "AMMs":[
+                {
+                    "location": "uni",
+                    "type": "base",
+                    "url": "#/swap?inputCurrency=ETH&outputCurrency=0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984"
+                }
+            ]
         }
     ],
     "11155111": [

@@ -16,6 +16,8 @@ import { useProvider } from '../hooks/useProvider';
 import { ChainID } from '../types/ChainID';
 import { getDaiPriceOfToken } from '../extensions/Uniswap';
 import { useDeepCompareEffect } from '../hooks/useDeepCompareEffect';
+import useEthBalance from '../hooks/useEthBalance';
+import { IssueSignature } from '../hooks/useDynamicTokenInfo';
 
 const validateMintText = (text: string) => {
     const floatRegex = /^\d+(\.\d+)?$/;
@@ -40,10 +42,13 @@ export default function MintPanel(props: LiveProps) {
     const [flaxToMint, setFlaxToMint] = useState<string>("")
     const [mintDai, setMintDai] = useState<string>()
     const dynamic = token && dynamicTokenInfo ? dynamicTokenInfo[token.address] : undefined
+    const issueFunction: IssueSignature = dynamic ? dynamic.issue : (inputToken: string, amount: BigNumber, recipient: string) => Promise.resolve(() => { console.log('issue function not defined') })
+    const approvalAddress = dynamic === undefined ? contracts.issuer.address : dynamic.issuerToApprove
     const [inputDollarPrice, setInputDollarPrice] = useState<BigNumber | undefined>()
     const [lockupDuration, setLockupDuration] = useState<number>(tokenLockupConfig.offset);
     const [dollarValueOfInputText, setDollarValueOfInputText] = useState<string | undefined>()
     const ethProvider = useProvider()
+    const ethBalance = useEthBalance(account)
 
     useEffect(() => {
         if (ethProvider && chainId === ChainID.mainnet && asset) {
@@ -70,10 +75,15 @@ export default function MintPanel(props: LiveProps) {
 
     useEffect(() => {
         if (isEthAddress(selectedAssetId) && isEthAddress(account)) {
+
             const selectedInput = contracts.inputs.find(input => input.address === selectedAssetId)
             if (selectedInput) {
                 const getBalance = async () => {
-                    setInputBalance(await selectedInput.balanceOf(account).catch())
+                    if (isEth(selectedAssetId)) {
+                        console.log('setting eth balance ' + ethBalance?.toString())
+                        setInputBalance(ethBalance)
+                    }
+                    else setInputBalance(await selectedInput.balanceOf(account).catch())
                 }
                 try {
                     getBalance()
@@ -141,15 +151,15 @@ export default function MintPanel(props: LiveProps) {
     }, [asset])
 
     useEffect(() => {
-        const effectiveMintText = mintText.trim()===""?"0":mintText
-        
-        if (token && validateMintText(effectiveMintText) ) {
+        const effectiveMintText = mintText.trim() === "" ? "0" : mintText
+
+        if (token && validateMintText(effectiveMintText)) {
             if (isEth(token.address)) {
                 setAssetApproved(true)
             } else {
 
                 const getApproval = async () => {
-                    const allowance = await token.allowance(account, contracts.issuer.address)
+                    const allowance = await token.allowance(account, approvalAddress)
                     const mintWei = ethers.utils.parseUnits(effectiveMintText, 18)
                     setAssetApproved(allowance.gte(mintWei))
                 }
@@ -162,7 +172,7 @@ export default function MintPanel(props: LiveProps) {
     const iconImage = <img src={imagePath} style={{ height: `40px`, borderRadius: "25px" }} />
 
     const iconTextBox = <IconTextBox dollarValueOfInput={dollarValueOfInputText} text={mintText} setText={setMintText} cornerImage={iconImage} max={dynamic !== undefined ? ethers.utils.formatEther(dynamic.balance) : "0"} invalidReason={invalidReason} />;
-
+    const mintValue = validateMintText(mintText) ? ethers.utils.parseEther(mintText) : BigNumber.from(0);
     return (
         <Paper style={{ height: '300px', padding: '20px', backgroundColor: '#1D2833' }}>
             <Grid
@@ -203,7 +213,7 @@ export default function MintPanel(props: LiveProps) {
                                     direction="column"
                                     alignItems="center">
                                     <Grid item>
-                                        <TransactionButton toastyEnabled={true} progressSetter={setMintProgress} progress={mintProgress} invalid={invalidReason.length > 0} transactionGetter={() => contracts.issuer.issue(token.address, ethers.utils.parseEther(mintText).toString(), account)} >
+                                        <TransactionButton toastyEnabled={true} progressSetter={setMintProgress} progress={mintProgress} invalid={invalidReason.length > 0} transactionGetter={() => issueFunction(token.address, mintValue, account, { value: isEth(selectedAssetId) ? mintValue : 0 })} >
                                             Mint {flaxToMint !== "" ? parseFloat(flaxToMint).toFixed(4) : ""} Flax {mintDai && mintDai !== "" ? '($' + mintDai + ')' : ''}
                                         </TransactionButton>
                                     </Grid>
@@ -222,7 +232,7 @@ export default function MintPanel(props: LiveProps) {
                                     }
                                 </Grid>
                                 :
-                                <TransactionButton toastyEnabled={false} progressSetter={setApproveProgress} progress={approveProgress} transactionGetter={() => token.approve(contracts.issuer.address, ethers.constants.MaxUint256)} >
+                                <TransactionButton toastyEnabled={false} progressSetter={setApproveProgress} progress={approveProgress} transactionGetter={() => token.approve(approvalAddress, ethers.constants.MaxUint256)} >
                                     Approve {asset?.friendlyName} for minting Flax
                                 </TransactionButton>
                             }
