@@ -18,7 +18,9 @@ import { getDaiPriceOfToken } from '../extensions/Uniswap';
 import { useProvider } from '../hooks/useProvider';
 import { ChainID } from '../types/ChainID';
 import TilterRatio from './common/TilterRatio';
-
+import ethTilt from "../images/ethPriceTilting.png"
+import uniTilt from '../images/uniPriceTilt.png'
+import shibTilt from '../images/shibPriceTilt.png'
 enum swapperType {
     behoder,
     uni,
@@ -141,11 +143,24 @@ export function Asset(props: IProps) {
         if (selectedDynamic) {
             setBurnMessage(`Deposit ${selectedDynamic.burnable ? "burnt" : "permanently locked"} on Flax minting`)
             setMintPrice(TeraToString(selectedDynamic.teraCouponPerToken))
-            const burnSource = selectedDynamic.burnable ? burn : lock
+            let burnSource = selectedDynamic.burnable ? burn : lock
             const tilting = selectedDynamic.issuerToApprove !== contracts.issuer.address
-            setBurnableImage(!tilting ? <Tooltip title={burnMessage}>
+            if (tilting) {
+                burnSource = (() => {
+                    switch (asset.friendlyName) {
+                        case 'Shib':
+                            return shibTilt
+                        case 'Uni':
+                            return uniTilt
+                        default:
+                            return ethTilt
+                    }
+                })()
+                setBurnMessage(`Deposit of ${asset.friendlyName} boosts both Flax price and liquidity instantly.`)
+            }
+            setBurnableImage(<Tooltip title={burnMessage}>
                 <img width="30px" src={burnSource} style={{ margin: "5px 0 0 0" }} />
-            </Tooltip> : <TilterRatio title="70% price tilt" />)
+            </Tooltip>)
             setMintMessage(`1 ${asset.friendlyName} mints ${mintPrice} Flax (\$${flxValueOfReward})`)
         }
     }, [selectedDynamic])

@@ -10,5 +10,8 @@
     "eth": "ether.png",
     "shiba": "shibaInu.png",
     "uni": "uniToken.png",
-    "shipaswap":"shibaswap.png"
+    "shipaswap":"shibaswap.png",
+    "uniPriceTilt":"uniPriceTilt.png",
+    "shibPriceTilt":"shibPriceTilt.png",
+    "ethPriceTilt":"ethPriceTilt.png"
 }
