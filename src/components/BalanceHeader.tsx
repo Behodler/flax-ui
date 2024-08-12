@@ -24,10 +24,10 @@ const BalanceHeader = (props: LiveProps) => {
     useEffect(() => {
         if (ethProvider && chainId === ChainID.mainnet) {
             const fetchDaiPrice = async () => {
-                const ethPrice = await getEthPrice('0x0cf758D4303295C43CD95e1232f0101ADb3DA9E8', ethProvider, [])
-                if (daiPriceOfEth && ethPrice) {
+                const ethPriceOfFLX = await getEthPrice('0x0cf758D4303295C43CD95e1232f0101ADb3DA9E8', ethProvider, [])
+                if (daiPriceOfEth && ethPriceOfFLX) {
 
-                    const daiPrice = daiPriceOfEth.mul(ethPrice).div(ethers.constants.WeiPerEther)
+                    const daiPrice = daiPriceOfEth.mul(ethPriceOfFLX).div(ethers.constants.WeiPerEther)
                     setFlxDollarPrice(daiPrice || BigNumber.from('0000000000000000'))
                     if (daiPrice) {
                         const formatted = parseFloat(ethers.utils.formatEther(daiPrice)).toFixed(2)
@@ -40,7 +40,7 @@ const BalanceHeader = (props: LiveProps) => {
             fetchDaiPrice();
         }
 
-    }, [blockNumber, chainId, ethProvider])
+    }, [blockNumber, chainId, ethProvider, daiPriceOfEth])
 
 
     useEffect(() => {

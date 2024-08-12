@@ -28,7 +28,7 @@ interface TokenInfoFlat extends TokenInfo {
 interface TokenFeatures extends TokenInfo {
     currentPrice: BigNumber,
     issue: (inputToken: string, amount: BigNumber, recipient: string) => Promise<any>
-    issuerToApprove:string
+    issuerToApprove: string
 }
 
 interface TokenFeatureMap {
@@ -46,7 +46,7 @@ interface TokenTilterPair {
 const getPrice = (info: TokenFeatures): BigNumber => {
     const currentTimestamp = Math.floor(Date.now());
     const milliSecondsElapsed = BigNumber.from(currentTimestamp).sub(info.lastminted_timestamp.mul(1000)).toNumber();
-    return info.teraCouponPerTokenPerSecond.mul(milliSecondsElapsed)
+    return info.teraCouponPerTokenPerSecond.mul(milliSecondsElapsed).div(1000)
 
 }
 
@@ -80,9 +80,12 @@ const useMultiTilterMapping = (contracts: Contracts | undefined, tokens: string[
                 })
                 setTokenTilterPairs(pairs)
                 setRefresh(false)
-            })()
+            })().catch(error => {
+                throw "In useMutiTilterMapping: " + error
+            })
         }
     }, [contracts, tokens, blockNumber, refreshCount])
+
 
     return tokenTilterPairs;
 }
@@ -119,7 +122,9 @@ const useReferencePair = (contracts: Contracts | undefined, tokenTilterPairs: To
                     }
                 })
                 setUniTokenTilterPairs(updateArray(tokenTilterPairs, mapping))
-            })()
+            })().catch(error => {
+                throw "In useREferencePair: " + error
+            })
         }
     }, [contracts, tokenTilterPairs])
     return uniTokenTilterPairs
@@ -133,14 +138,16 @@ const usePriceMultiples = (contracts: Contracts | undefined, inputTilterReferenc
     const [priceMultipleTokenTilterPairs, setPriceMultipleTokenTilterPairs] = useState<TokenTilterPair[] | undefined>(inputTilterReferencePairs)
     useDeepCompareEffect(() => {
         if (inputTilterReferencePairs && contracts) {
+            let tilterAddresses: string[]
             (async () => {
                 const filteredTokens = inputTilterReferencePairs
                     .filter((t): t is TokenTilterPairWithTilter => t.tilter !== undefined);
 
                 const calls = filteredTokens.map(t => ({
                     target: t.tilter.address,
-                    callData: t.tilter.interface.encodeFunctionData("refValueOfTilt", [ethers.constants.WeiPerEther, true])
+                    callData: t.tilter.interface.encodeFunctionData("refValueOfTilt", [ethers.constants.WeiPerEther, false])
                 }))
+                tilterAddresses = calls.map(c => c.target)
                 // try {
                 const { blockNumber, returnData } = await contracts.multicall3.callStatic.aggregate(calls)
                 const updatedMultiples = returnData.map((data, i) => {
@@ -157,7 +164,9 @@ const usePriceMultiples = (contracts: Contracts | undefined, inputTilterReferenc
                 const updatedFromOriginal = updateArray(inputTilterReferencePairs, updatedMultiples)
                 setPriceMultipleTokenTilterPairs(updatedFromOriginal)
                 // } catch { throw 'multi call fails on refValueOfTilt for calls ' + JSON.stringify(calls) }
-            })()
+            })().catch(error => {
+                throw `In usePriceMultiples: tilter addresses ${JSON.stringify(tilterAddresses, null, 4)}`
+            })
         }
     }, [contracts, inputTilterReferencePairs])
     return priceMultipleTokenTilterPairs
@@ -204,7 +213,9 @@ const useTokenInfo = (contracts: Contracts | undefined, priceMultiples: TokenTil
                     console.log('onchain prices fetched')
                     setFlatTokenInfo(flatInfo)
                 } catch { console.log('multicall failed on whitelist') }
-            })()
+            })().catch(error => {
+                throw "In useTokenInfo: " + error
+            })
         }
     }, [priceMultiples, updateStalePrice])
     return flatTokenInfo
@@ -217,7 +228,7 @@ const useMultiTokenInfo = (contracts: Contracts | undefined,
     const provider = useProvider()
     const [info, setInfo] = useState<TokenFeatureMap>()
     const blockNumber = useBlockNumber()
-    const [quarterSeconds, setQuarterSeconds] = useState(0);
+    const [halfSeconds, setHalfSeconds] = useState(0);
 
     const inputTilterPairs = useMultiTilterMapping(contracts, tokens, provider, refresh)
     const inputTilterReferencePairs = useReferencePair(contracts, inputTilterPairs);
@@ -226,7 +237,8 @@ const useMultiTokenInfo = (contracts: Contracts | undefined,
     const priceMultiple: TokenTilterPair[] | undefined = usePriceMultiples(contracts, inputTilterReferencePairs);
     const tokenInfoFlat: TokenInfoFlat[] | undefined = useTokenInfo(contracts, priceMultiple, blockNumber || 0);
 
-    useEffect(() => {
+
+    useDeepCompareEffect(() => {
 
         //merge tokenInfo and priceMultiple to create tokenFeatures
         //generate map as per below
@@ -239,7 +251,7 @@ const useMultiTokenInfo = (contracts: Contracts | undefined,
                     throw "UI error: useDynamicTokenInfo algorithm should have eliminated nulls"
                 const newTera = t.teraCouponPerTokenPerSecond.mul(matchingPriceMultiple.priceMultiple).div(ONE)
                 const { burnable, enabled, lastminted_timestamp } = t
-                const issuer = matchingPriceMultiple.tilter===undefined?contracts.issuer:matchingPriceMultiple.tilter
+                const issuer = matchingPriceMultiple.tilter === undefined ? contracts.issuer : matchingPriceMultiple.tilter
 
                 let feature: TokenFeatures = {
                     currentPrice: BigNumber.from(0),
@@ -248,7 +260,7 @@ const useMultiTokenInfo = (contracts: Contracts | undefined,
                     lastminted_timestamp,
                     teraCouponPerTokenPerSecond: newTera,
                     issue: issuer.issue,
-                    issuerToApprove:issuer.address
+                    issuerToApprove: issuer.address
                 }
                 const currentPrice = getPrice(feature)
                 feature.currentPrice = currentPrice
@@ -268,8 +280,8 @@ const useMultiTokenInfo = (contracts: Contracts | undefined,
 
 
     useEffect(() => {
-        setTimeout(() => setQuarterSeconds(quarterSeconds + 1), 250)
-    }, [quarterSeconds])
+        setTimeout(() => setHalfSeconds(halfSeconds + 1), 500)
+    }, [halfSeconds])
 
     useEffect(() => {
         // Set up the interval
@@ -288,7 +300,7 @@ const useMultiTokenInfo = (contracts: Contracts | undefined,
 
         // Clear interval on component unmount
 
-    }, [quarterSeconds]);
+    }, [halfSeconds]);
     return info
 }
 
@@ -324,9 +336,9 @@ const useMultiTokenBalances = (multicall3: Multicall3 | undefined, holder: strin
                             acc[current.address] = current.balance;
                             return acc;
                         }, {} as Record<string, BigNumber>))
-                 //   if (wethless.length < tokens.length) {
-                        tokenBalances[weth] = ethBalance
-                   // }
+                    //   if (wethless.length < tokens.length) {
+                    tokenBalances[weth] = ethBalance
+                    // }
 
                     setBalances(tokenBalances)
 
@@ -335,7 +347,6 @@ const useMultiTokenBalances = (multicall3: Multicall3 | undefined, holder: strin
             }
         }
     }, [blockNumber, provider, multicall3, refresh])
-
 
     return balances;
 };
@@ -349,7 +360,7 @@ export interface DynamicTokenInfo {
     burnable: boolean
     teraCouponPerToken: BigNumber
     issue: IssueSignature,
-    issuerToApprove:string
+    issuerToApprove: string
 }
 type DynamicInfoMap = Record<string, DynamicTokenInfo>
 export const useDynamicTokenInfo = (contracts: Contracts | undefined, account: string | undefined, addresses: OptionalAddresses, refresh: number): DynamicInfoMap | undefined => {
@@ -362,21 +373,22 @@ export const useDynamicTokenInfo = (contracts: Contracts | undefined, account: s
     useEffect(() => {
         if (balances && tokenInfo && tokens) {
 
-            setDynamicInfo(tokens.map(token => {
+            setDynamicInfo(tokens.map(t => t.toLowerCase()).map(token => {
                 const info: DynamicTokenInfo = {
                     balance: balances[token],
                     burnable: tokenInfo[token].burnable,
                     teraCouponPerToken: tokenInfo[token].currentPrice,
                     issue: tokenInfo[token].issue,
-                    issuerToApprove:tokenInfo[token].issuerToApprove
+                    issuerToApprove: tokenInfo[token].issuerToApprove
                 }
                 return { token, info }
             }).reduce((acc, current) => {
-                acc[current.token] = current.info
+                acc[current.token.toLowerCase()] = current.info
                 return acc
             }, {} as DynamicInfoMap))
         }
     }, [tokenInfo, balances, refresh])
+
 
     return dynamicInfo
 }

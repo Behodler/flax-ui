@@ -57,6 +57,7 @@ async function getEthPrice(token: string, provider: ethers.providers.Web3Provide
         }
         //dissaggregate into base tokens and recursively get prices
     } else if (isBase) {
+
         //get direct eth price from Uniswap. Use SDK docs and provider object
         if (token === "ETH") {
             return ethers.constants.WeiPerEther
@@ -64,21 +65,27 @@ async function getEthPrice(token: string, provider: ethers.providers.Web3Provide
         else {
             //FIRST GET UNISWAP ETH PAIR
             const uniToken = new Token(ChainId.MAINNET, token, 18)
+            try {
+                if (uniToken.address.toLowerCase() === WETH9[uniToken.chainId].address.toLowerCase()) {
+                    return ethers.constants.WeiPerEther
+                }
+                const pairAddress = Pair.getAddress(uniToken, WETH9[uniToken.chainId])
+                const pairContract = new ethers.Contract(pairAddress, UniV2PairABI.abi, provider)
+                const reserves = await pairContract["getReserves"]()
+                const [reserve0, reserve1] = reserves
+                const tokens = [uniToken, WETH9[uniToken.chainId]]
+                const [token0, token1] = tokens[0].sortsBefore(tokens[1]) ? tokens : [tokens[1], tokens[0]]
 
-            const pairAddress = Pair.getAddress(uniToken, WETH9[uniToken.chainId])
-            const pairContract = new ethers.Contract(pairAddress, UniV2PairABI.abi, provider)
-            const reserves = await pairContract["getReserves"]()
-            const [reserve0, reserve1] = reserves
-            const tokens = [uniToken, WETH9[uniToken.chainId]]
-            const [token0, token1] = tokens[0].sortsBefore(tokens[1]) ? tokens : [tokens[1], tokens[0]]
-
-            const pair = new Pair(CurrencyAmount.fromRawAmount(token0, reserve0), CurrencyAmount.fromRawAmount(token1, reserve1))
+                const pair = new Pair(CurrencyAmount.fromRawAmount(token0, reserve0), CurrencyAmount.fromRawAmount(token1, reserve1))
 
 
-            //next construct trade route of input: token, output: weth to get weth price
-            const route = new Route([pair], uniToken, WETH9[uniToken.chainId])
-            //Eth per token
-            price = ethers.utils.parseUnits(route.midPrice.toSignificant(6), 18);
+                //next construct trade route of input: token, output: weth to get weth price
+                const route = new Route([pair], uniToken, WETH9[uniToken.chainId])
+                //Eth per token
+                price = ethers.utils.parseUnits(route.midPrice.toSignificant(6), 18);
+            } catch (e) {
+                throw 'error in isBase: ' + e
+            }
         }
     }
     return price

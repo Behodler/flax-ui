@@ -27,16 +27,19 @@ const useAddresses = (chainId: ChainID): { addresses: OptionalAddresses, loading
                 } else if (chainId === ChainID.mainnet) {
                     // Hardcoded Ethereum addresses for Mainnet
                     setIfNotEqual({
-                        Coupon: '0x0cf758D4303295C43CD95e1232f0101ADb3DA9E8', Issuer: '0x53ff898264202dc94A6947Bbd6F2BbD8102D7ED4',
+                        Coupon: '0x0cf758D4303295C43CD95e1232f0101ADb3DA9E8', Issuer: '0x2da263a35a7FaaB754886b73E8fC3b77AcE1dafC',
                         Multicall: "0x0", HedgeyAdapter: "0xb2d3445304d40A71A4461CD3A9eCdc44f2479825", Multicall3: "0xcA11bde05977b3631167028862bE2a173976CA11",
-                        Weth: '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2', UniswapV2Router: '0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D', TilterFactory: 'NOTSET',
-                        Inputs: ['0x155ff1a85f440ee0a382ea949f24ce4e0b751c65', //EYE price = 1
+                        Weth: '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2', UniswapV2Router: '0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D', TilterFactory: '0xB8cF96fa4259b03C09050bD251bcac44d9523E39',
+                        Inputs:['0x155ff1a85f440ee0a382ea949f24ce4e0b751c65', //EYE price = 1
                             '0x1b8568fbb47708e9e9d31ff303254f748805bf21',   //SCX price = 20
-                            '0x6dF6B57FB7c35D7C71395F77cb08b82A62635e19', //Flx/eth
+                            '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2', //WETH
                             '0xf047ee812b21050186f86106f6cabdfec35366c6', //SCX/EYE price = 55
-                            '0x0287120f9b7d8709b4dD5b589Ae759F79fD34E62', //pyro(SCX/EYE) price =55
+                            '0x0287120f9b7d8709b4dd5b589ae759f79fd34e62', //pyro(SCX/EYE) price =55
                             '0x319ead06eb01e808c80c7eb9bd77c5d8d163addb', //SCX/Eth price = ($1283.924375215) 16691
-                            '0xa9EEA8723FffD923F6908586455411159B525d23'] //pyro(scx/ETH) price = 16857
+                            '0xa9eea8723fffd923f6908586455411159b525d23', //pyro(scx/ETH) price = 16857
+                            '0x1f9840a85d5af5bf1d1762f925bdaddc4201f984', // UNI
+                            '0x95ad61b0a150d79219dcf64e1e6cc01f0b64c4ce']//SHIB
+
                         //tera mult:1000000000000 = 10^12 so that 1 EYE mints 1 Flax
                     });
                     //input order: EYE, SCX, SCX/EYE,pyro(SCX/EYE), SCX/ETH, pyro(SCX/ETH),

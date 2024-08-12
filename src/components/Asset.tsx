@@ -67,21 +67,21 @@ export function Asset(props: IProps) {
     } = useBlockchainContext()
     const [currentBalance, setCurrentBalance] = useState<string | undefined>(undefined)
     const inputs = contracts.inputs
-    const selectedInput = inputs.filter(input => input.address === asset.address)[0]
+    const selectedInput = inputs.filter(input => input.address.toLowerCase() === asset.address.toLowerCase())[0]
     const selectedDynamic = (selectedInput !== undefined && dynamicTokenInfo) ? dynamicTokenInfo[selectedInput.address] : undefined
-    const [flxValue, setFlxValue] = useState<string>()
+    const [flxValueOfReward, setFlxValueOfReward] = useState<string>()
     const [inputDollarPrice, setInputDollarPrice] = useState<string | undefined>()
     const ethProvider = useProvider();
 
     useDeepCompareEffect(() => {
-        if (inputDollarPrice && flxValue) {
+        if (inputDollarPrice && flxValueOfReward) {
             const inputDollarFloat = parseFloat(inputDollarPrice)
-            const flxDollar = parseFloat(flxValue)
+            const dollarValueOfFlaxReward = parseFloat(flxValueOfReward)
 
-            if (isNaN(inputDollarFloat) || isNaN(flxDollar)) {
+            if (isNaN(inputDollarFloat) || isNaN(dollarValueOfFlaxReward)) {
                 props.setAPY(0)
             } else {
-                const premium = flxDollar - inputDollarFloat
+                const premium = dollarValueOfFlaxReward - inputDollarFloat
                 const ROI = premium / inputDollarFloat
                 const APY_Float = ((1 + ROI * ROI) - 1) * (ROI < 0 ? -100 : 100)
                 props.setAPY(APY_Float)
@@ -89,7 +89,7 @@ export function Asset(props: IProps) {
         } else {
             props.setAPY(0)
         }
-    }, [inputDollarPrice, flxValue, dynamicTokenInfo])
+    }, [inputDollarPrice, flxValueOfReward, dynamicTokenInfo, blockNumber])
 
     useEffect(() => {
         if (ethProvider && chainId === ChainID.mainnet) {
@@ -98,7 +98,9 @@ export function Asset(props: IProps) {
 
                     const daiPrice = await getDaiPriceOfToken(props.children.address, ethProvider, chainId, daiPriceOfEth)
                     if (daiPrice) {
-                        const formatted = parseFloat(ethers.utils.formatEther(daiPrice)).toFixed(2)
+                        const float = parseFloat(ethers.utils.formatEther(daiPrice))
+                        const decimalPlaces = float > 0.01 ? 2 : 6
+                        const formatted = parseFloat(ethers.utils.formatEther(daiPrice)).toFixed(decimalPlaces)
                         setInputDollarPrice(formatted)
                     }
                 } else {
@@ -112,16 +114,16 @@ export function Asset(props: IProps) {
     }, [blockNumber, chainId, ethProvider, selectedAssetId, daiPriceOfEth])
 
     useDeepCompareEffect(() => {
-        if (dynamicTokenInfo && dynamicTokenInfo[props.children.address]) {
-            const teraCouponPerToken = dynamicTokenInfo[props.children.address].teraCouponPerToken
+        if (dynamicTokenInfo && dynamicTokenInfo[props.children.address.toLowerCase()]) {
+            const teraCouponPerToken = dynamicTokenInfo[props.children.address.toLowerCase()].teraCouponPerToken
             const factor = BigNumber.from(10).pow(12);
             const flxValueBig = teraCouponPerToken.mul(flxDollarPrice).div(factor)
-            setFlxValue(parseFloat(ethers.utils.formatEther(flxValueBig)).toFixed(4));
+            setFlxValueOfReward(parseFloat(ethers.utils.formatEther(flxValueBig)).toFixed(6));
         }
     }, [flxDollarPrice, dynamicTokenInfo])
 
     useDeepCompareEffect(() => {
-        if (selectedInput && dynamicTokenInfo) {
+        if (selectedInput && dynamicTokenInfo && dynamicTokenInfo[selectedInput.address] && dynamicTokenInfo[selectedInput.address].balance) {
             const formattedBalance = ethers.utils.formatEther(dynamicTokenInfo[selectedInput.address].balance);
             const balanceFixed = parseFloat(formattedBalance).toFixed(8); // Ensure it always has 8 decimal places
             setCurrentBalance(balanceFixed);
@@ -134,21 +136,21 @@ export function Asset(props: IProps) {
 
     const [mintPrice, setMintPrice] = useState<string>("")
     const [burnMessage, setBurnMessage] = useState<string>("")
-    const [mintMessage, setMintMessage] = useState<string>(`1 ${asset.friendlyName} mints ${mintPrice} Flax (\$${flxValue})`)
+    const [mintMessage, setMintMessage] = useState<string>(`1 ${asset.friendlyName} mints ${mintPrice} Flax (\$${flxValueOfReward})`)
     useEffect(() => {
         if (selectedDynamic) {
             setBurnMessage(`Deposit ${selectedDynamic.burnable ? "burnt" : "permanently locked"} on Flax minting`)
             setMintPrice(TeraToString(selectedDynamic.teraCouponPerToken))
             const burnSource = selectedDynamic.burnable ? burn : lock
-            const tilting = selectedDynamic.issuerToApprove!==contracts.issuer.address
+            const tilting = selectedDynamic.issuerToApprove !== contracts.issuer.address
             setBurnableImage(!tilting ? <Tooltip title={burnMessage}>
                 <img width="30px" src={burnSource} style={{ margin: "5px 0 0 0" }} />
             </Tooltip> : <TilterRatio title="70% price tilt" />)
-            setMintMessage(`1 ${asset.friendlyName} mints ${mintPrice} Flax (\$${flxValue})`)
+            setMintMessage(`1 ${asset.friendlyName} mints ${mintPrice} Flax (\$${flxValueOfReward})`)
         }
     }, [selectedDynamic])
 
-    const APYtext = props.APY === 0 ? '--.- ' : props.APY.toFixed(4);
+    const APYtext = props.APY === 0 ? '--.- ' : props.APY.toFixed(2);
 
     //carry on here
     return <ListItem
@@ -230,7 +232,7 @@ export function Asset(props: IProps) {
                             <Tooltip title={mintMessage}>
                                 <div>
                                     <Typography style={{ textAlign: "right" }} variant={"h3"}> {mintPrice} FLX</Typography>
-                                    <Typography style={{ textAlign: "right" }} variant={"h6"}> (${flxValue})</Typography>
+                                    <Typography style={{ textAlign: "right" }} variant={"h6"}> (${flxValueOfReward})</Typography>
                                 </div>
                             </Tooltip>
                         </Grid>

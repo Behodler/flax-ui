@@ -4,12 +4,12 @@
             "address": "0x155ff1a85f440ee0a382ea949f24ce4e0b751c65",
             "image": "eye",
             "friendlyName": "Eye",
-            "category":"Behodler",
+            "category": "Behodler",
             "AMMs": [
                 {
                     "location": "uni",
                     "type": "base",
-                    "url": "#/swap?inputCurrency=ETH&outputCurrency=0x155ff1A85F440EE0A382eA949f24CE4E0b751c65"
+                    "url": "#/swap?inputCurrency=ETH&outputCurrency=0x155ff1a85f440ee0a382ea949f24ce4e0b751c65"
                 }
             ]
         },
@@ -17,7 +17,7 @@
             "address": "0x1b8568fbb47708e9e9d31ff303254f748805bf21",
             "image": "scx",
             "friendlyName": "Scarcity",
-            "category":"Behodler",
+            "category": "Behodler",
             "AMMs": [
                 {
                     "location": "behodler",
@@ -32,29 +32,29 @@
             ]
         },
         {
-            "address":"0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
-            "image":"eth",
-            "category":"BlueChip",
-            "friendlyName":"Ether"
+            "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+            "image": "eth",
+            "category": "BlueChip",
+            "friendlyName": "Ether"
         },
         {
             "address": "0xf047ee812b21050186f86106f6cabdfec35366c6",
             "image": "scxEye",
             "friendlyName": "SCX/EYE LP (Uni-V2)",
-            "category":"LP",
+            "category": "LP",
             "AMMs": [
                 {
                     "location": "uni",
                     "type": "LP",
-                    "url": "add/v2/0x155ff1A85F440EE0A382eA949f24CE4E0b751c65/0x1B8568FbB47708E9E9D31Ff303254f748805bF21"
+                    "url": "add/v2/0x155ff1a85f440ee0a382ea949f24ce4e0b751c65/0x1b8568fbb47708e9e9d31ff303254f748805bf21"
                 }
             ]
         },
         {
-            "address": "0x0287120f9b7d8709b4dD5b589Ae759F79fD34E62",
+            "address": "0x0287120f9b7d8709b4dd5b589ae759f79fd34e62",
             "image": "pyroScxEye",
             "friendlyName": "Pyro(SCX/EYE)",
-            "category":"PyroToken",
+            "category": "PyroToken",
             "AMMs": [
                 {
                     "location": "behodler",
@@ -67,20 +67,20 @@
             "address": "0x319ead06eb01e808c80c7eb9bd77c5d8d163addb",
             "image": "scxEth",
             "friendlyName": "SCX/ETH LP (Uni-V2)",
-            "category":"LP",
+            "category": "LP",
             "AMMs": [
                 {
                     "location": "uni",
                     "type": "LP",
-                    "url": "add/v2/ETH/0x1B8568FbB47708E9E9D31Ff303254f748805bF21"
+                    "url": "add/v2/ETH/0x1b8568fbb47708e9e9d31ff303254f748805bf21"
                 }
             ]
         },
         {
-            "address": "0xa9EEA8723FffD923F6908586455411159B525d23",
+            "address": "0xa9eea8723fffd923f6908586455411159b525d23",
             "image": "pyroScxEth",
             "friendlyName": "Pyro (SCX/ETH)",
-            "category":"PyroToken",
+            "category": "PyroToken",
             "AMMs": [
                 {
                     "location": "behodler",
@@ -88,14 +88,46 @@
                     "url": "https://app.behodler.io/"
                 }
             ]
+        },
+        {
+            "address": "0x1f9840a85d5af5bf1d1762f925bdaddc4201f984",
+            "image": "uni",
+            "category": "Governance",
+            "friendlyName": "Uni",
+            "AMMs": [
+                {
+                    "location": "uni",
+                    "type": "base",
+                    "url": "#/swap?inputCurrency=ETH&outputCurrency=0x1f9840a85d5af5bf1d1762f925bdaddc4201f984"
+                }
+            ]
+        },
+        {
+            "address": "0x95ad61b0a150d79219dcf64e1e6cc01f0b64c4ce",
+            "image": "shiba",
+            "category": "Meme",
+            "friendlyName": "Shib",
+            "AMMs": [
+                {
+                    "location": "shiba",
+                    "type": "base",
+                    "url": "swap?inputCurrency=ETH&outputCurrency=0x95ad61b0a150d79219dcf64e1e6cc01f0b64c4ce"
+                },
+                {
+                    "location": "uni",
+                    "type": "base",
+                    "url": "swap?inputCurrency=ETH&outputCurrency=0x95ad61b0a150d79219dcf64e1e6cc01f0b64c4ce"
+                }
+            ]
         }
-    ],
+    ]
+    ,
     "31337": [
         {
             "address": "0xbcf26943c0197d2ee0e5d05c716be60cc2761508",
             "image": "eye",
             "friendlyName": "Eye",
-            "category":"Behodler",
+            "category": "Behodler",
             "AMMs": [
                 {
                     "location": "uni",
@@ -113,7 +145,7 @@
             "address": "0x59f2f1fcfe2474fd5f0b9ba1e73ca90b143eb8d0",
             "image": "scx",
             "friendlyName": "Scarcity",
-            "category":"Behodler",
+            "category": "Behodler",
             "AMMs": [
                 {
                     "location": "behodler",
@@ -126,7 +158,7 @@
             "address": "0x0b48af34f4c854f5ae1a3d587da471fea45bad52",
             "image": "scxEye",
             "friendlyName": "SCX/EYE LP (Uni-V2)",
-            "category":"LP",
+            "category": "LP",
             "AMMs": [
                 {
                     "location": "uni",
@@ -139,7 +171,7 @@
             "address": "0x90118d110b07abb82ba8980d1c5cc96eea810d2c",
             "image": "pyroScxEth",
             "friendlyName": "Pyro (SCX/ETH)",
-            "category":"PyroToken",
+            "category": "PyroToken",
             "AMMs": [
                 {
                     "location": "behodler",
@@ -149,17 +181,17 @@
             ]
         },
         {
-            "address":"0xf818a7c2afc45cf4b9ddc48933c9a1edd624e46f",
-            "image":"eth",
-            "category":"BlueChip",
-            "friendlyName":"Ether"
+            "address": "0xf818a7c2afc45cf4b9ddc48933c9a1edd624e46f",
+            "image": "eth",
+            "category": "BlueChip",
+            "friendlyName": "Ether"
         },
         {
-            "address":"0xe6b98f104c1bef218f3893adab4160dc73eb8367",
-            "image":"shiba",
-            "category":"Meme",
-            "friendlyName":"Shib",
-            "AMMs":[
+            "address": "0xe6b98f104c1bef218f3893adab4160dc73eb8367",
+            "image": "shiba",
+            "category": "Meme",
+            "friendlyName": "Shib",
+            "AMMs": [
                 {
                     "location": "shiba",
                     "type": "base",
@@ -168,11 +200,11 @@
             ]
         },
         {
-            "address":"0x5c7c905b505f0cf40ab6600d05e677f717916f6b",
-            "image":"uni",
-            "category":"Governance",
-            "friendlyName":"Uni",
-            "AMMs":[
+            "address": "0x5c7c905b505f0cf40ab6600d05e677f717916f6b",
+            "image": "uni",
+            "category": "Governance",
+            "friendlyName": "Uni",
+            "AMMs": [
                 {
                     "location": "uni",
                     "type": "base",
@@ -186,7 +218,7 @@
             "address": "0xc4171cB917Db366BBcB84aF3472CB63BB0f3a554",
             "image": "eye",
             "friendlyName": "Eye",
-            "category":"Behodler",
+            "category": "Behodler",
             "AMMs": [
                 {
                     "location": "uni",
@@ -199,7 +231,7 @@
             "address": "0x594d83f99a0339d7FA867F746f8Af91DC4562FC9",
             "image": "scx",
             "friendlyName": "Scarcity",
-            "category":"Behodler",
+            "category": "Behodler",
             "AMMs": [
                 {
                     "location": "behodler",
@@ -217,7 +249,7 @@
             "address": "0xdA479c034876Ee72105a7E536d9077d0b18A68a5",
             "image": "scxEye",
             "friendlyName": "SCX/EYE LP (Uni-V2)",
-            "category":"LP",
+            "category": "LP",
             "AMMs": [
                 {
                     "location": "uni",
@@ -230,7 +262,7 @@
             "address": "0x1070a8B8E83A58856F6a21682868eAf0dc09e6C3",
             "image": "scxEth",
             "friendlyName": "SCX/ETH LP (Uni-V2)",
-            "category":"LP",
+            "category": "LP",
             "AMMs": [
                 {
                     "location": "uni",

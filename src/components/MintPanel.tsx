@@ -80,7 +80,6 @@ export default function MintPanel(props: LiveProps) {
             if (selectedInput) {
                 const getBalance = async () => {
                     if (isEth(selectedAssetId)) {
-                        console.log('setting eth balance ' + ethBalance?.toString())
                         setInputBalance(ethBalance)
                     }
                     else setInputBalance(await selectedInput.balanceOf(account).catch())
