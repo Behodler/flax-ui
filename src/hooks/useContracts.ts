@@ -11,6 +11,7 @@ import useTokenLockUpPlans from './useTokenLockup';
 import useMulticall3 from './useMulticall3';
 import { useTilterFactory } from './useTilter';
 import { useUniswap } from './useUniswap';
+import useUniPriceFetcher from './useUniPriceFetcher';
 // Custom hook to manage contracts based on addresses
 export function useContracts(addresses: ContractAddresses | null): Contracts | undefined {
     const [contracts, setContracts] = useState<Contracts | undefined>();
@@ -20,16 +21,17 @@ export function useContracts(addresses: ContractAddresses | null): Contracts | u
     const faucet = useFaucet(addresses);
     const hedgey = useHedgey(addresses);
     const uni = useUniswap(addresses)
+    const uniPriceFetcher = useUniPriceFetcher(addresses)
     const tilterFactory = useTilterFactory(addresses)
     const tokenLockup = useTokenLockUpPlans(hedgey);
     const multicall3 = useMulticall3(addresses);
 
 
-    if (coupon && issuer && hedgey && tokenLockup && multicall3 && tilterFactory && inputs && uni) {
-        const newContracts: Contracts = { coupon, issuer, inputs, faucet, hedgey, tokenLockup, multicall3, tilterFactory, uniswapFactory: uni.factory, uniswapRouter: uni.router }
+    if (coupon && issuer && hedgey && tokenLockup && multicall3 && tilterFactory && inputs && uni && uniPriceFetcher) {
+        const newContracts: Contracts = { coupon, issuer, inputs, faucet, hedgey, tokenLockup, multicall3, tilterFactory, uniPriceFetcher, uniswapFactory: uni.factory, uniswapRouter: uni.router }
         const isNew: boolean = !_.isEqual(newContracts, contracts)
         if (isNew)
-            setContracts({ coupon, issuer, inputs, faucet, tilterFactory, hedgey, tokenLockup, multicall3, uniswapFactory: uni.factory, uniswapRouter: uni.router });
+            setContracts({ coupon, issuer, inputs, faucet, tilterFactory, hedgey, tokenLockup, multicall3, uniswapFactory: uni.factory, uniswapRouter: uni.router, uniPriceFetcher });
     }
     return contracts;
 }

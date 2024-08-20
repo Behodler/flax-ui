@@ -14,7 +14,6 @@ import { LiveProps } from '../extensions/LiveProps';
 import { calculateLockupDuration, isEthAddress } from '../extensions/Utils';
 import { useProvider } from '../hooks/useProvider';
 import { ChainID } from '../types/ChainID';
-import { getDaiPriceOfToken } from '../extensions/Uniswap';
 import { useDeepCompareEffect } from '../hooks/useDeepCompareEffect';
 import useEthBalance from '../hooks/useEthBalance';
 import { IssueSignature } from '../hooks/useDynamicTokenInfo';
@@ -27,7 +26,7 @@ const validateMintText = (text: string) => {
 export default function MintPanel(props: LiveProps) {
     const [inputBalance, setInputBalance] = useState<BigNumber>();
     const { contracts, account, chainId } = props
-    const { selectedAssetId, dynamicTokenInfo, flxDollarPrice, daiPriceOfEth, tokenLockupConfig, isEth } = useBlockchainContext()
+    const { selectedAssetId, dynamicTokenInfo, flxDollarPrice, tokenLockupConfig, isEth,inputDollarPrices } = useBlockchainContext()
     const blockNumber = useBlockNumber()
     const [asset, setAsset] = useState<AssetProps>()
     const [token, setToken] = useState<ERC20>()
@@ -50,21 +49,11 @@ export default function MintPanel(props: LiveProps) {
     const ethProvider = useProvider()
     const ethBalance = useEthBalance(account)
 
-    useEffect(() => {
-        if (ethProvider && chainId === ChainID.mainnet && asset) {
-            const fetchDaiPrice = async () => {
-                if (daiPriceOfEth) {
-                    const daiPrice = await getDaiPriceOfToken(selectedAssetId, ethProvider, chainId, daiPriceOfEth)
-                    setInputDollarPrice(daiPrice)
-
-                } else {
-                    setInputDollarPrice(undefined)
-                }
-            }
-            fetchDaiPrice();
+    useEffect(()=>{
+        if(inputDollarPrices){
+            setInputDollarPrice(inputDollarPrices[selectedAssetId])
         }
-
-    }, [blockNumber, chainId, ethProvider, selectedAssetId])
+    },[inputDollarPrices])
 
     useEffect(() => {
         if (mintProgress === TransactionProgress.confirmed) {

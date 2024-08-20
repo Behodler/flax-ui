@@ -14,7 +14,6 @@ import { AMM, AssetProps } from '../types/Assets';
 import { useDeepCompareEffect } from '../hooks/useDeepCompareEffect';
 import { TeraToString } from '../extensions/Utils';
 import _ from 'lodash';
-import { getDaiPriceOfToken } from '../extensions/Uniswap';
 import { useProvider } from '../hooks/useProvider';
 import { ChainID } from '../types/ChainID';
 import TilterRatio from './common/TilterRatio';
@@ -65,7 +64,7 @@ export function Asset(props: IProps) {
     const imagePath = require(`../images/${getImagePath(asset.image)}`);
     const blockNumber = useBlockNumber();
     const { dynamicTokenInfo,
-        account, flxDollarPrice, chainId, daiPriceOfEth, setSelectedAssetId, selectedAssetId
+        account, flxDollarPrice, chainId, daiPriceOfEth, setSelectedAssetId, selectedAssetId, inputDollarPrices,
     } = useBlockchainContext()
     const [currentBalance, setCurrentBalance] = useState<string | undefined>(undefined)
     const inputs = contracts.inputs
@@ -93,27 +92,19 @@ export function Asset(props: IProps) {
         }
     }, [inputDollarPrice, flxValueOfReward, dynamicTokenInfo, blockNumber])
 
-    useEffect(() => {
-        if (ethProvider && chainId === ChainID.mainnet) {
-            const fetchDaiPrice = async () => {
-                if (daiPriceOfEth) {
-
-                    const daiPrice = await getDaiPriceOfToken(props.children.address, ethProvider, chainId, daiPriceOfEth)
-                    if (daiPrice) {
-                        const float = parseFloat(ethers.utils.formatEther(daiPrice))
-                        const decimalPlaces = float > 0.01 ? 2 : 6
-                        const formatted = parseFloat(ethers.utils.formatEther(daiPrice)).toFixed(decimalPlaces)
-                        setInputDollarPrice(formatted)
-                    }
-                } else {
-                    setInputDollarPrice(undefined)
-                }
-            }
-            if (blockNumber && (blockNumber % 3 == 0 || inputDollarPrice !== undefined))
-                fetchDaiPrice();
+    useDeepCompareEffect(() => {
+        const daiPrice = inputDollarPrices[props.children.address.toLowerCase()]
+        if (daiPrice) {
+            const float = parseFloat(ethers.utils.formatEther(daiPrice))
+            const decimalPlaces = float > 0.01 ? 2 : 6
+            const formatted = parseFloat(ethers.utils.formatEther(daiPrice)).toFixed(decimalPlaces)
+            setInputDollarPrice(formatted)
+        }
+        else {
+            setInputDollarPrice(undefined)
         }
 
-    }, [blockNumber, chainId, ethProvider, selectedAssetId, daiPriceOfEth])
+    }, [inputDollarPrices])
 
     useDeepCompareEffect(() => {
         if (dynamicTokenInfo && dynamicTokenInfo[props.children.address.toLowerCase()]) {

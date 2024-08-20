@@ -1,15 +1,15 @@
 import React, { ReactNode, createContext, useContext, useEffect, useState } from 'react';
 import { useEthers } from '@usedapp/core';
 import { ChainID, supportedChain } from '../types/ChainID'
-import { Coupon, ERC20, HedgeyAdapter, Issuer, Multicall3, Test, TestnetFaucet, TilterFactory, TokenLockupPlans, UniswapV2Factory, UniswapV2Router02 } from "../typechain/types/ethers";
+import { Coupon, ERC20, HedgeyAdapter, Issuer, Multicall3, Test, TestnetFaucet, TilterFactory, TokenLockupPlans, UniPriceFetcher, UniswapV2Factory, UniswapV2Router02 } from "../typechain/types/ethers";
 import useAddresses from '../hooks/useAddresses'; // Updated import for renamed hook
 import { useContracts } from '../hooks/useContracts';
 import { BigNumber } from 'ethers';
 import _, { add } from 'lodash';
-import { getDaiPriceOfEth } from '../extensions/Uniswap';
 import { useProvider } from '../hooks/useProvider';
 import { DynamicTokenInfo, useDynamicTokenInfo } from '../hooks/useDynamicTokenInfo';
 import { isTiltingTokenFactory } from '../extensions/Utils';
+import useInputPrices from '../hooks/useInputPrices';
 // import { useMultipleTokenBalances } from '../hooks/useMultipleTokenBalances';
 
 
@@ -23,6 +23,7 @@ export interface Contracts {
     tilterFactory: TilterFactory
     tokenLockup: TokenLockupPlans
     multicall3: Multicall3
+    uniPriceFetcher: UniPriceFetcher
     faucet?: TestnetFaucet
 }
 
@@ -42,21 +43,22 @@ interface BlockchainContextType {
     account: string | undefined
     selectedAssetId: string,
     flxDollarPrice: BigNumber,
-    setFlxDollarPrice: (price: BigNumber) => void
     setSelectedAssetId: (assetId: string) => void
     dynamicTokenInfo: Record<string, DynamicTokenInfo> | undefined
     daiPriceOfEth: BigNumber | undefined
     tokenLockupConfig: TokenLockupConfig,
+    inputDollarPrices: Record<string, BigNumber>
     refreshMultiCalls: () => void
     isEth: (token: string) => boolean
     isTiltingToken: (token: string) => boolean
 }
 
+
+
 const BlockchainContext = createContext<BlockchainContextType>({
     chainId: ChainID.disconnected, contracts: {} as any, account: "0x0", selectedAssetId: '', flxDollarPrice: BigNumber.from('100000000000000000'),
-    setFlxDollarPrice: (price: BigNumber) => { },
     setSelectedAssetId: (id: string) => { }, dynamicTokenInfo: undefined, daiPriceOfEth: undefined,
-    tokenLockupConfig: defaultLockup, refreshMultiCalls: () => { }, isEth: defaultIsEth, isTiltingToken: defaultIsTiltingToken
+    tokenLockupConfig: defaultLockup, refreshMultiCalls: () => { }, isEth: defaultIsEth, isTiltingToken: defaultIsTiltingToken, inputDollarPrices: {}
 });
 
 interface BlockchainProviderProps {
@@ -78,10 +80,27 @@ export const BlockchainContextProvider: React.FC<BlockchainProviderProps> = ({ c
     const [flxDollarPrice, setFlxDollarPrice] = useState<BigNumber>(BigNumber.from('100000000000000000'))
     const [tokenLockupConfig, setTokenLockupConfig] = useState<TokenLockupConfig>(defaultLockup)
     const contracts = useContracts(addresses);
-    const [refresh, setRefresh] = useState<number>(0) //TODO:possibly default this to true
+    const [refresh, setRefresh] = useState<number>(0)
 
     const isTiltingToken = isTiltingTokenFactory(derivedChainId)
     const dynamicTokenInfo = useDynamicTokenInfo(contracts, account, addresses, refresh)
+    const pricedTokens = addresses ? [addresses.Coupon, addresses.Weth, ...addresses.Inputs] : []
+    const inputDollarPrices = useInputPrices(contracts?.uniPriceFetcher, pricedTokens, refresh)
+
+    useEffect(() => {
+        if (inputDollarPrices && addresses) {
+            const wethPrice = inputDollarPrices[addresses.Weth]
+            if (wethPrice) {
+                setDaiPriceOfEth(wethPrice)
+            }
+
+            const flaxPrice = inputDollarPrices[addresses.Coupon.toLowerCase()]
+            console.log('flaxPrice ' + flaxPrice.toString())
+            if (flaxPrice)
+                setFlxDollarPrice(flaxPrice)
+
+        }
+    }, [inputDollarPrices])
 
     useEffect(() => {
         if (contracts && contracts.issuer) {
@@ -138,16 +157,6 @@ export const BlockchainContextProvider: React.FC<BlockchainProviderProps> = ({ c
 
     const ethProvider = useProvider()
 
-    useEffect(() => {
-        if (derivedChainId === ChainID.mainnet && ethProvider) {
-            (async () => {
-                setDaiPriceOfEth(await getDaiPriceOfEth(ethProvider))
-            })()
-        }
-        else {
-            setDaiPriceOfEth(undefined)
-        }
-    }, [derivedChainId, ethProvider])
 
     return (
         <BlockchainContext.Provider value={{
@@ -158,8 +167,8 @@ export const BlockchainContextProvider: React.FC<BlockchainProviderProps> = ({ c
             setSelectedAssetId,
             dynamicTokenInfo,
             flxDollarPrice,
-            setFlxDollarPrice,
             daiPriceOfEth,
+            inputDollarPrices,
             tokenLockupConfig,
             refreshMultiCalls: () => { console.log('Refreshed at ' + Date()); setTimeout(() => setRefresh(refresh + 1), 10000) },
             isEth: addresses ? (token: string) => token === addresses.Weth : defaultIsEth,

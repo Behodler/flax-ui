@@ -9,4 +9,6 @@ export interface ContractAddresses {
     TilterFactory:string
     Faucet?:string
     Multicall3:string
+    UniPriceFetcher:string
+    Dai:string
 }

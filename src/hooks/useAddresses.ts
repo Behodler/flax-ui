@@ -28,9 +28,9 @@ const useAddresses = (chainId: ChainID): { addresses: OptionalAddresses, loading
                     // Hardcoded Ethereum addresses for Mainnet
                     setIfNotEqual({
                         Coupon: '0x0cf758D4303295C43CD95e1232f0101ADb3DA9E8', Issuer: '0x2da263a35a7FaaB754886b73E8fC3b77AcE1dafC',
-                        Multicall: "0x0", HedgeyAdapter: "0xb2d3445304d40A71A4461CD3A9eCdc44f2479825", Multicall3: "0xcA11bde05977b3631167028862bE2a173976CA11",
-                        Weth: '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2', UniswapV2Router: '0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D', TilterFactory: '0xB8cF96fa4259b03C09050bD251bcac44d9523E39',
-                        Inputs:['0x155ff1a85f440ee0a382ea949f24ce4e0b751c65', //EYE price = 1
+                        Multicall: "0x0",Dai:'0x6B175474E89094C44Da98b954EedeAC495271d0F', HedgeyAdapter: "0xb2d3445304d40A71A4461CD3A9eCdc44f2479825", Multicall3: "0xcA11bde05977b3631167028862bE2a173976CA11",
+                        Weth: '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2', UniPriceFetcher: '0x679f5bD341521573a023B77076142854abcb1A98', UniswapV2Router: '0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D', TilterFactory: '0xB8cF96fa4259b03C09050bD251bcac44d9523E39',
+                        Inputs: ['0x155ff1a85f440ee0a382ea949f24ce4e0b751c65', //EYE price = 1
                             '0x1b8568fbb47708e9e9d31ff303254f748805bf21',   //SCX price = 20
                             '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2', //WETH
                             '0xf047ee812b21050186f86106f6cabdfec35366c6', //SCX/EYE price = 55
@@ -47,8 +47,8 @@ const useAddresses = (chainId: ChainID): { addresses: OptionalAddresses, loading
                     // Hardcoded Ethereum addresses for Sepolia
                     setIfNotEqual({
                         Coupon: '0x526C7Efc77A42D46447f45E13B9598919BbB9e4F', Issuer: '0xFaC63FB20DA71248C7fc778C6FD89D4b7a4220F5', Multicall: "0x0",
-                        Faucet: '0x16B0642032F652146534D7A99d6CF3513616Cf97', HedgeyAdapter: "0x36396c4EAE2928747E43C257Fbd7d4bed1b7f570",
-                        Multicall3: "0xcA11bde05977b3631167028862bE2a173976CA11", Weth: '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2', TilterFactory: 'NOTSET', UniswapV2Router: 'NOTSET',
+                        Faucet: '0x16B0642032F652146534D7A99d6CF3513616Cf97',Dai:'NOTSET', HedgeyAdapter: "0x36396c4EAE2928747E43C257Fbd7d4bed1b7f570",
+                        Multicall3: "0xcA11bde05977b3631167028862bE2a173976CA11", UniPriceFetcher: 'NOTSET', Weth: '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2', TilterFactory: 'NOTSET', UniswapV2Router: 'NOTSET',
                         Inputs: ['0xc4171cB917Db366BBcB84aF3472CB63BB0f3a554', //EYE price = 1
                             '0x594d83f99a0339d7FA867F746f8Af91DC4562FC9',   //SCX price = 20
                             '0xdA479c034876Ee72105a7E536d9077d0b18A68a5', //SCX/EYE price = 55

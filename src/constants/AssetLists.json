@@ -124,7 +124,7 @@
     ,
     "31337": [
         {
-            "address": "0xbcf26943c0197d2ee0e5d05c716be60cc2761508",
+            "address": "0x1275d096b9dbf2347bd2a131fb6bdab0b4882487",
             "image": "eye",
             "friendlyName": "Eye",
             "category": "Behodler",
@@ -142,7 +142,7 @@
             ]
         },
         {
-            "address": "0x59f2f1fcfe2474fd5f0b9ba1e73ca90b143eb8d0",
+            "address": "0x05aa229aec102f78ce0e852a812a388f076aa555",
             "image": "scx",
             "friendlyName": "Scarcity",
             "category": "Behodler",
@@ -155,7 +155,7 @@
             ]
         },
         {
-            "address": "0x0b48af34f4c854f5ae1a3d587da471fea45bad52",
+            "address": "0xdbce93328dc9c9abaea108d25711470fd1875c43",
             "image": "scxEye",
             "friendlyName": "SCX/EYE LP (Uni-V2)",
             "category": "LP",
@@ -168,9 +168,9 @@
             ]
         },
         {
-            "address": "0x90118d110b07abb82ba8980d1c5cc96eea810d2c",
-            "image": "pyroScxEth",
-            "friendlyName": "Pyro (SCX/ETH)",
+            "address": "0x5c7c905b505f0cf40ab6600d05e677f717916f6b",
+            "image": "pyroScxEye",
+            "friendlyName": "Pyro (SCX/EYE)",
             "category": "PyroToken",
             "AMMs": [
                 {
@@ -181,13 +181,13 @@
             ]
         },
         {
-            "address": "0xf818a7c2afc45cf4b9ddc48933c9a1edd624e46f",
+            "address": "0x71c95911e9a5d330f4d621842ec243ee1343292e",
             "image": "eth",
             "category": "BlueChip",
             "friendlyName": "Ether"
         },
         {
-            "address": "0xe6b98f104c1bef218f3893adab4160dc73eb8367",
+            "address": "0xafe1b5bdebd4ae65af2024738bf0735fbb65d44b",
             "image": "shiba",
             "category": "Meme",
             "friendlyName": "Shib",
@@ -200,7 +200,7 @@
             ]
         },
         {
-            "address": "0x5c7c905b505f0cf40ab6600d05e677f717916f6b",
+            "address": "0x2fc631e4b3018258759c52af169200213e84abab",
             "image": "uni",
             "category": "Governance",
             "friendlyName": "Uni",

@@ -8,8 +8,6 @@ import { BigNumber, ethers } from 'ethers';
 import { LiveProps } from '../extensions/LiveProps';
 import { useProvider } from '../hooks/useProvider';
 import { ChainID } from '../types/ChainID';
-import { getDaiPriceOfToken, getEthPrice } from '../extensions/Uniswap';
-
 
 
 const BalanceHeader = (props: LiveProps) => {
@@ -17,31 +15,12 @@ const BalanceHeader = (props: LiveProps) => {
     const [balance, setBalance] = useState<string>("0.0")
     const [lockedBalance, setLockedBalance] = useState<string>();
     const blockNumber = useBlockNumber();
-    const { chainId, daiPriceOfEth, setFlxDollarPrice, flxDollarPrice } = useBlockchainContext()
-    const [flaxPrice, setFlaxPrice] = useState<string>()
-    const ethProvider = useProvider();
+    const { chainId, daiPriceOfEth, flxDollarPrice } = useBlockchainContext()
+    const [formattedFlaxPrice, setFormattedFlaxPrice] = useState<string>("-.--")
 
     useEffect(() => {
-        if (ethProvider && chainId === ChainID.mainnet) {
-            const fetchDaiPrice = async () => {
-                const ethPriceOfFLX = await getEthPrice('0x0cf758D4303295C43CD95e1232f0101ADb3DA9E8', ethProvider, [])
-                if (daiPriceOfEth && ethPriceOfFLX) {
-
-                    const daiPrice = daiPriceOfEth.mul(ethPriceOfFLX).div(ethers.constants.WeiPerEther)
-                    setFlxDollarPrice(daiPrice || BigNumber.from('0000000000000000'))
-                    if (daiPrice) {
-                        const formatted = parseFloat(ethers.utils.formatEther(daiPrice)).toFixed(2)
-                        setFlaxPrice(formatted)
-                    }
-                } else {
-                    setFlaxPrice(undefined)
-                }
-            }
-            fetchDaiPrice();
-        }
-
-    }, [blockNumber, chainId, ethProvider, daiPriceOfEth])
-
+        setFormattedFlaxPrice(parseFloat(ethers.utils.formatEther(flxDollarPrice)).toFixed(2))
+    }, [flxDollarPrice])
 
     useEffect(() => {
         const fetchBalance = async () => {
@@ -104,21 +83,13 @@ const BalanceHeader = (props: LiveProps) => {
                     </a>
                 }
             </Grid>
-            {flaxPrice ?
                 <Grid item>
                     <Tooltip title="This is the current Uniswap V2 price">
                         <Typography variant="h5" style={{ color: '#00A36C' }}>
-                            ${flaxPrice}
+                            ${formattedFlaxPrice}
                         </Typography>
                     </Tooltip>
-                </Grid> : <Grid item>
-                    <Tooltip title="This is just a fictional testnet price">
-                        <Typography variant="h5" style={{ color: '#00A36C' }}>
-                            ${ethers.utils.formatEther(flxDollarPrice.toString())}0
-                        </Typography>
-                    </Tooltip>
-                </Grid>}
-
+                </Grid> 
         </Grid>
     );
 };
