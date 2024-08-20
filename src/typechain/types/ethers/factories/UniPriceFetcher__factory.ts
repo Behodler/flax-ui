@@ -119,21 +119,8 @@ const _abi = [
       },
       {
         name: "types",
-        type: "uint256[]",
-        internalType: "uint256[]",
-      },
-    ],
-    outputs: [],
-    stateMutability: "nonpayable",
-  },
-  {
-    type: "function",
-    name: "setTradeAmount",
-    inputs: [
-      {
-        name: "amount",
-        type: "uint256",
-        internalType: "uint256",
+        type: "uint8[]",
+        internalType: "enum TokenType[]",
       },
     ],
     outputs: [],
@@ -154,19 +141,6 @@ const _abi = [
         name: "",
         type: "uint8",
         internalType: "enum TokenType",
-      },
-    ],
-    stateMutability: "view",
-  },
-  {
-    type: "function",
-    name: "tradeAmount",
-    inputs: [],
-    outputs: [
-      {
-        name: "",
-        type: "uint256",
-        internalType: "uint256",
       },
     ],
     stateMutability: "view",
@@ -229,6 +203,17 @@ const _abi = [
   },
   {
     type: "error",
+    name: "InvalidLP",
+    inputs: [
+      {
+        name: "token",
+        type: "address",
+        internalType: "address",
+      },
+    ],
+  },
+  {
+    type: "error",
     name: "OwnableInvalidOwner",
     inputs: [
       {
@@ -244,6 +229,33 @@ const _abi = [
     inputs: [
       {
         name: "account",
+        type: "address",
+        internalType: "address",
+      },
+    ],
+  },
+  {
+    type: "error",
+    name: "TokenFalselyClaimsToBeWeth",
+    inputs: [
+      {
+        name: "token",
+        type: "address",
+        internalType: "address",
+      },
+      {
+        name: "weth",
+        type: "address",
+        internalType: "address",
+      },
+    ],
+  },
+  {
+    type: "error",
+    name: "TokenTypeUnset",
+    inputs: [
+      {
+        name: "token",
         type: "address",
         internalType: "address",
       },

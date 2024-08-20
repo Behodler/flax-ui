@@ -33,10 +33,8 @@ export interface UniPriceFetcherInterface extends utils.Interface {
     "daiPriceOfTokens(address[])": FunctionFragment;
     "owner()": FunctionFragment;
     "renounceOwnership()": FunctionFragment;
-    "setTokenTypeMap(address[],uint256[])": FunctionFragment;
-    "setTradeAmount(uint256)": FunctionFragment;
+    "setTokenTypeMap(address[],uint8[])": FunctionFragment;
     "tokenTypeMap(address)": FunctionFragment;
-    "tradeAmount()": FunctionFragment;
     "transferOwnership(address)": FunctionFragment;
     "wethPriceOfBaseToken(address,bool)": FunctionFragment;
   };
@@ -49,9 +47,7 @@ export interface UniPriceFetcherInterface extends utils.Interface {
       | "owner"
       | "renounceOwnership"
       | "setTokenTypeMap"
-      | "setTradeAmount"
       | "tokenTypeMap"
-      | "tradeAmount"
       | "transferOwnership"
       | "wethPriceOfBaseToken"
   ): FunctionFragment;
@@ -78,16 +74,8 @@ export interface UniPriceFetcherInterface extends utils.Interface {
     values: [string[], BigNumberish[]]
   ): string;
   encodeFunctionData(
-    functionFragment: "setTradeAmount",
-    values: [BigNumberish]
-  ): string;
-  encodeFunctionData(
     functionFragment: "tokenTypeMap",
     values: [string]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "tradeAmount",
-    values?: undefined
   ): string;
   encodeFunctionData(
     functionFragment: "transferOwnership",
@@ -120,15 +108,7 @@ export interface UniPriceFetcherInterface extends utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "setTradeAmount",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
     functionFragment: "tokenTypeMap",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "tradeAmount",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -214,14 +194,7 @@ export interface UniPriceFetcher extends BaseContract {
       overrides?: Overrides & { from?: string }
     ): Promise<ContractTransaction>;
 
-    setTradeAmount(
-      amount: BigNumberish,
-      overrides?: Overrides & { from?: string }
-    ): Promise<ContractTransaction>;
-
     tokenTypeMap(arg0: string, overrides?: CallOverrides): Promise<[number]>;
-
-    tradeAmount(overrides?: CallOverrides): Promise<[BigNumber]>;
 
     transferOwnership(
       newOwner: string,
@@ -260,14 +233,7 @@ export interface UniPriceFetcher extends BaseContract {
     overrides?: Overrides & { from?: string }
   ): Promise<ContractTransaction>;
 
-  setTradeAmount(
-    amount: BigNumberish,
-    overrides?: Overrides & { from?: string }
-  ): Promise<ContractTransaction>;
-
   tokenTypeMap(arg0: string, overrides?: CallOverrides): Promise<number>;
-
-  tradeAmount(overrides?: CallOverrides): Promise<BigNumber>;
 
   transferOwnership(
     newOwner: string,
@@ -307,14 +273,7 @@ export interface UniPriceFetcher extends BaseContract {
       overrides?: CallOverrides
     ): Promise<void>;
 
-    setTradeAmount(
-      amount: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
     tokenTypeMap(arg0: string, overrides?: CallOverrides): Promise<number>;
-
-    tradeAmount(overrides?: CallOverrides): Promise<BigNumber>;
 
     transferOwnership(
       newOwner: string,
@@ -368,14 +327,7 @@ export interface UniPriceFetcher extends BaseContract {
       overrides?: Overrides & { from?: string }
     ): Promise<BigNumber>;
 
-    setTradeAmount(
-      amount: BigNumberish,
-      overrides?: Overrides & { from?: string }
-    ): Promise<BigNumber>;
-
     tokenTypeMap(arg0: string, overrides?: CallOverrides): Promise<BigNumber>;
-
-    tradeAmount(overrides?: CallOverrides): Promise<BigNumber>;
 
     transferOwnership(
       newOwner: string,
@@ -418,17 +370,10 @@ export interface UniPriceFetcher extends BaseContract {
       overrides?: Overrides & { from?: string }
     ): Promise<PopulatedTransaction>;
 
-    setTradeAmount(
-      amount: BigNumberish,
-      overrides?: Overrides & { from?: string }
-    ): Promise<PopulatedTransaction>;
-
     tokenTypeMap(
       arg0: string,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
-
-    tradeAmount(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     transferOwnership(
       newOwner: string,
