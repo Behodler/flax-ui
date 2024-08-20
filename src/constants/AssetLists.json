@@ -32,6 +32,19 @@
             ]
         },
         {
+            "address": "0x0cf758d4303295c43cd95e1232f0101adb3da9e8",
+            "image": "flax",
+            "friendlyName": "Flax",
+            "category": "Behodler",
+            "AMMs": [
+                {
+                    "location": "uni",
+                    "type": "base",
+                    "url": "#/swap?inputCurrency=ETH&outputCurrency=0x0cf758D4303295C43CD95e1232f0101ADb3DA9E8"
+                }
+            ]
+        },
+        {
             "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
             "image": "eth",
             "category": "BlueChip",

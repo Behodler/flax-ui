@@ -38,7 +38,8 @@ const useAddresses = (chainId: ChainID): { addresses: OptionalAddresses, loading
                             '0x319ead06eb01e808c80c7eb9bd77c5d8d163addb', //SCX/Eth price = ($1283.924375215) 16691
                             '0xa9eea8723fffd923f6908586455411159b525d23', //pyro(scx/ETH) price = 16857
                             '0x1f9840a85d5af5bf1d1762f925bdaddc4201f984', // UNI
-                            '0x95ad61b0a150d79219dcf64e1e6cc01f0b64c4ce']//SHIB
+                            '0x95ad61b0a150d79219dcf64e1e6cc01f0b64c4ce', //SHIB
+                            '0x0cf758d4303295c43cd95e1232f0101adb3da9e8'] //Flax
 
                         //tera mult:1000000000000 = 10^12 so that 1 EYE mints 1 Flax
                     });
