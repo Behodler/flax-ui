@@ -6,8 +6,7 @@ import { useBlockchainContext } from '../contexts/BlockchainContextProvider';
 import { useEthers, useBlockNumber } from '@usedapp/core';
 import { BigNumber, ethers } from 'ethers';
 import { LiveProps } from '../extensions/LiveProps';
-import { useProvider } from '../hooks/useProvider';
-import { ChainID } from '../types/ChainID';
+import { ConnectButton } from '@rainbow-me/rainbowkit';
 
 
 const BalanceHeader = (props: LiveProps) => {
@@ -83,13 +82,13 @@ const BalanceHeader = (props: LiveProps) => {
                     </a>
                 }
             </Grid>
-                <Grid item>
-                    <Tooltip title="This is the current Uniswap V2 price">
-                        <Typography variant="h5" style={{ color: '#00A36C' }}>
-                            ${formattedFlaxPrice}
-                        </Typography>
-                    </Tooltip>
-                </Grid> 
+            <Grid item>
+                <Tooltip title="This is the current Uniswap V2 price">
+                    <Typography variant="h5" style={{ color: '#00A36C' }}>
+                        ${formattedFlaxPrice}
+                    </Typography>
+                </Tooltip>
+            </Grid>
         </Grid>
     );
 };

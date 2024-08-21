@@ -4,17 +4,17 @@ import { useBlockchainContext } from '../contexts/BlockchainContextProvider';
 import { ContractAddresses } from '../types/ContractAddresses';
 import { Coupon, UniPriceFetcher } from '../typechain/types/ethers'
 import { useEthers } from '@usedapp/core';
-import { useProvider } from './useProvider';
 import { useMemo, useRef } from 'react';
 import { useRenderCount } from './useDebug';
+import { useEthersSigner } from './useEthersProvider';
 
 //Never import this directly. Call the blockchain context
 const useUniPriceFetcher = (addresses: ContractAddresses | null): UniPriceFetcher | undefined => {
-    const provider = useProvider();
+    const signer = useEthersSigner();
     // Create a Contract instance and assert the correct type
     return useMemo(() => {
-        if (provider && addresses && addresses.UniPriceFetcher) {
-            const signer = provider.getSigner()
+        if (signer && addresses && addresses.UniPriceFetcher) {
+            
             const uniPriceFetcherContract = new Contract(
                 addresses.UniPriceFetcher,
                 ABIs.UniPriceFetcher,
@@ -24,7 +24,7 @@ const useUniPriceFetcher = (addresses: ContractAddresses | null): UniPriceFetche
             return uniPriceFetcherContract;
         }
         return undefined
-    }, [provider, addresses])
+    }, [signer, addresses])
 };
 
 export default useUniPriceFetcher

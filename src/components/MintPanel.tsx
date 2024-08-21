@@ -12,8 +12,6 @@ import { TransactionProgress } from '../extensions/Broadcast';
 import IconTextBox, { invalidReasons } from './IconTextBox';
 import { LiveProps } from '../extensions/LiveProps';
 import { calculateLockupDuration, isEthAddress } from '../extensions/Utils';
-import { useProvider } from '../hooks/useProvider';
-import { ChainID } from '../types/ChainID';
 import { useDeepCompareEffect } from '../hooks/useDeepCompareEffect';
 import useEthBalance from '../hooks/useEthBalance';
 import { IssueSignature } from '../hooks/useDynamicTokenInfo';
@@ -46,7 +44,6 @@ export default function MintPanel(props: LiveProps) {
     const [inputDollarPrice, setInputDollarPrice] = useState<BigNumber | undefined>()
     const [lockupDuration, setLockupDuration] = useState<number>(tokenLockupConfig.offset);
     const [dollarValueOfInputText, setDollarValueOfInputText] = useState<string | undefined>()
-    const ethProvider = useProvider()
     const ethBalance = useEthBalance(account)
 
     useEffect(()=>{

@@ -7,6 +7,7 @@ import MintPanel from './MintPanel';
 import { useBlockchainContext } from '../contexts/BlockchainContextProvider';
 import { LiveProps } from '../extensions/LiveProps';
 import { ChainID, supportedChain } from '../types/ChainID';
+import { ConnectButton } from '@rainbow-me/rainbowkit';
 
 const MinterPage = () => {
   const { contracts, chainId, account } = useBlockchainContext()
@@ -21,11 +22,11 @@ const MinterPage = () => {
         setLoadingMessage("Loading...")
       } else {
         if (chainId == ChainID.disconnected) {
-          setLoadingMessage("Metamask not connected")
+          setLoadingMessage("Wallet not connected")
         } else if (chainId == ChainID.absent) {
-          setLoadingMessage("Dapp presently requires Metamask only")
+          setLoadingMessage("Dapp presently requires a popular crypto wallet")
         } else if (chainId == ChainID.unsupported) {
-          setLoadingMessage("Please switch to one of the following networks: Sepolia or Mainnet")
+          setLoadingMessage("Please switch to Mainnet")
         }
       }
       setLiveProps(undefined)
@@ -48,17 +49,22 @@ const MinterPage = () => {
   const MintPanelLive = liveProps ? <MintPanel {...liveProps} /> : <div></div>
   return (
     <Container maxWidth={false} disableGutters>
-  
       <Grid container spacing={0} sx={{ backgroundColor: '#0D131A', width: '100vw', minHeight: '100vh', boxSizing: 'border-box' }}>
+
         <Grid item xs={false} sm={1} md={true} style={{ flexGrow: 1 }} />
+
         <Grid item xs={12} sm={10} md={false} style={{ maxWidth: 1400, flexBasis: 1400 }}>
           <Box id="box" sx={{ minHeight: '100%', width: '100%', color: 'white', padding: 4, backgroundColor: '#0D131A', boxSizing: 'border-box' }}>
+
             <Grid
               container
               direction="column"
               justifyContent="center"
               alignItems="stretch"
             >
+              <Grid item>
+
+              </Grid>
               <Grid item style={{ height: '130px' }}>
                 {BalanceHeaderLive}
               </Grid>

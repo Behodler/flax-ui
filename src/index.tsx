@@ -5,10 +5,17 @@ import './index.css';
 import App from './App';
 import { DAppProvider, Config, Mainnet, Sepolia, Localhost, Hardhat } from '@usedapp/core';
 import { BlockchainContextProvider } from './contexts/BlockchainContextProvider';
-import { ethers } from 'ethers';
-import { ContractAddresses } from './types/ContractAddresses';
+import '@rainbow-me/rainbowkit/styles.css';
 
-const config: Config = {
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { WagmiProvider } from 'wagmi';
+import { RainbowKitProvider, darkTheme } from '@rainbow-me/rainbowkit';
+
+import { config } from './wagmi';
+
+const client = new QueryClient();
+
+const useDappConfig: Config = {
   networks: [Localhost, Mainnet, Sepolia, Hardhat],  // Including multiple networks,
   multicallVersion: 2 as const,
   multicallAddresses: {
@@ -21,11 +28,15 @@ const config: Config = {
 const container = document.getElementById('root')!;
 const root = ReactDOM.createRoot(container);
 root.render(
-    <DAppProvider config={config}>
-      <BlockchainContextProvider>
-        <App />
-        
-
-      </BlockchainContextProvider>
-    </DAppProvider>
+  <WagmiProvider config={config}>
+    <QueryClientProvider client={client}>
+      <RainbowKitProvider theme={darkTheme()}>
+        <DAppProvider config={useDappConfig}>
+          <BlockchainContextProvider>
+            <App />
+          </BlockchainContextProvider>
+        </DAppProvider>
+      </RainbowKitProvider>
+    </QueryClientProvider>
+  </WagmiProvider>
 );

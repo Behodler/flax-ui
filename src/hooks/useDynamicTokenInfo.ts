@@ -1,10 +1,9 @@
 import { multicall, useBlockNumber, useContractFunction, useEtherBalance, useEthers } from '@usedapp/core';
 import { Issuer, Multicall3, Tilter, TilterFactory } from "../typechain/types/ethers";  // Import TypeChain-generated type
-import { ethers, Contract, BigNumber, Overrides, PayableOverrides } from 'ethers';
+import { ethers, Contract, BigNumber, Overrides, PayableOverrides, providers } from 'ethers';
 import ABIs from "../constants/ABIs.json"
 import { Contracts, useBlockchainContext } from '../contexts/BlockchainContextProvider';
 import { ContractAddresses } from '../types/ContractAddresses';
-import { useProvider } from './useProvider';
 import { useEffect, useMemo, useState } from 'react';
 import { useDeepCompareEffect } from './useDeepCompareEffect';
 import _ from 'lodash';
@@ -13,6 +12,7 @@ import useEthBalance from './useEthBalance';
 import { ChainID } from '../types/ChainID';
 import { getTilter } from './useTilter';
 import { ONE } from '../extensions/Utils';
+import { useEthersSigner } from './useEthersProvider';
 
 interface TokenInfo {
     burnable: boolean
@@ -50,16 +50,16 @@ const getPrice = (info: TokenFeatures): BigNumber => {
 
 }
 
-const useMultiTilterMapping = (contracts: Contracts | undefined, tokens: string[] | undefined, provider: ethers.providers.Web3Provider | undefined, refreshCount: number) => {
+const useMultiTilterMapping = (contracts: Contracts | undefined, tokens: string[] | undefined, signer: providers.JsonRpcSigner | undefined, refreshCount: number) => {
     const blockNumber = useBlockNumber()
     const [tokenTilterPairs, setTokenTilterPairs] = useState<TokenTilterPair[]>([])
     const [refresh, setRefresh] = useState<boolean>(false)
-
+  
     useEffect(() => {
         setRefresh(true)
     }, [refreshCount])
     useDeepCompareEffect(() => {
-        if (contracts && contracts.multicall3 && tokens && contracts.tilterFactory && provider && blockNumber && (blockNumber % 3 == 0 || refresh)) {
+        if (contracts && contracts.multicall3 && tokens && contracts.tilterFactory && signer && blockNumber && (blockNumber % 3 == 0 || refresh)) {
             (async () => {
                 const calls = tokens.map(t => ({
 
@@ -72,7 +72,7 @@ const useMultiTilterMapping = (contracts: Contracts | undefined, tokens: string[
                     const info = ethers.utils.defaultAbiCoder.decode(['address'], data)
                     return {
                         inputToken,
-                        tilter: getTilter(info[0], provider),
+                        tilter: getTilter(info[0], signer),
                         issuerToken: inputToken,
                         priceMultiple: ONE
                     }
@@ -225,12 +225,12 @@ const useTokenInfo = (contracts: Contracts | undefined, priceMultiples: TokenTil
 const useMultiTokenInfo = (contracts: Contracts | undefined,
     tokens: string[] | undefined,
     refresh: number): TokenFeatureMap | undefined => {
-    const provider = useProvider()
+    const signer = useEthersSigner()
     const [info, setInfo] = useState<TokenFeatureMap>()
     const blockNumber = useBlockNumber()
     const [halfSeconds, setHalfSeconds] = useState(0);
 
-    const inputTilterPairs = useMultiTilterMapping(contracts, tokens, provider, refresh)
+    const inputTilterPairs = useMultiTilterMapping(contracts, tokens, signer, refresh)
     const inputTilterReferencePairs = useReferencePair(contracts, inputTilterPairs);
 
     //1 ether for non tilters
@@ -305,7 +305,7 @@ const useMultiTokenInfo = (contracts: Contracts | undefined,
 }
 
 const useMultiTokenBalances = (multicall3: Multicall3 | undefined, holder: string | undefined, tokens: string[] | undefined, weth: string | undefined, refreshCount: number): Record<string, BigNumber> | undefined => {
-    const provider = useProvider()
+    const signer = useEthersSigner()
     const [refresh, setRefresh] = useState<boolean>(false)
     const [balances, setBalances] = useState<Record<string, BigNumber> | undefined>()
 
@@ -318,12 +318,13 @@ const useMultiTokenBalances = (multicall3: Multicall3 | undefined, holder: strin
 
     useDeepCompareEffect(() => {
         if (blockNumber && (refresh || blockNumber % 5 == 0)) {
-            if (provider && holder && tokens && multicall3 && ethBalance && weth) {
+            if (signer && holder && tokens && multicall3 && ethBalance && weth) {
+         
                 (async () => {
                     const wethless = tokens.filter(t => t.toLowerCase() != weth.toLowerCase())
 
                     const calls = wethless.map(tokenAddress => {
-                        const tokenContract = new ethers.Contract(tokenAddress, ABIs.ERC20, provider);
+                        const tokenContract = new ethers.Contract(tokenAddress, ABIs.ERC20, signer);
                         return {
                             target: tokenAddress,
                             callData: tokenContract.interface.encodeFunctionData('balanceOf', [holder])
@@ -346,7 +347,7 @@ const useMultiTokenBalances = (multicall3: Multicall3 | undefined, holder: strin
                 })()
             }
         }
-    }, [blockNumber, provider, multicall3, refresh])
+    }, [blockNumber, signer, multicall3, refresh])
 
     return balances;
 };

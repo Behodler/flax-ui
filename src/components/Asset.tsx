@@ -4,8 +4,8 @@ import { Contracts, useBlockchainContext } from '../contexts/BlockchainContextPr
 
 import burn from "../images/burn.png"
 import lock from "../images/padlock.png"
-import { acceptableImages, getImagePath } from '../extensions/ImageMapper';
-import { useBlockNumber, useTokenBalance } from '@usedapp/core';
+import {  getImagePath } from '../extensions/ImageMapper';
+import { useBlockNumber } from '@usedapp/core';
 import { BigNumber, ethers } from 'ethers';
 import behodler from "../images/behodler.png"
 import uniswap from "../images/uniswap.png"
@@ -14,9 +14,6 @@ import { AMM, AssetProps } from '../types/Assets';
 import { useDeepCompareEffect } from '../hooks/useDeepCompareEffect';
 import { TeraToString } from '../extensions/Utils';
 import _ from 'lodash';
-import { useProvider } from '../hooks/useProvider';
-import { ChainID } from '../types/ChainID';
-import TilterRatio from './common/TilterRatio';
 import ethTilt from "../images/ethPriceTilting.png"
 import uniTilt from '../images/uniPriceTilt.png'
 import shibTilt from '../images/shibPriceTilt.png'
@@ -72,7 +69,6 @@ export function Asset(props: IProps) {
     const selectedDynamic = (selectedInput !== undefined && dynamicTokenInfo) ? dynamicTokenInfo[selectedInput.address] : undefined
     const [flxValueOfReward, setFlxValueOfReward] = useState<string>()
     const [inputDollarPrice, setInputDollarPrice] = useState<string | undefined>()
-    const ethProvider = useProvider();
 
     useDeepCompareEffect(() => {
         if (inputDollarPrice && flxValueOfReward) {

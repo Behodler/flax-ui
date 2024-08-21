@@ -1,11 +1,12 @@
 import { useState, useEffect } from 'react';
 import { BigNumber, ethers } from 'ethers';
-import { useProvider } from './useProvider'; // Adjust the import path as necessary
 import { useBlockNumber } from '@usedapp/core';
+import { useEthersProvider, useEthersSigner } from './useEthersProvider';
 
 const useEthBalance = (account: string | undefined): BigNumber | undefined => {
     const [balance, setBalance] = useState<BigNumber | undefined>();
-    const provider = useProvider();
+    const signer = useEthersSigner();
+    const provider = useEthersProvider()
     const blockNumber = useBlockNumber()
 
     useEffect(() => {
@@ -24,7 +25,7 @@ const useEthBalance = (account: string | undefined): BigNumber | undefined => {
         if (account) {
             fetchBalance();
         }
-    }, [provider, account, blockNumber]);
+    }, [signer, account, blockNumber]);
 
     return balance;
 };

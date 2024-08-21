@@ -6,7 +6,6 @@ import useAddresses from '../hooks/useAddresses'; // Updated import for renamed 
 import { useContracts } from '../hooks/useContracts';
 import { BigNumber } from 'ethers';
 import _, { add } from 'lodash';
-import { useProvider } from '../hooks/useProvider';
 import { DynamicTokenInfo, useDynamicTokenInfo } from '../hooks/useDynamicTokenInfo';
 import { isTiltingTokenFactory } from '../extensions/Utils';
 import useInputPrices from '../hooks/useInputPrices';
@@ -119,9 +118,6 @@ export const BlockchainContextProvider: React.FC<BlockchainProviderProps> = ({ c
     }, [contracts])
 
     useEffect(() => {
-        if ((!account || !active) && ethWindow.ethereum) {
-            activateBrowserWallet();
-        }
 
         const setChain = async (chainIdHex: string) => {
             const chainId: ChainID = parseInt(chainIdHex, 16);
@@ -154,9 +150,6 @@ export const BlockchainContextProvider: React.FC<BlockchainProviderProps> = ({ c
 
         };
     }, [active, account, ethWindow.ethereum]);
-
-    const ethProvider = useProvider()
-
 
     return (
         <BlockchainContext.Provider value={{

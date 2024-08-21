@@ -3,19 +3,18 @@ import ABIs from "../constants/ABIs.json"
 import { useBlockchainContext } from '../contexts/BlockchainContextProvider';
 import { ContractAddresses } from '../types/ContractAddresses';
 import { Coupon } from '../typechain/types/ethers'
-import { useEthers } from '@usedapp/core';
-import { useProvider } from './useProvider';
+
 import { useMemo, useRef } from 'react';
 import { useRenderCount } from './useDebug';
-
+import { useEthersSigner } from './useEthersProvider';
 //Never import this directly. Call the blockchain context
 const useCoupon = (addresses: ContractAddresses | null): Coupon | undefined => {
     useRenderCount("useCoupon",false)
-    const provider = useProvider();
+    const signer = useEthersSigner();
     // Create a Contract instance and assert the correct type
     return useMemo(() => {
-        if (provider && addresses && addresses.Coupon) {
-            const signer = provider.getSigner()
+        if (signer && addresses && addresses.Coupon) {
+          
             const couponContract = new Contract(
                 addresses.Coupon,
                 ABIs.Coupon,
@@ -25,7 +24,7 @@ const useCoupon = (addresses: ContractAddresses | null): Coupon | undefined => {
             return couponContract;
         }
         return undefined
-    }, [provider, addresses])
+    }, [signer, addresses])
 };
 
 export default useCoupon

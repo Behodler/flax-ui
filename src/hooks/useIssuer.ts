@@ -4,28 +4,28 @@ import { ethers, Contract } from 'ethers';
 import ABIs from "../constants/ABIs.json"
 import { useBlockchainContext } from '../contexts/BlockchainContextProvider';
 import { ContractAddresses } from '../types/ContractAddresses';
-import { useProvider } from './useProvider';
 import { useMemo } from 'react';
+import { useEthersSigner } from './useEthersProvider';
 
 
 //Never import this directly. Call the blockchain context
 const useIssuer = (addresses: ContractAddresses | null): Issuer | undefined => {
   
-    const provider = useProvider();
+    const signer = useEthersSigner();
     // Create a Contract instance and assert the correct type
     return useMemo(() => {
-        if (provider && addresses && addresses.Issuer) {
+        if (signer && addresses && addresses.Issuer) {
             const issuerContract = new Contract(
                 addresses.Issuer,
                 ABIs.Issuer,
-                provider.getSigner()
+                signer
             ) as unknown as Issuer;  // Type assertion here
 
             // Now you can use issuerContract as a Issuer instance with all methods strongly typed
             return issuerContract;
         }
         return undefined
-    }, [provider, addresses])
+    }, [signer, addresses])
 };
 
 export default useIssuer

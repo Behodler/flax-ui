@@ -4,21 +4,21 @@ import { ethers, Contract } from 'ethers';
 import ABIs from "../constants/ABIs.json"
 import { useBlockchainContext } from '../contexts/BlockchainContextProvider';
 import { ContractAddresses } from '../types/ContractAddresses';
-import { useProvider } from './useProvider';
 
 import { useEffect, useMemo, useState } from 'react';
 import _ from 'lodash';
+import { useEthersSigner } from './useEthersProvider';
 
 const useERC20s = (addresses: ContractAddresses | null): ERC20[] | undefined => {
-    const provider = useProvider();
+    const signer = useEthersSigner();
     const addressesString = JSON.stringify(addresses)
     const { account } = useEthers()
     const blockNumber = useBlockNumber()
     const [erc20s, setErc20s] = useState<ERC20[]>([])
 
     useEffect(() => {
-        if (addresses && addresses.Inputs && provider) {
-            const signer = provider.getSigner();
+        if (addresses && addresses.Inputs && signer) {
+
             const newERC20s = addresses.Inputs.map(address => {
                 return new Contract(
                     address,
@@ -30,7 +30,7 @@ const useERC20s = (addresses: ContractAddresses | null): ERC20[] | undefined => 
                 setErc20s(newERC20s)
             }
         }
-    }, [addresses, provider, addressesString]); // Dependency array
+    }, [addresses, signer, addressesString]); // Dependency array
 
     return erc20s
 };

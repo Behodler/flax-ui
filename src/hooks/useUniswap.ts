@@ -1,21 +1,21 @@
-import { Contract, ethers } from 'ethers';
+import { Contract, ethers, providers } from 'ethers';
 import { ContractAddresses } from '../types/ContractAddresses';
-import { useProvider } from './useProvider';
 import { useEffect, useMemo, useState } from 'react';
 import { UniswapV2Router02, UniswapV2Factory } from '../typechain/types/ethers';
 import ABIs from "../constants/ABIs.json"
+import { useEthersSigner } from './useEthersProvider';
 
-const useUniswapRouter = (addresses: ContractAddresses | null, provider: ethers.providers.Web3Provider | undefined): UniswapV2Router02 | undefined => {
+const useUniswapRouter = (addresses: ContractAddresses | null, signer: providers.JsonRpcSigner | undefined): UniswapV2Router02 | undefined => {
 
     return useMemo(() => {
-        if (provider && addresses) {
+        if (signer && addresses) {
             return new Contract(
                 addresses.UniswapV2Router,
                 ABIs.UniswapV2Router02,
-                provider.getSigner()
+                signer
             ) as unknown as UniswapV2Router02
         }
-    }, [provider, addresses])
+    }, [signer, addresses])
 }
 
 interface Uniswap {
@@ -24,16 +24,16 @@ interface Uniswap {
 }
 
 export const useUniswap = (addresses: ContractAddresses | null): Uniswap | undefined => {
-    const provider = useProvider()
-    const router = useUniswapRouter(addresses, provider)
+    const signer = useEthersSigner()
+    const router = useUniswapRouter(addresses, signer)
     const [factory, setFactory] = useState<UniswapV2Factory>()
 
     useEffect(() => {
-        if (provider && router) {
+        if (signer && router) {
             (async () => {
                 const factoryAddress = await router.factory()
                 setFactory(
-                    new Contract(factoryAddress, ABIs.UniswapV2Factory, provider.getSigner()) as unknown as UniswapV2Factory
+                    new Contract(factoryAddress, ABIs.UniswapV2Factory, signer) as unknown as UniswapV2Factory
                 )
             })()
         }

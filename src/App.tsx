@@ -9,12 +9,15 @@ import { Broadcast, TransactionProgress } from './extensions/Broadcast';
 import { ThemeProvider } from '@mui/material/styles';
 import theme from './theme';
 import MinterPage from './components/MinterPage';
+import { ConnectButton } from '@rainbow-me/rainbowkit';
 
 function App() {
 
   return (
     <ThemeProvider theme={theme}>
-      <div style={{ overflowX: 'hidden' }}>
+      <div style={{ overflowX: 'hidden', backgroundColor:'#0D131A' }}>
+
+      <ConnectButton />
         <MinterPage />
       </div>
     </ThemeProvider>
