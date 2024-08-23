@@ -54,7 +54,7 @@ const useMultiTilterMapping = (contracts: Contracts | undefined, tokens: string[
     const blockNumber = useBlockNumber()
     const [tokenTilterPairs, setTokenTilterPairs] = useState<TokenTilterPair[]>([])
     const [refresh, setRefresh] = useState<boolean>(false)
-  
+
     useEffect(() => {
         setRefresh(true)
     }, [refreshCount])
@@ -252,7 +252,6 @@ const useMultiTokenInfo = (contracts: Contracts | undefined,
                 const newTera = t.teraCouponPerTokenPerSecond.mul(matchingPriceMultiple.priceMultiple).div(ONE)
                 const { burnable, enabled, lastminted_timestamp } = t
                 const issuer = matchingPriceMultiple.tilter === undefined ? contracts.issuer : matchingPriceMultiple.tilter
-
                 let feature: TokenFeatures = {
                     currentPrice: BigNumber.from(0),
                     burnable,
@@ -319,7 +318,7 @@ const useMultiTokenBalances = (multicall3: Multicall3 | undefined, holder: strin
     useDeepCompareEffect(() => {
         if (blockNumber && (refresh || blockNumber % 5 == 0)) {
             if (signer && holder && tokens && multicall3 && ethBalance && weth) {
-         
+
                 (async () => {
                     const wethless = tokens.filter(t => t.toLowerCase() != weth.toLowerCase())
 
