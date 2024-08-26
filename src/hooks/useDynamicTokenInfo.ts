@@ -145,7 +145,7 @@ const usePriceMultiples = (contracts: Contracts | undefined, inputTilterReferenc
 
                 const calls = filteredTokens.map(t => ({
                     target: t.tilter.address,
-                    callData: t.tilter.interface.encodeFunctionData("refValueOfTilt", [ethers.constants.WeiPerEther, false])
+                    callData: t.tilter.interface.encodeFunctionData("refValueOfTilt", [ethers.constants.WeiPerEther, true])
                 }))
                 tilterAddresses = calls.map(c => c.target)
                 // try {

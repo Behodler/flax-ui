@@ -4,7 +4,7 @@ import { Contracts, useBlockchainContext } from '../contexts/BlockchainContextPr
 
 import burn from "../images/burn.png"
 import lock from "../images/padlock.png"
-import {  getImagePath } from '../extensions/ImageMapper';
+import { getImagePath } from '../extensions/ImageMapper';
 import { useBlockNumber } from '@usedapp/core';
 import { BigNumber, ethers } from 'ethers';
 import behodler from "../images/behodler.png"
@@ -67,13 +67,13 @@ export function Asset(props: IProps) {
     const inputs = contracts.inputs
     const selectedInput = inputs.filter(input => input.address.toLowerCase() === asset.address.toLowerCase())[0]
     const selectedDynamic = (selectedInput !== undefined && dynamicTokenInfo) ? dynamicTokenInfo[selectedInput.address] : undefined
-    const [flxValueOfReward, setFlxValueOfReward] = useState<string>()
+    const [dollarValueOfFlaxReward_str, setDollarValueOfFlaxReward_str] = useState<string>()
     const [inputDollarPrice, setInputDollarPrice] = useState<string | undefined>()
 
     useDeepCompareEffect(() => {
-        if (inputDollarPrice && flxValueOfReward) {
+        if (inputDollarPrice && dollarValueOfFlaxReward_str) {
             const inputDollarFloat = parseFloat(inputDollarPrice)
-            const dollarValueOfFlaxReward = parseFloat(flxValueOfReward)
+            const dollarValueOfFlaxReward = parseFloat(dollarValueOfFlaxReward_str)
 
             if (isNaN(inputDollarFloat) || isNaN(dollarValueOfFlaxReward)) {
                 props.setAPY(0)
@@ -86,13 +86,13 @@ export function Asset(props: IProps) {
         } else {
             props.setAPY(0)
         }
-    }, [inputDollarPrice, flxValueOfReward, dynamicTokenInfo, blockNumber])
+    }, [inputDollarPrice, dollarValueOfFlaxReward_str, dynamicTokenInfo, blockNumber])
 
     useDeepCompareEffect(() => {
         const daiPrice = inputDollarPrices[props.children.address.toLowerCase()]
         if (daiPrice) {
             const float = parseFloat(ethers.utils.formatEther(daiPrice))
-            const decimalPlaces = float > 0.01 ? 2 : 6
+            const decimalPlaces = float > 0.01 ? 2 : 12
             const formatted = parseFloat(ethers.utils.formatEther(daiPrice)).toFixed(decimalPlaces)
             setInputDollarPrice(formatted)
         }
@@ -107,14 +107,14 @@ export function Asset(props: IProps) {
             const teraCouponPerToken = dynamicTokenInfo[props.children.address.toLowerCase()].teraCouponPerToken
             const factor = BigNumber.from(10).pow(12);
             const flxValueBig = teraCouponPerToken.mul(flxDollarPrice).div(factor)
-            setFlxValueOfReward(parseFloat(ethers.utils.formatEther(flxValueBig)).toFixed(6));
+            setDollarValueOfFlaxReward_str(parseFloat(ethers.utils.formatEther(flxValueBig)).toFixed(12));
         }
     }, [flxDollarPrice, dynamicTokenInfo])
 
     useDeepCompareEffect(() => {
         if (selectedInput && dynamicTokenInfo && dynamicTokenInfo[selectedInput.address] && dynamicTokenInfo[selectedInput.address].balance) {
             const formattedBalance = ethers.utils.formatEther(dynamicTokenInfo[selectedInput.address].balance);
-            const balanceFixed = parseFloat(formattedBalance).toFixed(8); // Ensure it always has 8 decimal places
+            const balanceFixed = parseFloat(formattedBalance).toFixed(12); // Ensure it always has 8 decimal places
             setCurrentBalance(balanceFixed);
         }
     }, [dynamicTokenInfo])
@@ -125,11 +125,12 @@ export function Asset(props: IProps) {
 
     const [mintPrice, setMintPrice] = useState<string>("")
     const [burnMessage, setBurnMessage] = useState<string>("")
-    const [mintMessage, setMintMessage] = useState<string>(`1 ${asset.friendlyName} mints ${mintPrice} Flax (\$${flxValueOfReward})`)
+    const [mintMessage, setMintMessage] = useState<string>(`1 ${asset.friendlyName} mints ${mintPrice} Flax (\$${dollarValueOfFlaxReward_str})`)
     useEffect(() => {
         if (selectedDynamic) {
             setBurnMessage(`Deposit ${selectedDynamic.burnable ? "burnt" : "permanently locked"} on Flax minting`)
-            setMintPrice(TeraToString(selectedDynamic.teraCouponPerToken))
+            let places =4
+            setMintPrice(TeraToString(selectedDynamic.teraCouponPerToken, places))
             let burnSource = selectedDynamic.burnable ? burn : lock
             const tilting = selectedDynamic.issuerToApprove !== contracts.issuer.address
             if (tilting) {
@@ -148,7 +149,7 @@ export function Asset(props: IProps) {
             setBurnableImage(<Tooltip title={burnMessage}>
                 <img width="30px" src={burnSource} style={{ margin: "5px 0 0 0" }} />
             </Tooltip>)
-            setMintMessage(`1 ${asset.friendlyName} mints ${mintPrice} Flax (\$${flxValueOfReward})`)
+            setMintMessage(`1 ${asset.friendlyName} mints ${mintPrice} Flax (\$${dollarValueOfFlaxReward_str})`)
         }
     }, [selectedDynamic])
 
@@ -234,7 +235,7 @@ export function Asset(props: IProps) {
                             <Tooltip title={mintMessage}>
                                 <div>
                                     <Typography style={{ textAlign: "right" }} variant={"h3"}> {mintPrice} FLX</Typography>
-                                    <Typography style={{ textAlign: "right" }} variant={"h6"}> (${flxValueOfReward})</Typography>
+                                    <Typography style={{ textAlign: "right" }} variant={"h6"}> (${dollarValueOfFlaxReward_str})</Typography>
                                 </div>
                             </Tooltip>
                         </Grid>

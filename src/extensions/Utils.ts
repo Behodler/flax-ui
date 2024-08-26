@@ -3,10 +3,10 @@ import { TokenLockupConfig } from "../contexts/BlockchainContextProvider";
 import assetList from '../constants/AssetLists.json'
 import { AssetProps, Assets } from "../types/Assets";
 import { ChainID } from "../types/ChainID";
-export function TeraToString(teraFlaxPerInput: BigNumber): string {
-    return `${parseFloat(BigNumber.from(teraFlaxPerInput).div(
-        1000_000
-    ).toString()) / 1000_000}`
+export function TeraToString(teraFlaxPerInput: BigNumber, places:number): string {
+    return `${(parseFloat(BigNumber.from(teraFlaxPerInput).div(
+        1
+    ).toString()) / 1000_000_000_000).toFixed(places)}`
 }
 
 export const isEthAddress = (address: string | undefined) => {
