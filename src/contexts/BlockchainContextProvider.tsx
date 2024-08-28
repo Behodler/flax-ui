@@ -9,6 +9,10 @@ import _, { add } from 'lodash';
 import { DynamicTokenInfo, useDynamicTokenInfo } from '../hooks/useDynamicTokenInfo';
 import { isTiltingTokenFactory } from '../extensions/Utils';
 import useInputPrices from '../hooks/useInputPrices';
+import { useAnchorPrices } from '../hooks/useAnchorPrices';
+import { useTokenLockupConfig } from '../hooks/useTokenLockupConfig';
+import { defaultRewardConfig, RewardConfig, useRewardConfig } from '../hooks/useRewardConfig';
+import { useCustomRewardBalance } from '../hooks/useCustomRewardBalance';
 // import { useMultipleTokenBalances } from '../hooks/useMultipleTokenBalances';
 
 
@@ -32,7 +36,9 @@ export interface TokenLockupConfig {
     offset: number,
 }
 
-const defaultLockup: TokenLockupConfig = { threshold_size: 0, days_multiple: 0, offset: 0 }
+export const defaultLockup: TokenLockupConfig = { threshold_size: 0, days_multiple: 0, offset: 0 }
+
+
 const defaultIsEth = (token: string) => false
 const defaultIsTiltingToken = defaultIsEth
 
@@ -41,6 +47,8 @@ interface BlockchainContextType {
     contracts: Contracts | undefined;
     account: string | undefined
     selectedAssetId: string,
+    rewardConfig: RewardConfig
+    customRewardBalance:BigNumber
     flxDollarPrice: BigNumber,
     setSelectedAssetId: (assetId: string) => void
     dynamicTokenInfo: Record<string, DynamicTokenInfo> | undefined
@@ -50,6 +58,7 @@ interface BlockchainContextType {
     refreshMultiCalls: () => void
     isEth: (token: string) => boolean
     isTiltingToken: (token: string) => boolean
+    rewardTokenName:string
 }
 
 
@@ -57,7 +66,8 @@ interface BlockchainContextType {
 const BlockchainContext = createContext<BlockchainContextType>({
     chainId: ChainID.disconnected, contracts: {} as any, account: "0x0", selectedAssetId: '', flxDollarPrice: BigNumber.from('100000000000000000'),
     setSelectedAssetId: (id: string) => { }, dynamicTokenInfo: undefined, daiPriceOfEth: undefined,
-    tokenLockupConfig: defaultLockup, refreshMultiCalls: () => { }, isEth: defaultIsEth, isTiltingToken: defaultIsTiltingToken, inputDollarPrices: {}
+    tokenLockupConfig: defaultLockup, refreshMultiCalls: () => { }, isEth: defaultIsEth, isTiltingToken: defaultIsTiltingToken, inputDollarPrices: {}, rewardConfig: defaultRewardConfig,
+    customRewardBalance:BigNumber.from(0),rewardTokenName:''
 });
 
 interface BlockchainProviderProps {
@@ -72,53 +82,22 @@ export const BlockchainContextProvider: React.FC<BlockchainProviderProps> = ({ c
     const [selectedAssetId, setSelectedAssetId] = useState<string>('');
     const ethWindow: EthWindow = (window as unknown) as EthWindow;
     const [derivedChainId, setDerivedChainId] = useState<ChainID>(ChainID.absent);
-
-    const [daiPriceOfEth, setDaiPriceOfEth] = useState<BigNumber | undefined>()
     // Fetch addresses and contracts whenever chainId changes
     const { addresses } = useAddresses(derivedChainId);
-    const [flxDollarPrice, setFlxDollarPrice] = useState<BigNumber>(BigNumber.from('100000000000000000'))
-    const [tokenLockupConfig, setTokenLockupConfig] = useState<TokenLockupConfig>(defaultLockup)
+
     const contracts = useContracts(addresses);
     const [refresh, setRefresh] = useState<number>(0)
-
+    // const rewardConfig = useRewardConfig(contracts?.issuer)
     const isTiltingToken = isTiltingTokenFactory(derivedChainId)
     const dynamicTokenInfo = useDynamicTokenInfo(contracts, account, addresses, refresh)
     const pricedTokens = addresses ? [addresses.Coupon, addresses.Weth, ...addresses.Inputs] : []
     const inputDollarPrices = useInputPrices(contracts?.uniPriceFetcher, pricedTokens, refresh)
 
+    const { flxDollarPrice, daiPriceOfEth } = useAnchorPrices(inputDollarPrices, addresses)
+    const tokenLockupConfig = useTokenLockupConfig(contracts?.issuer)
+    const rewardConfig = useRewardConfig(contracts?.issuer, refresh)
+    const {customRewardBalance,rewardTokenName} = useCustomRewardBalance(addresses?.Issuer,rewardConfig.token,refresh)
     useEffect(() => {
-        if (inputDollarPrices && addresses) {
-            const wethPrice = inputDollarPrices[addresses.Weth]
-            if (wethPrice) {
-                setDaiPriceOfEth(wethPrice)
-            }
-
-            const flaxPrice = inputDollarPrices[addresses.Coupon.toLowerCase()]
-            console.log('flaxPrice ' + flaxPrice.toString())
-            if (flaxPrice)
-                setFlxDollarPrice(flaxPrice)
-
-        }
-    }, [inputDollarPrices])
-
-    useEffect(() => {
-        if (contracts && contracts.issuer) {
-            (async () => {
-                const { threshold_size: threshold_sizeBig, offset: offsetBig, days_multiple: days_multipleBig } = await contracts.issuer.lockupConfig()
-                const threshold_size = threshold_sizeBig.toNumber()
-                const offset = offsetBig.toNumber()
-                const days_multiple = days_multipleBig.toNumber()
-                const newConfig: TokenLockupConfig = { threshold_size, offset, days_multiple }
-                if (!_.isEqual(tokenLockupConfig, newConfig)) {
-                    setTokenLockupConfig(newConfig)
-                }
-
-            })()
-        }
-    }, [contracts])
-
-    useEffect(() => {
-
         const setChain = async (chainIdHex: string) => {
             const chainId: ChainID = parseInt(chainIdHex, 16);
             if (supportedChain(chainId)) {
@@ -162,7 +141,10 @@ export const BlockchainContextProvider: React.FC<BlockchainProviderProps> = ({ c
             flxDollarPrice,
             daiPriceOfEth,
             inputDollarPrices,
+            rewardConfig,
             tokenLockupConfig,
+            customRewardBalance,
+            rewardTokenName,
             refreshMultiCalls: () => { console.log('Refreshed at ' + Date()); setTimeout(() => setRefresh(refresh + 1), 10000) },
             isEth: addresses ? (token: string) => token === addresses.Weth : defaultIsEth,
             isTiltingToken

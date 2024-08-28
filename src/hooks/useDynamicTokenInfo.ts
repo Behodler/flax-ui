@@ -19,6 +19,7 @@ interface TokenInfo {
     enabled: boolean,
     lastminted_timestamp: BigNumber,
     teraCouponPerTokenPerSecond: BigNumber,
+    rewardEnabled: boolean
 }
 
 interface TokenInfoFlat extends TokenInfo {
@@ -198,7 +199,7 @@ const useTokenInfo = (contracts: Contracts | undefined, priceMultiples: TokenTil
                     const flatInfo: TokenInfoFlat[] = returnData.map((data, i) => {
                         const indexToken = priceMultiples[i].inputToken
                         const info = ethers.utils.defaultAbiCoder.decode(
-                            ['bool', 'bool', 'uint256', 'uint256'],
+                            ['bool', 'bool', 'uint256', 'uint256', 'bool'],
                             data
                         );
                         const flatInfo: TokenInfoFlat = {
@@ -207,6 +208,7 @@ const useTokenInfo = (contracts: Contracts | undefined, priceMultiples: TokenTil
                             burnable: info[1],
                             lastminted_timestamp: info[2],
                             teraCouponPerTokenPerSecond: info[3],
+                            rewardEnabled: info[4]
                         }
                         return flatInfo
                     })
@@ -250,7 +252,7 @@ const useMultiTokenInfo = (contracts: Contracts | undefined,
                 if (!matchingPriceMultiple)
                     throw "UI error: useDynamicTokenInfo algorithm should have eliminated nulls"
                 const newTera = t.teraCouponPerTokenPerSecond.mul(matchingPriceMultiple.priceMultiple).div(ONE)
-                const { burnable, enabled, lastminted_timestamp } = t
+                const { burnable, enabled, lastminted_timestamp,rewardEnabled } = t
                 const issuer = matchingPriceMultiple.tilter === undefined ? contracts.issuer : matchingPriceMultiple.tilter
                 let feature: TokenFeatures = {
                     currentPrice: BigNumber.from(0),
@@ -259,7 +261,8 @@ const useMultiTokenInfo = (contracts: Contracts | undefined,
                     lastminted_timestamp,
                     teraCouponPerTokenPerSecond: newTera,
                     issue: issuer.issue,
-                    issuerToApprove: issuer.address
+                    issuerToApprove: issuer.address,
+                    rewardEnabled
                 }
                 const currentPrice = getPrice(feature)
                 feature.currentPrice = currentPrice
@@ -361,6 +364,7 @@ export interface DynamicTokenInfo {
     teraCouponPerToken: BigNumber
     issue: IssueSignature,
     issuerToApprove: string
+    rewardEnabled:boolean
 }
 type DynamicInfoMap = Record<string, DynamicTokenInfo>
 export const useDynamicTokenInfo = (contracts: Contracts | undefined, account: string | undefined, addresses: OptionalAddresses, refresh: number): DynamicInfoMap | undefined => {
@@ -379,7 +383,8 @@ export const useDynamicTokenInfo = (contracts: Contracts | undefined, account: s
                     burnable: tokenInfo[token].burnable,
                     teraCouponPerToken: tokenInfo[token].currentPrice,
                     issue: tokenInfo[token].issue,
-                    issuerToApprove: tokenInfo[token].issuerToApprove
+                    issuerToApprove: tokenInfo[token].issuerToApprove,
+                    rewardEnabled:tokenInfo[token].rewardEnabled
                 }
                 return { token, info }
             }).reduce((acc, current) => {

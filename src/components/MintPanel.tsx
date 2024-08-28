@@ -15,6 +15,7 @@ import { calculateLockupDuration, isEthAddress } from '../extensions/Utils';
 import { useDeepCompareEffect } from '../hooks/useDeepCompareEffect';
 import useEthBalance from '../hooks/useEthBalance';
 import { IssueSignature } from '../hooks/useDynamicTokenInfo';
+import treasure from '../images/eye-treasure.png'
 
 const validateMintText = (text: string) => {
     const floatRegex = /^\d+(\.\d+)?$/;
@@ -24,7 +25,8 @@ const validateMintText = (text: string) => {
 export default function MintPanel(props: LiveProps) {
     const [inputBalance, setInputBalance] = useState<BigNumber>();
     const { contracts, account, chainId } = props
-    const { selectedAssetId, dynamicTokenInfo, flxDollarPrice, tokenLockupConfig, isEth,inputDollarPrices } = useBlockchainContext()
+    const { selectedAssetId, dynamicTokenInfo, flxDollarPrice,
+        tokenLockupConfig, isEth, inputDollarPrices, rewardConfig, customRewardBalance, rewardTokenName } = useBlockchainContext()
     const blockNumber = useBlockNumber()
     const [asset, setAsset] = useState<AssetProps>()
     const [token, setToken] = useState<ERC20>()
@@ -46,11 +48,11 @@ export default function MintPanel(props: LiveProps) {
     const [dollarValueOfInputText, setDollarValueOfInputText] = useState<string | undefined>()
     const ethBalance = useEthBalance(account)
 
-    useEffect(()=>{
-        if(inputDollarPrices){
+    useEffect(() => {
+        if (inputDollarPrices) {
             setInputDollarPrice(inputDollarPrices[selectedAssetId])
         }
-    },[inputDollarPrices])
+    }, [inputDollarPrices])
 
     useEffect(() => {
         if (mintProgress === TransactionProgress.confirmed) {
@@ -76,6 +78,26 @@ export default function MintPanel(props: LiveProps) {
             }
         }
     }, [selectedAssetId, account])
+    const [rewardText, setRewardText] = useState<string>()
+
+    useDeepCompareEffect(() => {
+        if (dynamic && rewardConfig.token && flaxToMint) {
+            const mintWei = ethers.utils.parseUnits(flaxToMint, 18)
+            const bigFlaxToMint = BigNumber.from(mintWei)
+            if (rewardConfig.token.address !== ethers.constants.AddressZero
+                && rewardConfig.rewardSize.gt(0)
+                && customRewardBalance.gte(rewardConfig.rewardSize)
+                && dynamic.rewardEnabled
+                && bigFlaxToMint.gte(rewardConfig.minFlax)) {
+                //Need token Name
+                setRewardText(`${parseFloat(ethers.utils.formatEther(rewardConfig.rewardSize)).toFixed(0)} ${rewardTokenName} bonus reward`)
+            }
+            else {
+                setRewardText(undefined)
+            }
+        }
+
+    }, [customRewardBalance, rewardConfig, dynamic && flaxToMint])
 
     useDeepCompareEffect(() => {
         if (dynamic) {
@@ -158,8 +180,9 @@ export default function MintPanel(props: LiveProps) {
 
     const iconTextBox = <IconTextBox dollarValueOfInput={dollarValueOfInputText} text={mintText} setText={setMintText} cornerImage={iconImage} max={dynamic !== undefined ? ethers.utils.formatEther(dynamic.balance) : "0"} invalidReason={invalidReason} />;
     const mintValue = validateMintText(mintText) ? ethers.utils.parseEther(mintText) : BigNumber.from(0);
+    const rewardImage = rewardText?<img src={treasure} style={{width:"20px",margin:'0 5px'}} />:undefined
     return (
-        <Paper style={{ height: '300px', padding: '20px', backgroundColor: '#1D2833' }}>
+        <Paper style={{ height: '320px', padding: '20px', backgroundColor: '#1D2833' }}>
             <Grid
                 container
                 direction="column"
@@ -205,6 +228,11 @@ export default function MintPanel(props: LiveProps) {
                                     <Grid item>
                                         <Typography variant='h6'>
                                             (streamed over {lockupDuration} days)
+                                        </Typography>
+                                    </Grid>
+                                    <Grid item>
+                                        <Typography variant='h5' sx={{color:'#DAA520',marginTop:'5px', fontWeight:'bold'}}>
+                                        {rewardImage}{rewardText}{rewardImage}
                                         </Typography>
                                     </Grid>
                                     {

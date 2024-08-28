@@ -17,6 +17,8 @@ import _ from 'lodash';
 import ethTilt from "../images/ethPriceTilting.png"
 import uniTilt from '../images/uniPriceTilt.png'
 import shibTilt from '../images/shibPriceTilt.png'
+import treasure from '../images/eye-treasure.png'
+
 enum swapperType {
     behoder,
     uni,
@@ -61,7 +63,7 @@ export function Asset(props: IProps) {
     const imagePath = require(`../images/${getImagePath(asset.image)}`);
     const blockNumber = useBlockNumber();
     const { dynamicTokenInfo,
-        account, flxDollarPrice, chainId, daiPriceOfEth, setSelectedAssetId, selectedAssetId, inputDollarPrices,
+        flxDollarPrice, setSelectedAssetId, inputDollarPrices, rewardConfig, customRewardBalance
     } = useBlockchainContext()
     const [currentBalance, setCurrentBalance] = useState<string | undefined>(undefined)
     const inputs = contracts.inputs
@@ -69,6 +71,17 @@ export function Asset(props: IProps) {
     const selectedDynamic = (selectedInput !== undefined && dynamicTokenInfo) ? dynamicTokenInfo[selectedInput.address] : undefined
     const [dollarValueOfFlaxReward_str, setDollarValueOfFlaxReward_str] = useState<string>()
     const [inputDollarPrice, setInputDollarPrice] = useState<string | undefined>()
+    const [showTreasure, setShowTreasure] = useState<boolean>(false)
+
+    useDeepCompareEffect(() => {
+        if (selectedDynamic && rewardConfig && rewardConfig.token) {
+            setShowTreasure(rewardConfig.token.address !== ethers.constants.AddressZero
+                && rewardConfig.rewardSize.gt(0)
+                && customRewardBalance.gte(rewardConfig.rewardSize)
+                && selectedDynamic.rewardEnabled)
+        }
+
+    }, [customRewardBalance, rewardConfig, selectedDynamic])
 
     useDeepCompareEffect(() => {
         if (inputDollarPrice && dollarValueOfFlaxReward_str) {
@@ -120,6 +133,7 @@ export function Asset(props: IProps) {
     }, [dynamicTokenInfo])
 
     const image = <img src={imagePath.default || imagePath} style={{ height: '40px', borderRadius: "25px" }} />
+    const treasureIcon = showTreasure ? <Tooltip title="1000 EYE reward for minting more than 2000 FLX"><img src={treasure} style={{ width: "20px", margin: "0 0 0 -15px" }} /></Tooltip> : <></>
     const ammLinks = asset.AMMs?.map((amm, index) => getAMMLink(amm, index))
     const [burnableImage, setBurnableImage] = useState<React.ReactElement>(<></>)
 
@@ -129,7 +143,7 @@ export function Asset(props: IProps) {
     useEffect(() => {
         if (selectedDynamic) {
             setBurnMessage(`Deposit ${selectedDynamic.burnable ? "burnt" : "permanently locked"} on Flax minting`)
-            let places =4
+            let places = 4
             setMintPrice(TeraToString(selectedDynamic.teraCouponPerToken, places))
             let burnSource = selectedDynamic.burnable ? burn : lock
             const tilting = selectedDynamic.issuerToApprove !== contracts.issuer.address
@@ -155,6 +169,7 @@ export function Asset(props: IProps) {
 
     const APYtext = props.APY === 0 ? '--.- ' : props.APY.toFixed(2);
 
+
     //carry on here
     return <ListItem
         key={asset.address}
@@ -166,7 +181,7 @@ export function Asset(props: IProps) {
         <ListItemButton onClick={() => setSelectedAssetId(asset.address)} style={{ width: '100%', height: '100%' }}>
             <Grid container wrap="nowrap" alignItems="flex-start" spacing={1} >
                 <Grid item>
-                    {image}
+                    {image} {treasureIcon}
                 </Grid>
                 <Grid item xs  >
                     <Grid container direction="column" >

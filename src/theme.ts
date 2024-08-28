@@ -53,6 +53,12 @@ const theme = createTheme({
       fontSize: '15px',
       lineHeight: '20px',
       color: 'white',
+    },
+    h4: {
+      fontWeight: 500,
+      fontSize: '20px',
+      lineHeight: '20px',
+      color: 'white',
     }
   },
   components: {
