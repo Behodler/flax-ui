@@ -15,7 +15,6 @@ export const useAnchorPrices = (inputDollarPrices:Record<string,BigNumber>|undef
             }
 
             const flaxPrice = inputDollarPrices[addresses.Coupon.toLowerCase()]
-            console.log('flaxPrice ' + flaxPrice.toString())
             if (flaxPrice)
                 setFlxDollarPrice(flaxPrice)
 

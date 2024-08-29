@@ -14,7 +14,7 @@ import { useTokenLockupConfig } from '../hooks/useTokenLockupConfig';
 import { defaultRewardConfig, RewardConfig, useRewardConfig } from '../hooks/useRewardConfig';
 import { useCustomRewardBalance } from '../hooks/useCustomRewardBalance';
 // import { useMultipleTokenBalances } from '../hooks/useMultipleTokenBalances';
-
+import { useDerivedChainId } from '../hooks/useDerivedChainId';
 
 export interface Contracts {
     coupon: Coupon;
@@ -48,7 +48,7 @@ interface BlockchainContextType {
     account: string | undefined
     selectedAssetId: string,
     rewardConfig: RewardConfig
-    customRewardBalance:BigNumber
+    customRewardBalance: BigNumber
     flxDollarPrice: BigNumber,
     setSelectedAssetId: (assetId: string) => void
     dynamicTokenInfo: Record<string, DynamicTokenInfo> | undefined
@@ -58,7 +58,7 @@ interface BlockchainContextType {
     refreshMultiCalls: () => void
     isEth: (token: string) => boolean
     isTiltingToken: (token: string) => boolean
-    rewardTokenName:string
+    rewardTokenName: string
 }
 
 
@@ -67,7 +67,7 @@ const BlockchainContext = createContext<BlockchainContextType>({
     chainId: ChainID.disconnected, contracts: {} as any, account: "0x0", selectedAssetId: '', flxDollarPrice: BigNumber.from('100000000000000000'),
     setSelectedAssetId: (id: string) => { }, dynamicTokenInfo: undefined, daiPriceOfEth: undefined,
     tokenLockupConfig: defaultLockup, refreshMultiCalls: () => { }, isEth: defaultIsEth, isTiltingToken: defaultIsTiltingToken, inputDollarPrices: {}, rewardConfig: defaultRewardConfig,
-    customRewardBalance:BigNumber.from(0),rewardTokenName:''
+    customRewardBalance: BigNumber.from(0), rewardTokenName: ''
 });
 
 interface BlockchainProviderProps {
@@ -78,16 +78,15 @@ interface EthWindow {
     ethereum: any
 }
 export const BlockchainContextProvider: React.FC<BlockchainProviderProps> = ({ children }) => {
-    const { account, active, activateBrowserWallet } = useEthers();
+
     const [selectedAssetId, setSelectedAssetId] = useState<string>('');
-    const ethWindow: EthWindow = (window as unknown) as EthWindow;
-    const [derivedChainId, setDerivedChainId] = useState<ChainID>(ChainID.absent);
-    // Fetch addresses and contracts whenever chainId changes
+    const [refresh, setRefresh] = useState<number>(0)
+    const { derivedChainId, account } = useDerivedChainId(setRefresh, refresh)
+
     const { addresses } = useAddresses(derivedChainId);
 
     const contracts = useContracts(addresses);
-    const [refresh, setRefresh] = useState<number>(0)
-    // const rewardConfig = useRewardConfig(contracts?.issuer)
+
     const isTiltingToken = isTiltingTokenFactory(derivedChainId)
     const dynamicTokenInfo = useDynamicTokenInfo(contracts, account, addresses, refresh)
     const pricedTokens = addresses ? [addresses.Coupon, addresses.Weth, ...addresses.Inputs] : []
@@ -96,39 +95,7 @@ export const BlockchainContextProvider: React.FC<BlockchainProviderProps> = ({ c
     const { flxDollarPrice, daiPriceOfEth } = useAnchorPrices(inputDollarPrices, addresses)
     const tokenLockupConfig = useTokenLockupConfig(contracts?.issuer)
     const rewardConfig = useRewardConfig(contracts?.issuer, refresh)
-    const {customRewardBalance,rewardTokenName} = useCustomRewardBalance(addresses?.Issuer,rewardConfig.token,refresh)
-    useEffect(() => {
-        const setChain = async (chainIdHex: string) => {
-            const chainId: ChainID = parseInt(chainIdHex, 16);
-            if (supportedChain(chainId)) {
-                setDerivedChainId(chainId);
-            } else {
-                setDerivedChainId(ChainID.unsupported);
-            }
-        };
-
-        const handleChainChanged = () => window.location.reload();
-
-        const getChainIdFromMetamask = async () => {
-            if (!ethWindow.ethereum) {
-                setDerivedChainId(ChainID.absent);
-            } else if (!account || !active) {
-                setDerivedChainId(ChainID.disconnected);
-            } else {
-                const chainIdHex: string = await ethWindow.ethereum.request({ method: 'eth_chainId' });
-                setChain(chainIdHex);
-            }
-        };
-
-        getChainIdFromMetamask();
-        ethWindow.ethereum?.on('chainChanged', handleChainChanged);
-        ethWindow.ethereum?.on('accountsChanged', handleChainChanged)
-        return () => {
-            ethWindow.ethereum?.removeListener('chainChanged', handleChainChanged);
-            ethWindow.ethereum?.removeListener('accountsChanged', handleChainChanged);
-
-        };
-    }, [active, account, ethWindow.ethereum]);
+    const { customRewardBalance, rewardTokenName } = useCustomRewardBalance(addresses?.Issuer, rewardConfig.token, refresh)
 
     return (
         <BlockchainContext.Provider value={{

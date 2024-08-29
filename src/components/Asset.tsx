@@ -167,7 +167,7 @@ export function Asset(props: IProps) {
         }
     }, [selectedDynamic])
 
-    const APYtext = props.APY === 0 ? '--.- ' : props.APY.toFixed(2);
+    const APYtext = (!props.APY || props.APY === 0) ? '--.- ' : props.APY.toFixed(2);
 
 
     //carry on here

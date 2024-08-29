@@ -1,4 +1,3 @@
-import { multicall, useBlockNumber, useContractFunction, useEtherBalance, useEthers } from '@usedapp/core';
 import { Issuer, Multicall3, Tilter, TilterFactory } from "../typechain/types/ethers";  // Import TypeChain-generated type
 import { ethers, Contract, BigNumber, Overrides, PayableOverrides, providers } from 'ethers';
 import ABIs from "../constants/ABIs.json"
@@ -13,6 +12,7 @@ import { ChainID } from '../types/ChainID';
 import { getTilter } from './useTilter';
 import { ONE } from '../extensions/Utils';
 import { useEthersSigner } from './useEthersProvider';
+import { useBlockNumber } from 'wagmi'
 
 interface TokenInfo {
     burnable: boolean
@@ -52,15 +52,16 @@ const getPrice = (info: TokenFeatures): BigNumber => {
 }
 
 const useMultiTilterMapping = (contracts: Contracts | undefined, tokens: string[] | undefined, signer: providers.JsonRpcSigner | undefined, refreshCount: number) => {
-    const blockNumber = useBlockNumber()
     const [tokenTilterPairs, setTokenTilterPairs] = useState<TokenTilterPair[]>([])
-    const [refresh, setRefresh] = useState<boolean>(false)
+    const { data: blocknumber } = useBlockNumber()
 
-    useEffect(() => {
-        setRefresh(true)
-    }, [refreshCount])
+    const [refreshing,setRefreshing] = useState<boolean>(false)
+    useEffect(()=>{
+        setRefreshing(true)
+    },[refreshCount])
+
     useDeepCompareEffect(() => {
-        if (contracts && contracts.multicall3 && tokens && contracts.tilterFactory && signer && blockNumber && (blockNumber % 3 == 0 || refresh)) {
+        if (contracts && contracts.multicall3 && tokens && contracts.tilterFactory && signer && (refreshing ||Number(blocknumber) % 3 === 0)) {
             (async () => {
                 const calls = tokens.map(t => ({
 
@@ -80,12 +81,12 @@ const useMultiTilterMapping = (contracts: Contracts | undefined, tokens: string[
 
                 })
                 setTokenTilterPairs(pairs)
-                setRefresh(false)
             })().catch(error => {
                 throw "In useMutiTilterMapping: " + error
             })
+            setRefreshing(false)
         }
-    }, [contracts, tokens, blockNumber, refreshCount])
+    }, [contracts, tokens, refreshCount, blocknumber])
 
 
     return tokenTilterPairs;
@@ -98,11 +99,11 @@ const updateArray = (A: TokenTilterPair[], B: TokenTilterPair[]): TokenTilterPai
 };
 
 
-const useReferencePair = (contracts: Contracts | undefined, tokenTilterPairs: TokenTilterPair[] | undefined) => {
+const useReferencePair = (contracts: Contracts | undefined, tokenTilterPairs: TokenTilterPair[]) => {
 
     const [uniTokenTilterPairs, setUniTokenTilterPairs] = useState<TokenTilterPair[] | undefined>(tokenTilterPairs)
     useDeepCompareEffect(() => {
-        if (tokenTilterPairs && contracts) {
+        if (tokenTilterPairs.length > 0 && contracts) {
 
             (async () => {
                 const filteredTokens = tokenTilterPairs.filter(t => t.tilter !== undefined)
@@ -229,7 +230,7 @@ const useMultiTokenInfo = (contracts: Contracts | undefined,
     refresh: number): TokenFeatureMap | undefined => {
     const signer = useEthersSigner()
     const [info, setInfo] = useState<TokenFeatureMap>()
-    const blockNumber = useBlockNumber()
+    const { data: blockNumber } = useBlockNumber()
     const [halfSeconds, setHalfSeconds] = useState(0);
 
     const inputTilterPairs = useMultiTilterMapping(contracts, tokens, signer, refresh)
@@ -237,7 +238,7 @@ const useMultiTokenInfo = (contracts: Contracts | undefined,
 
     //1 ether for non tilters
     const priceMultiple: TokenTilterPair[] | undefined = usePriceMultiples(contracts, inputTilterReferencePairs);
-    const tokenInfoFlat: TokenInfoFlat[] | undefined = useTokenInfo(contracts, priceMultiple, blockNumber || 0);
+    const tokenInfoFlat: TokenInfoFlat[] | undefined = useTokenInfo(contracts, priceMultiple, Number(blockNumber) || 0);
 
 
     useDeepCompareEffect(() => {
@@ -252,7 +253,7 @@ const useMultiTokenInfo = (contracts: Contracts | undefined,
                 if (!matchingPriceMultiple)
                     throw "UI error: useDynamicTokenInfo algorithm should have eliminated nulls"
                 const newTera = t.teraCouponPerTokenPerSecond.mul(matchingPriceMultiple.priceMultiple).div(ONE)
-                const { burnable, enabled, lastminted_timestamp,rewardEnabled } = t
+                const { burnable, enabled, lastminted_timestamp, rewardEnabled } = t
                 const issuer = matchingPriceMultiple.tilter === undefined ? contracts.issuer : matchingPriceMultiple.tilter
                 let feature: TokenFeatures = {
                     currentPrice: BigNumber.from(0),
@@ -308,48 +309,42 @@ const useMultiTokenInfo = (contracts: Contracts | undefined,
 
 const useMultiTokenBalances = (multicall3: Multicall3 | undefined, holder: string | undefined, tokens: string[] | undefined, weth: string | undefined, refreshCount: number): Record<string, BigNumber> | undefined => {
     const signer = useEthersSigner()
-    const [refresh, setRefresh] = useState<boolean>(false)
     const [balances, setBalances] = useState<Record<string, BigNumber> | undefined>()
-
+    const [refreshing, setRefreshing]= useState<boolean>(false)
     const ethBalance = useEthBalance(holder)
-    const blockNumber = useBlockNumber()
+    const { data: blockNumber } = useBlockNumber()
 
-    useEffect(() => {
-        setRefresh(true)
-    }, [refreshCount, holder, tokens])
+    useEffect(()=>{
+        setRefreshing(true)
+    },[refreshCount])
 
     useDeepCompareEffect(() => {
-        if (blockNumber && (refresh || blockNumber % 5 == 0)) {
-            if (signer && holder && tokens && multicall3 && ethBalance && weth) {
+        if (signer && holder && tokens && multicall3 && ethBalance && weth &&  (refreshing ||Number(blockNumber) % 3 === 0)) {
 
-                (async () => {
-                    const wethless = tokens.filter(t => t.toLowerCase() != weth.toLowerCase())
+            (async () => {
+                const wethless = tokens.filter(t => t.toLowerCase() != weth.toLowerCase())
+                const calls = wethless.map(tokenAddress => {
+                    const tokenContract = new ethers.Contract(tokenAddress, ABIs.ERC20, signer);
+                    return {
+                        target: tokenAddress,
+                        callData: tokenContract.interface.encodeFunctionData('balanceOf', [holder])
+                    };
+                });
 
-                    const calls = wethless.map(tokenAddress => {
-                        const tokenContract = new ethers.Contract(tokenAddress, ABIs.ERC20, signer);
-                        return {
-                            target: tokenAddress,
-                            callData: tokenContract.interface.encodeFunctionData('balanceOf', [holder])
-                        };
-                    });
-
-                    const { blockNumber, returnData } = await multicall3.callStatic.aggregate(calls);
-                    const tokenBalances = (returnData.map((data, i) => ({ address: wethless[i], balance: ethers.utils.defaultAbiCoder.decode(['uint256'], data)[0] }))
-                        .reduce((acc, current) => {
-                            acc[current.address] = current.balance;
-                            return acc;
-                        }, {} as Record<string, BigNumber>))
-                    //   if (wethless.length < tokens.length) {
-                    tokenBalances[weth] = ethBalance
-                    // }
-
-                    setBalances(tokenBalances)
-
-                    setRefresh(false)
-                })()
-            }
+                const { blockNumber, returnData } = await multicall3.callStatic.aggregate(calls);
+                const tokenBalances = (returnData.map((data, i) => ({ address: wethless[i], balance: ethers.utils.defaultAbiCoder.decode(['uint256'], data)[0] }))
+                    .reduce((acc, current) => {
+                        acc[current.address] = current.balance;
+                        return acc;
+                    }, {} as Record<string, BigNumber>))
+                //   if (wethless.length < tokens.length) {
+                tokenBalances[weth] = ethBalance
+                // }
+                setBalances(tokenBalances)
+            })()
+            setRefreshing(false)
         }
-    }, [blockNumber, signer, multicall3, refresh])
+    }, [signer, multicall3, refreshCount, blockNumber])
 
     return balances;
 };
@@ -364,7 +359,7 @@ export interface DynamicTokenInfo {
     teraCouponPerToken: BigNumber
     issue: IssueSignature,
     issuerToApprove: string
-    rewardEnabled:boolean
+    rewardEnabled: boolean
 }
 type DynamicInfoMap = Record<string, DynamicTokenInfo>
 export const useDynamicTokenInfo = (contracts: Contracts | undefined, account: string | undefined, addresses: OptionalAddresses, refresh: number): DynamicInfoMap | undefined => {
@@ -384,7 +379,7 @@ export const useDynamicTokenInfo = (contracts: Contracts | undefined, account: s
                     teraCouponPerToken: tokenInfo[token].currentPrice,
                     issue: tokenInfo[token].issue,
                     issuerToApprove: tokenInfo[token].issuerToApprove,
-                    rewardEnabled:tokenInfo[token].rewardEnabled
+                    rewardEnabled: tokenInfo[token].rewardEnabled
                 }
                 return { token, info }
             }).reduce((acc, current) => {
