@@ -21,7 +21,7 @@ export const useCustomRewardBalance = (issuerAddress: string | undefined, token:
         if (token && issuerAddress) {
             (async () => {
                 setCustomRewardBalance(await token.balanceOf(issuerAddress))
-                setRewardTokenName(await token.name())
+                setRewardTokenName(await token.symbol())
             })()
         }
     }, [token, issuerAddress, localRefresh])

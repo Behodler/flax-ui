@@ -103,6 +103,19 @@
             ]
         },
         {
+            "address": "0x54965801946d768b395864019903aef8b5b63bb3",
+            "image": "eyeEth",
+            "friendlyName": "EYE/ETH LP (Uni-V2)",
+            "category": "LP",
+            "AMMs": [
+                {
+                    "location": "uni",
+                    "type": "LP",
+                    "url": "add/v2/ETH/0x155ff1a85f440ee0a382ea949f24ce4e0b751c65"
+                }
+            ]
+        },
+        {
             "address": "0x1f9840a85d5af5bf1d1762f925bdaddc4201f984",
             "image": "uni",
             "category": "Governance",
@@ -133,8 +146,7 @@
                 }
             ]
         }
-    ]
-    ,
+    ],
     "31337": [
         {
             "address": "0x1275d096b9dbf2347bd2a131fb6bdab0b4882487",

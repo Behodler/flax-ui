@@ -27,7 +27,7 @@ const useAddresses = (chainId: ChainID): { addresses: OptionalAddresses, loading
                 } else if (chainId === ChainID.mainnet) {
                     // Hardcoded Ethereum addresses for Mainnet
                     setIfNotEqual({
-                        Coupon: '0x0cf758D4303295C43CD95e1232f0101ADb3DA9E8', Issuer: '0x6827C32d222f2fA16b6BA5b320da4F8bDa34e7e5',
+                        Coupon: '0x0cf758D4303295C43CD95e1232f0101ADb3DA9E8', Issuer: '0xDf998917f61091958FeB554EDFf56aDd2fe0dF77',
                         Multicall: "0x0",Dai:'0x6B175474E89094C44Da98b954EedeAC495271d0F', HedgeyAdapter: "0xb2d3445304d40A71A4461CD3A9eCdc44f2479825", Multicall3: "0xcA11bde05977b3631167028862bE2a173976CA11",
                         Weth: '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2', UniPriceFetcher: '0x679f5bD341521573a023B77076142854abcb1A98', UniswapV2Router: '0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D', TilterFactory: '0xB8cF96fa4259b03C09050bD251bcac44d9523E39',
                         Inputs: ['0x155ff1a85f440ee0a382ea949f24ce4e0b751c65', //EYE price = 1
@@ -39,7 +39,8 @@ const useAddresses = (chainId: ChainID): { addresses: OptionalAddresses, loading
                             '0xa9eea8723fffd923f6908586455411159b525d23', //pyro(scx/ETH) price = 16857
                             '0x1f9840a85d5af5bf1d1762f925bdaddc4201f984', // UNI, 0x85fa95c7ec636ffd320e25b43b4e37df8479c56c
                             '0x95ad61b0a150d79219dcf64e1e6cc01f0b64c4ce', //SHIB, 0xAbB2223f54499b9FF2807C8d556dA65B555c30e7
-                            '0x0cf758d4303295c43cd95e1232f0101adb3da9e8'] //Flax
+                            '0x0cf758d4303295c43cd95e1232f0101adb3da9e8',
+                        '0x54965801946d768b395864019903aef8b5b63bb3'] //Flax
 
                         //tera mult:1000000000000 = 10^12 so that 1 EYE mints 1 Flax
                     });

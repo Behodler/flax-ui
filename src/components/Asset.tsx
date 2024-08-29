@@ -133,7 +133,7 @@ export function Asset(props: IProps) {
     }, [dynamicTokenInfo])
 
     const image = <img src={imagePath.default || imagePath} style={{ height: '40px', borderRadius: "25px" }} />
-    const treasureIcon = showTreasure ? <Tooltip title="1000 EYE reward for minting more than 2000 FLX"><img src={treasure} style={{ width: "20px", margin: "0 0 0 -15px" }} /></Tooltip> : <></>
+    const treasureIcon = showTreasure ? <Tooltip title={`${parseInt(ethers.utils.formatEther(rewardConfig.rewardSize))} EYE reward for minting more than ${parseInt(ethers.utils.formatEther(rewardConfig.minFlax))} FLX`}><img src={treasure} style={{ width: "20px", margin: "0 0 0 -15px" }} /></Tooltip> : <></>
     const ammLinks = asset.AMMs?.map((amm, index) => getAMMLink(amm, index))
     const [burnableImage, setBurnableImage] = useState<React.ReactElement>(<></>)
 
