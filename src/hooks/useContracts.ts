@@ -12,9 +12,12 @@ import useMulticall3 from './useMulticall3';
 import { useTilterFactory } from './useTilter';
 import { useUniswap } from './useUniswap';
 import useUniPriceFetcher from './useUniPriceFetcher';
+import { BigNumber } from 'ethers';
 // Custom hook to manage contracts based on addresses
-export function useContracts(addresses: ContractAddresses | null): Contracts | undefined {
+export function useContracts(addresses: ContractAddresses | null,account:string |undefined): {contracts: Contracts | undefined,accountIsOwner:boolean,couponBalanceOfIssuer:BigNumber} {
     const [contracts, setContracts] = useState<Contracts | undefined>();
+    const [accountIsOwner,setAccountIsOwner] = useState<boolean>(false)
+    const [couponBalanceOfIssuer,setCouponBalanceOfIssuer] = useState<BigNumber>(BigNumber.from(0))
     const coupon = useCoupon(addresses);
     const issuer = useIssuer(addresses);
     const inputs = useERC20s(addresses);
@@ -26,6 +29,23 @@ export function useContracts(addresses: ContractAddresses | null): Contracts | u
     const tokenLockup = useTokenLockUpPlans(hedgey);
     const multicall3 = useMulticall3(addresses);
 
+    useEffect(()=>{
+        if(account && issuer){
+            (async ()=>{
+               const owner = (await issuer.owner()).toLowerCase()
+               setAccountIsOwner(account.toLowerCase()===owner) 
+            })()
+        }
+    },[issuer,account])
+
+    useEffect(()=>{
+        if(coupon && issuer){
+            (async ()=>{
+                const balance = await coupon.balanceOf(issuer.address)
+                setCouponBalanceOfIssuer(balance) 
+             })()
+        }
+    },[coupon,issuer])
 
     if (coupon && issuer && hedgey && tokenLockup && multicall3 && tilterFactory && inputs && uni && uniPriceFetcher) {
         const newContracts: Contracts = { coupon, issuer, inputs, faucet, hedgey, tokenLockup, multicall3, tilterFactory, uniPriceFetcher, uniswapFactory: uni.factory, uniswapRouter: uni.router }
@@ -33,5 +53,5 @@ export function useContracts(addresses: ContractAddresses | null): Contracts | u
         if (isNew)
             setContracts({ coupon, issuer, inputs, faucet, tilterFactory, hedgey, tokenLockup, multicall3, uniswapFactory: uni.factory, uniswapRouter: uni.router, uniPriceFetcher });
     }
-    return contracts;
+    return {contracts,accountIsOwner,couponBalanceOfIssuer};
 }

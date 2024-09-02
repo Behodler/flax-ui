@@ -43,6 +43,7 @@ const defaultIsEth = (token: string) => false
 const defaultIsTiltingToken = defaultIsEth
 
 interface BlockchainContextType {
+    accountIsOwner:boolean
     chainId: ChainID;
     contracts: Contracts | undefined;
     account: string | undefined
@@ -58,12 +59,14 @@ interface BlockchainContextType {
     refreshMultiCalls: () => void
     isEth: (token: string) => boolean
     isTiltingToken: (token: string) => boolean
-    rewardTokenName: string
+    rewardTokenName: string,
+    couponBalanceOfIssuer:BigNumber
 }
 
 
 
 const BlockchainContext = createContext<BlockchainContextType>({
+    accountIsOwner:false,couponBalanceOfIssuer:BigNumber.from(0),
     chainId: ChainID.disconnected, contracts: {} as any, account: "0x0", selectedAssetId: '', flxDollarPrice: BigNumber.from('100000000000000000'),
     setSelectedAssetId: (id: string) => { }, dynamicTokenInfo: undefined, daiPriceOfEth: undefined,
     tokenLockupConfig: defaultLockup, refreshMultiCalls: () => { }, isEth: defaultIsEth, isTiltingToken: defaultIsTiltingToken, inputDollarPrices: {}, rewardConfig: defaultRewardConfig,
@@ -85,7 +88,7 @@ export const BlockchainContextProvider: React.FC<BlockchainProviderProps> = ({ c
 
     const { addresses } = useAddresses(derivedChainId);
 
-    const contracts = useContracts(addresses);
+    const {contracts,accountIsOwner,couponBalanceOfIssuer} = useContracts(addresses,account);
 
     const isTiltingToken = isTiltingTokenFactory(derivedChainId)
     const dynamicTokenInfo = useDynamicTokenInfo(contracts, account, addresses, refresh)
@@ -99,6 +102,8 @@ export const BlockchainContextProvider: React.FC<BlockchainProviderProps> = ({ c
 
     return (
         <BlockchainContext.Provider value={{
+            couponBalanceOfIssuer,
+            accountIsOwner,
             chainId: derivedChainId,
             contracts,
             account,
