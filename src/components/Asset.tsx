@@ -113,7 +113,7 @@ export function Asset(props: IProps) {
             setInputDollarPrice(undefined)
         }
 
-    }, [inputDollarPrices])
+    }, [inputDollarPrices,selectedInput])
 
     useDeepCompareEffect(() => {
         if (dynamicTokenInfo && dynamicTokenInfo[props.children.address.toLowerCase()]) {
@@ -178,7 +178,7 @@ export function Asset(props: IProps) {
         onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#273340'}  // Highlight on hover
         onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
     >
-        <ListItemButton onClick={() => setSelectedAssetId(asset.address)} style={{ width: '100%', height: '100%' }}>
+        <ListItemButton onClick={() => {setSelectedAssetId(asset.address)}} style={{ width: '100%', height: '100%' }}>
             <Grid container wrap="nowrap" alignItems="flex-start" spacing={1} >
                 <Grid item>
                     {image} {treasureIcon}

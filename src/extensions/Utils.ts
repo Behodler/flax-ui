@@ -3,7 +3,7 @@ import { TokenLockupConfig } from "../contexts/BlockchainContextProvider";
 import assetList from '../constants/AssetLists.json'
 import { AssetProps, Assets } from "../types/Assets";
 import { ChainID } from "../types/ChainID";
-export function TeraToString(teraFlaxPerInput: BigNumber, places:number): string {
+export function TeraToString(teraFlaxPerInput: BigNumber, places: number): string {
     return `${(parseFloat(BigNumber.from(teraFlaxPerInput).div(
         1
     ).toString()) / 1000_000_000_000).toFixed(places)}`
@@ -41,3 +41,22 @@ export const isTiltingTokenFactory = (chainId: ChainID) => (address: string): bo
 
 
 export const ONE = ethers.constants.WeiPerEther
+
+
+const isTilter = (name: string) => name === 'Ether' || name === 'Uni' || name === 'Shib'
+
+export const priceBuffer = (tokenAddress: string): boolean => {
+    let bufferRequired: boolean = false
+    let assets: Assets = assetList as Assets
+    Object.keys(assets).forEach((chain) => {
+        let currentChain = assets[chain]
+        currentChain.forEach(assetGroup => {
+            if (assetGroup.address.toLowerCase() === tokenAddress) {
+                if (isTilter(assetGroup.friendlyName))
+                    bufferRequired = true
+            }
+        })
+
+    })
+    return bufferRequired
+}

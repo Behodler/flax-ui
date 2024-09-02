@@ -11,7 +11,7 @@ import TransactionButton from './TransactionButton';
 import { TransactionProgress } from '../extensions/Broadcast';
 import IconTextBox, { invalidReasons } from './IconTextBox';
 import { LiveProps } from '../extensions/LiveProps';
-import { calculateLockupDuration, isEthAddress } from '../extensions/Utils';
+import { priceBuffer, calculateLockupDuration, isEthAddress } from '../extensions/Utils';
 import { useDeepCompareEffect } from '../hooks/useDeepCompareEffect';
 import useEthBalance from '../hooks/useEthBalance';
 import { IssueSignature } from '../hooks/useDynamicTokenInfo';
@@ -52,7 +52,7 @@ export default function MintPanel(props: LiveProps) {
         if (inputDollarPrices) {
             setInputDollarPrice(inputDollarPrices[selectedAssetId])
         }
-    }, [inputDollarPrices])
+    }, [inputDollarPrices, selectedAssetId])
 
     useEffect(() => {
         if (mintProgress === TransactionProgress.confirmed) {
@@ -80,17 +80,24 @@ export default function MintPanel(props: LiveProps) {
     }, [selectedAssetId, account])
     const [rewardText, setRewardText] = useState<string>()
 
+
     useDeepCompareEffect(() => {
         if (dynamic && rewardConfig.token && flaxToMint) {
             const mintWei = ethers.utils.parseUnits(flaxToMint, 18)
             const bigFlaxToMint = BigNumber.from(mintWei)
+            const bufferRequired = priceBuffer(selectedAssetId)
             if (rewardConfig.token.address !== ethers.constants.AddressZero
                 && rewardConfig.rewardSize.gt(0)
                 && customRewardBalance.gte(rewardConfig.rewardSize)
                 && dynamic.rewardEnabled
-                && bigFlaxToMint.gte(rewardConfig.minFlax)) {
-                //Need token Name
+                && (
+                    (bufferRequired && bigFlaxToMint.gte(rewardConfig.minFlax.add(ethers.constants.WeiPerEther.mul(200)))) || (!bufferRequired && bigFlaxToMint.gte(rewardConfig.minFlax))
+                )) {
+
                 setRewardText(`${parseFloat(ethers.utils.formatEther(rewardConfig.rewardSize)).toFixed(0)} ${rewardTokenName} bonus reward`)
+                //Need token Name
+
+                // setRewardText(`${parseFloat(ethers.utils.formatEther(rewardConfig.rewardSize.add(priceBuffer(rewardConfig.token.address)))).toFixed(0)} ${rewardTokenName} bonus reward`)
             }
             else {
                 setRewardText(undefined)
@@ -114,7 +121,7 @@ export default function MintPanel(props: LiveProps) {
                     validateInput(mintWei, divTera);
                     if (inputDollarPrice) {
                         const dollarWei = mintWei.mul(inputDollarPrice).div(ethers.constants.WeiPerEther)
-                        const formatted = parseFloat(ethers.utils.formatEther(dollarWei)).toFixed(2)
+                        const formatted = parseFloat(ethers.utils.formatEther(dollarWei)).toFixed(4)
                         setDollarValueOfInputText(formatted)
                     }
                     else {
@@ -124,6 +131,7 @@ export default function MintPanel(props: LiveProps) {
             } else {
                 setInvalidReason("Invalid Input")
                 setLockupDuration(tokenLockupConfig.offset)
+                setDollarValueOfInputText(undefined)
             }
         }
     }, [mintText, invalidReason, blockNumber, inputBalance, dynamic, inputDollarPrice])
@@ -180,9 +188,9 @@ export default function MintPanel(props: LiveProps) {
 
     const iconTextBox = <IconTextBox dollarValueOfInput={dollarValueOfInputText} text={mintText} setText={setMintText} cornerImage={iconImage} max={dynamic !== undefined ? ethers.utils.formatEther(dynamic.balance) : "0"} invalidReason={invalidReason} />;
     const mintValue = validateMintText(mintText) ? ethers.utils.parseEther(mintText) : BigNumber.from(0);
-    const rewardImage = rewardText?<img src={treasure} style={{width:"20px",margin:'0 5px'}} />:undefined
+    const rewardImage = rewardText ? <img src={treasure} style={{ width: "20px", margin: '0 5px' }} /> : undefined
     return (
-        <Paper style={{ height: '320px', padding: '20px', backgroundColor: '#1D2833' }}>
+        <Paper style={{ height: '340px', padding: '20px', backgroundColor: '#1D2833' }}>
             <Grid
                 container
                 direction="column"
@@ -231,8 +239,8 @@ export default function MintPanel(props: LiveProps) {
                                         </Typography>
                                     </Grid>
                                     <Grid item>
-                                        <Typography variant='h5' sx={{color:'#DAA520',marginTop:'5px', fontWeight:'bold'}}>
-                                        {rewardImage}{rewardText}{rewardImage}
+                                        <Typography variant='h5' sx={{ color: '#DAA520', marginTop: '5px', fontWeight: 'bold' }}>
+                                            {rewardImage}{rewardText}{rewardImage}
                                         </Typography>
                                     </Grid>
                                     {

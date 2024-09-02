@@ -61,21 +61,20 @@ const IconTextBox = (props: IconTextBoxProps) => {
                     height: '50px' // Adjusting field height for proper visual balance
                 }}
             />
-            <Grid container alignItems="center">
-                <Grid item xs={8}>
-                    {props.text.trim().length > 0 ?
+            <Grid container alignItems="center" spacing={1}>
 
-                        (props.invalidReason !== "" && props.invalidReason !== "Invalid Input" ?
-                            <Typography variant='h6' sx={{ color: 'red', mt: 1, margin: "-20px 0 0 0" }}>
-                                {props.invalidReason}
-                            </Typography> :
-                            <>
-                                <Typography variant='h5' sx={{ color: 'forestgreen', mt: 1, margin: "-20px 0 0 0" }}>
-                                    {props.dollarValueOfInput ? `\$${props.dollarValueOfInput}` : ''}
-                                </Typography>
-                            </>) : <></>
-                    }
+                <Grid item xs={8}>
+                    <Typography variant='h5' sx={{ color: 'forestgreen', mt: 1, margin: "-20px 0 0 0" }}>
+                        {props.dollarValueOfInput ? `\$${props.dollarValueOfInput}` : '\$0.0000'}
+                    </Typography>
                 </Grid>
+                <Grid item xs={8}>
+                    {props.invalidReason !== "Invalid Input" ? <Typography variant='h6' sx={{ color: 'red', mt: 1, margin: "-20px 0 0 0" }}>
+                        {props.invalidReason}
+                    </Typography> : <></>}
+
+                </Grid>
+
                 <Grid item xs={4} sx={{ textAlign: 'right' }}>
                     <Button onClick={() => props.setText(props.max)} size="small" sx={{ minWidth: 'auto', padding: 0, fontSize: '0.75rem' }}>MAX</Button>
                 </Grid>
