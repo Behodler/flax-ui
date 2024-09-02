@@ -14,7 +14,7 @@ const BalanceHeader = (props: LiveProps) => {
     const [balance, setBalance] = useState<string>("0.0")
     const [lockedBalance, setLockedBalance] = useState<string>();
     const blockNumber = useBlockNumber();
-    const { chainId, daiPriceOfEth, flxDollarPrice, couponBalanceOfIssuer, accountIsOwner } = useBlockchainContext()
+    const { chainId, daiPriceOfEth, flxDollarPrice,customRewardBalance, couponBalanceOfIssuer, accountIsOwner } = useBlockchainContext()
     const [formattedFlaxPrice, setFormattedFlaxPrice] = useState<string>("-.--")
 
     useEffect(() => {
@@ -61,10 +61,12 @@ const BalanceHeader = (props: LiveProps) => {
             alignItems="flex-start"
         >
             {accountIsOwner ? <Grid item>
-                <Typography variant="h2" style={{ color: 'green' }}>
+                <Typography variant="h4" style={{ color: 'green' }}>
                     Coupon balance: {ethers.utils.formatEther(couponBalanceOfIssuer)}
                 </Typography>
-
+                <Typography variant="h4" style={{ color: 'green' }}>
+                    Reward balance: {ethers.utils.formatEther(customRewardBalance)}
+                </Typography>
             </Grid> : <></>}
 
             <Grid item style={{ marginBottom: '12px' }}>
