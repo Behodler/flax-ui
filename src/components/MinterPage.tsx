@@ -10,7 +10,7 @@ import { ChainID, supportedChain } from '../types/ChainID';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 
 const MinterPage = () => {
-  const { contracts, chainId, account } = useBlockchainContext()
+  const { contracts, chainId, account, accountIsOwner } = useBlockchainContext()
   const [liveProps, setLiveProps] = useState<LiveProps | undefined>()
   const [loadingMessage, setLoadingMessage] = useState<string>("")
 
@@ -65,7 +65,7 @@ const MinterPage = () => {
               <Grid item>
 
               </Grid>
-              <Grid item style={{ height: '130px' }}>
+              <Grid item style={{ height: accountIsOwner ? '160px' : '130px' }}>
                 {BalanceHeaderLive}
               </Grid>
 
