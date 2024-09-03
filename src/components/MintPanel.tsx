@@ -26,7 +26,7 @@ export default function MintPanel(props: LiveProps) {
     const [inputBalance, setInputBalance] = useState<BigNumber>();
     const { contracts, account, chainId } = props
     const { selectedAssetId, dynamicTokenInfo, flxDollarPrice,
-        tokenLockupConfig, isEth, inputDollarPrices, rewardConfig, customRewardBalance, rewardTokenName } = useBlockchainContext()
+        tokenLockupConfig, isEth, inputDollarPrices, rewardConfig, couponBalanceOfIssuer, customRewardBalance, rewardTokenName, issuerIsMinter } = useBlockchainContext()
     const blockNumber = useBlockNumber()
     const [asset, setAsset] = useState<AssetProps>()
     const [token, setToken] = useState<ERC20>()
@@ -39,6 +39,7 @@ export default function MintPanel(props: LiveProps) {
     const [invalidReason, setInvalidReason] = useState<invalidReasons>("")
 
     const [flaxToMint, setFlaxToMint] = useState<string>("")
+    const [mintButtonText, setMintButtonText] = useState<string>("")
     const [mintDai, setMintDai] = useState<string>()
     const dynamic = token && dynamicTokenInfo ? dynamicTokenInfo[token.address] : undefined
     const issueFunction: IssueSignature = dynamic ? dynamic.issue : (inputToken: string, amount: BigNumber, recipient: string) => Promise.resolve(() => { console.log('issue function not defined') })
@@ -47,6 +48,23 @@ export default function MintPanel(props: LiveProps) {
     const [lockupDuration, setLockupDuration] = useState<number>(tokenLockupConfig.offset);
     const [dollarValueOfInputText, setDollarValueOfInputText] = useState<string | undefined>()
     const ethBalance = useEthBalance(account)
+
+    useEffect(() => {
+
+        if (flaxToMint == "") {
+            setMintButtonText("")
+        } else {
+            const flaxVal = parseFloat(flaxToMint)
+            const flaxBalanceOnIssuer = parseFloat(ethers.utils.formatEther(couponBalanceOfIssuer))
+            if (!issuerIsMinter && flaxVal > flaxBalanceOnIssuer) {
+                setMintButtonText("Mint Value Exceeds Available Flax on Issuer");
+                setInvalidReason("Insufficient Flax on Issuer")
+            }
+            else {
+                setMintButtonText(`Mint ${flaxVal.toFixed(4)} Flax ${mintDai && mintDai !== "" ? '($' + mintDai + ')' : ''}`)
+            }
+        }
+    }, [flaxToMint, couponBalanceOfIssuer, issuerIsMinter])
 
     useEffect(() => {
         if (inputDollarPrices) {
@@ -95,16 +113,13 @@ export default function MintPanel(props: LiveProps) {
                 )) {
 
                 setRewardText(`${parseFloat(ethers.utils.formatEther(rewardConfig.rewardSize)).toFixed(0)} ${rewardTokenName} bonus reward`)
-                //Need token Name
-
-                // setRewardText(`${parseFloat(ethers.utils.formatEther(rewardConfig.rewardSize.add(priceBuffer(rewardConfig.token.address)))).toFixed(0)} ${rewardTokenName} bonus reward`)
             }
             else {
                 setRewardText(undefined)
             }
         }
 
-    }, [customRewardBalance, rewardConfig, dynamic && flaxToMint])
+    }, [customRewardBalance, rewardConfig, dynamic, flaxToMint])
 
     useDeepCompareEffect(() => {
         if (dynamic) {
@@ -230,7 +245,7 @@ export default function MintPanel(props: LiveProps) {
                                     alignItems="center">
                                     <Grid item>
                                         <TransactionButton toastyEnabled={true} progressSetter={setMintProgress} progress={mintProgress} invalid={invalidReason.length > 0} transactionGetter={() => issueFunction(token.address, mintValue, account, { value: isEth(selectedAssetId) ? mintValue : 0 })} >
-                                            Mint {flaxToMint !== "" ? parseFloat(flaxToMint).toFixed(4) : ""} Flax {mintDai && mintDai !== "" ? '($' + mintDai + ')' : ''}
+                                            {mintButtonText}
                                         </TransactionButton>
                                     </Grid>
                                     <Grid item>

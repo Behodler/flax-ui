@@ -1,6 +1,6 @@
 import { TextField, InputAdornment, Button, Box, Typography, Grid } from '@mui/material';
 
-export type invalidReasons = "" | "Invalid Input" | "Exceeds Balance"
+export type invalidReasons = "" | "Invalid Input" | "Exceeds Balance"|"Insufficient Flax on Issuer"
 
 interface IconTextBoxProps {
     cornerImage: JSX.Element

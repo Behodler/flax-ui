@@ -4,6 +4,7 @@
   "private": true,
   "dependencies": {
     "@emotion/react": "^11.11.4",
+    "source-map-explorer":"2.5.3",
     "@emotion/styled": "^11.11.5",
     "@mui/icons-material": "^5.15.15",
     "@mui/material": "^5.15.15",
@@ -38,7 +39,9 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "clean": "rm -rf yarn.lock node_modules/ && yarn cache clean",
-    "aws:sync": "aws s3 sync build/ s3://flax.behodler.io --delete"
+    "aws:sync": "aws s3 sync build/ s3://flax.behodler.io --delete",
+    "analyze": "source-map-explorer 'build/static/js/*.js'",
+    "build:analyze":"yarn build && yarn analyze"
   },
   "eslintConfig": {
     "extends": [

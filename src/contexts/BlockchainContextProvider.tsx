@@ -44,6 +44,7 @@ const defaultIsTiltingToken = defaultIsEth
 
 interface BlockchainContextType {
     accountIsOwner:boolean
+    issuerIsMinter:boolean
     chainId: ChainID;
     contracts: Contracts | undefined;
     account: string | undefined
@@ -70,7 +71,7 @@ const BlockchainContext = createContext<BlockchainContextType>({
     chainId: ChainID.disconnected, contracts: {} as any, account: "0x0", selectedAssetId: '', flxDollarPrice: BigNumber.from('100000000000000000'),
     setSelectedAssetId: (id: string) => { }, dynamicTokenInfo: undefined, daiPriceOfEth: undefined,
     tokenLockupConfig: defaultLockup, refreshMultiCalls: () => { }, isEth: defaultIsEth, isTiltingToken: defaultIsTiltingToken, inputDollarPrices: {}, rewardConfig: defaultRewardConfig,
-    customRewardBalance: BigNumber.from(0), rewardTokenName: ''
+    customRewardBalance: BigNumber.from(0), rewardTokenName: '',issuerIsMinter:false
 });
 
 interface BlockchainProviderProps {
@@ -85,7 +86,7 @@ export const BlockchainContextProvider: React.FC<BlockchainProviderProps> = ({ c
     const [selectedAssetId, setSelectedAssetId] = useState<string>('');
     const [refresh, setRefresh] = useState<number>(0)
     const { derivedChainId, account } = useDerivedChainId(setRefresh, refresh)
-
+    const [issuerIsMinter,setIssuerIsMinter] = useState<boolean>(false)
     const { addresses } = useAddresses(derivedChainId);
 
     const {contracts,accountIsOwner,couponBalanceOfIssuer} = useContracts(addresses,account);
@@ -100,9 +101,23 @@ export const BlockchainContextProvider: React.FC<BlockchainProviderProps> = ({ c
     const rewardConfig = useRewardConfig(contracts?.issuer, refresh)
     const { customRewardBalance, rewardTokenName } = useCustomRewardBalance(addresses?.Issuer, rewardConfig.token, refresh)
 
+    useEffect(()=>{
+        if(contracts?.issuer){
+            (async()=>{
+                try{
+                    const isMinter= await contracts.issuer.minter()
+                    setIssuerIsMinter(isMinter)
+                }catch{
+                    setIssuerIsMinter(true)
+                }
+            })()
+        }
+    },[contracts])
+
     return (
         <BlockchainContext.Provider value={{
             couponBalanceOfIssuer,
+            issuerIsMinter,
             accountIsOwner,
             chainId: derivedChainId,
             contracts,
