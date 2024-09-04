@@ -14,12 +14,12 @@ import { useUniswap } from './useUniswap';
 import useUniPriceFetcher from './useUniPriceFetcher';
 import { BigNumber } from 'ethers';
 // Custom hook to manage contracts based on addresses
-export function useContracts(addresses: ContractAddresses | null,account:string |undefined): {contracts: Contracts | undefined,accountIsOwner:boolean,couponBalanceOfIssuer:BigNumber} {
+export function useContracts(addresses: ContractAddresses | null,account:string |undefined): {contracts: Contracts | undefined,accountIsOwner:boolean,couponBalanceOfIssuer:BigNumber,issuerIsMinter:boolean} {
     const [contracts, setContracts] = useState<Contracts | undefined>();
     const [accountIsOwner,setAccountIsOwner] = useState<boolean>(false)
     const [couponBalanceOfIssuer,setCouponBalanceOfIssuer] = useState<BigNumber>(BigNumber.from(0))
     const coupon = useCoupon(addresses);
-    const issuer = useIssuer(addresses);
+    const {issuer,issuerIsMinter} = useIssuer(addresses);
     const inputs = useERC20s(addresses);
     const faucet = useFaucet(addresses);
     const hedgey = useHedgey(addresses);
@@ -53,5 +53,5 @@ export function useContracts(addresses: ContractAddresses | null,account:string 
         if (isNew)
             setContracts({ coupon, issuer, inputs, faucet, tilterFactory, hedgey, tokenLockup, multicall3, uniswapFactory: uni.factory, uniswapRouter: uni.router, uniPriceFetcher });
     }
-    return {contracts,accountIsOwner,couponBalanceOfIssuer};
+    return {contracts,accountIsOwner,couponBalanceOfIssuer,issuerIsMinter};
 }

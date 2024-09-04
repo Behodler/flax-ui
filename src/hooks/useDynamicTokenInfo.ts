@@ -55,13 +55,13 @@ const useMultiTilterMapping = (contracts: Contracts | undefined, tokens: string[
     const [tokenTilterPairs, setTokenTilterPairs] = useState<TokenTilterPair[]>([])
     const { data: blocknumber } = useBlockNumber()
 
-    const [refreshing,setRefreshing] = useState<boolean>(false)
-    useEffect(()=>{
+    const [refreshing, setRefreshing] = useState<boolean>(false)
+    useEffect(() => {
         setRefreshing(true)
-    },[refreshCount])
+    }, [refreshCount])
 
     useDeepCompareEffect(() => {
-        if (contracts && contracts.multicall3 && tokens && contracts.tilterFactory && signer && (refreshing ||Number(blocknumber) % 3 === 0)) {
+        if (contracts && contracts.multicall3 && tokens && contracts.tilterFactory && signer && (refreshing || Number(blocknumber) % 3 === 0)) {
             (async () => {
                 const calls = tokens.map(t => ({
 
@@ -310,16 +310,16 @@ const useMultiTokenInfo = (contracts: Contracts | undefined,
 const useMultiTokenBalances = (multicall3: Multicall3 | undefined, holder: string | undefined, tokens: string[] | undefined, weth: string | undefined, refreshCount: number): Record<string, BigNumber> | undefined => {
     const signer = useEthersSigner()
     const [balances, setBalances] = useState<Record<string, BigNumber> | undefined>()
-    const [refreshing, setRefreshing]= useState<boolean>(false)
+    const [refreshing, setRefreshing] = useState<boolean>(false)
     const ethBalance = useEthBalance(holder)
     const { data: blockNumber } = useBlockNumber()
 
-    useEffect(()=>{
+    useEffect(() => {
         setRefreshing(true)
-    },[refreshCount])
+    }, [refreshCount])
 
     useDeepCompareEffect(() => {
-        if (signer && holder && tokens && multicall3 && ethBalance && weth &&  (refreshing ||Number(blockNumber) % 3 === 0)) {
+        if (signer && holder && tokens && multicall3 && ethBalance && weth && (refreshing || Number(blockNumber) % 3 === 0)) {
 
             (async () => {
                 const wethless = tokens.filter(t => t.toLowerCase() != weth.toLowerCase())
@@ -340,7 +340,9 @@ const useMultiTokenBalances = (multicall3: Multicall3 | undefined, holder: strin
                 //   if (wethless.length < tokens.length) {
                 tokenBalances[weth] = ethBalance
                 // }
-                setBalances(tokenBalances)
+                if (!_.isEqual(tokenBalances, balances)) {
+                    setBalances(tokenBalances)
+                }
             })()
             setRefreshing(false)
         }

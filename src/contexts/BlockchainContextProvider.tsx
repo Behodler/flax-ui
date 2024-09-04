@@ -15,6 +15,7 @@ import { defaultRewardConfig, RewardConfig, useRewardConfig } from '../hooks/use
 import { useCustomRewardBalance } from '../hooks/useCustomRewardBalance';
 // import { useMultipleTokenBalances } from '../hooks/useMultipleTokenBalances';
 import { useDerivedChainId } from '../hooks/useDerivedChainId';
+import { useTilterBalances } from '../hooks/useTilterBalances';
 
 export interface Contracts {
     coupon: Coupon;
@@ -43,8 +44,8 @@ const defaultIsEth = (token: string) => false
 const defaultIsTiltingToken = defaultIsEth
 
 interface BlockchainContextType {
-    accountIsOwner:boolean
-    issuerIsMinter:boolean
+    accountIsOwner: boolean
+    issuerIsMinter: boolean
     chainId: ChainID;
     contracts: Contracts | undefined;
     account: string | undefined
@@ -61,17 +62,18 @@ interface BlockchainContextType {
     isEth: (token: string) => boolean
     isTiltingToken: (token: string) => boolean
     rewardTokenName: string,
-    couponBalanceOfIssuer:BigNumber
+    couponBalanceOfIssuer: BigNumber
+    tilterBalanceMapping: Record<string, string>
 }
 
 
 
 const BlockchainContext = createContext<BlockchainContextType>({
-    accountIsOwner:false,couponBalanceOfIssuer:BigNumber.from(0),
+    accountIsOwner: false, couponBalanceOfIssuer: BigNumber.from(0),
     chainId: ChainID.disconnected, contracts: {} as any, account: "0x0", selectedAssetId: '', flxDollarPrice: BigNumber.from('100000000000000000'),
     setSelectedAssetId: (id: string) => { }, dynamicTokenInfo: undefined, daiPriceOfEth: undefined,
     tokenLockupConfig: defaultLockup, refreshMultiCalls: () => { }, isEth: defaultIsEth, isTiltingToken: defaultIsTiltingToken, inputDollarPrices: {}, rewardConfig: defaultRewardConfig,
-    customRewardBalance: BigNumber.from(0), rewardTokenName: '',issuerIsMinter:false
+    customRewardBalance: BigNumber.from(0), rewardTokenName: '', issuerIsMinter: false, tilterBalanceMapping: {}
 });
 
 interface BlockchainProviderProps {
@@ -86,10 +88,9 @@ export const BlockchainContextProvider: React.FC<BlockchainProviderProps> = ({ c
     const [selectedAssetId, setSelectedAssetId] = useState<string>('');
     const [refresh, setRefresh] = useState<number>(0)
     const { derivedChainId, account } = useDerivedChainId(setRefresh, refresh)
-    const [issuerIsMinter,setIssuerIsMinter] = useState<boolean>(false)
     const { addresses } = useAddresses(derivedChainId);
 
-    const {contracts,accountIsOwner,couponBalanceOfIssuer} = useContracts(addresses,account);
+    const { contracts, accountIsOwner, couponBalanceOfIssuer, issuerIsMinter } = useContracts(addresses, account);
 
     const isTiltingToken = isTiltingTokenFactory(derivedChainId)
     const dynamicTokenInfo = useDynamicTokenInfo(contracts, account, addresses, refresh)
@@ -100,19 +101,7 @@ export const BlockchainContextProvider: React.FC<BlockchainProviderProps> = ({ c
     const tokenLockupConfig = useTokenLockupConfig(contracts?.issuer)
     const rewardConfig = useRewardConfig(contracts?.issuer, refresh)
     const { customRewardBalance, rewardTokenName } = useCustomRewardBalance(addresses?.Issuer, rewardConfig.token, refresh)
-
-    useEffect(()=>{
-        if(contracts?.issuer){
-            (async()=>{
-                try{
-                    const isMinter= await contracts.issuer.minter()
-                    setIssuerIsMinter(isMinter)
-                }catch{
-                    setIssuerIsMinter(true)
-                }
-            })()
-        }
-    },[contracts])
+    const tilterBalanceMapping = useTilterBalances(derivedChainId, contracts?.coupon, contracts?.tilterFactory, contracts?.multicall3, accountIsOwner);
 
     return (
         <BlockchainContext.Provider value={{
@@ -134,7 +123,8 @@ export const BlockchainContextProvider: React.FC<BlockchainProviderProps> = ({ c
             rewardTokenName,
             refreshMultiCalls: () => { console.log('Refreshed at ' + Date()); setTimeout(() => setRefresh(refresh + 1), 10000) },
             isEth: addresses ? (token: string) => token === addresses.Weth : defaultIsEth,
-            isTiltingToken
+            isTiltingToken,
+            tilterBalanceMapping
         }}>
             {children}
         </BlockchainContext.Provider>

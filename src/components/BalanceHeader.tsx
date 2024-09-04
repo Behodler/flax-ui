@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Box, Grid, Tooltip, Typography } from '@mui/material';
+import { Box, Grid, List, ListItem, Tooltip, Typography } from '@mui/material';
 import Flax from "../images/FlaxSmall.png"
 import HedgeyIcon from "../images/hedgeyIcon.png"
 import { useBlockchainContext } from '../contexts/BlockchainContextProvider';
@@ -8,13 +8,20 @@ import { BigNumber, ethers } from 'ethers';
 import { LiveProps } from '../extensions/LiveProps';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 
+const AdminListItem = (props: { children: string }) => {
+    return <ListItem >
+        <Typography variant="h5" style={{ color: 'green' }}>
+            {props.children}
+        </Typography>
+    </ListItem>
+}
 
 const BalanceHeader = (props: LiveProps) => {
     const { account, contracts } = props
     const [balance, setBalance] = useState<string>("0.0")
     const [lockedBalance, setLockedBalance] = useState<string>();
     const blockNumber = useBlockNumber();
-    const { chainId, daiPriceOfEth, flxDollarPrice,customRewardBalance, couponBalanceOfIssuer, accountIsOwner } = useBlockchainContext()
+    const { tilterBalanceMapping, flxDollarPrice, customRewardBalance, couponBalanceOfIssuer, accountIsOwner } = useBlockchainContext()
     const [formattedFlaxPrice, setFormattedFlaxPrice] = useState<string>("-.--")
 
     useEffect(() => {
@@ -61,12 +68,23 @@ const BalanceHeader = (props: LiveProps) => {
             alignItems="flex-start"
         >
             {accountIsOwner ? <Grid item>
-                <Typography variant="h4" style={{ color: 'green' }}>
-                    Coupon balance: {ethers.utils.formatEther(couponBalanceOfIssuer)}
-                </Typography>
-                <Typography variant="h4" style={{ color: 'green' }}>
-                    Reward balance: {ethers.utils.formatEther(customRewardBalance)}
-                </Typography>
+                <List>
+                    <AdminListItem key="issuer">
+                        {`Issuer Flax balance: ${ethers.utils.formatEther(couponBalanceOfIssuer)}`}
+                    </AdminListItem>
+                    <AdminListItem key="reward">
+                        {`Reward balance: ${ethers.utils.formatEther(customRewardBalance)}`}
+                    </AdminListItem>
+                    <AdminListItem key="heading">
+                        Tilter flax balances
+                    </AdminListItem>
+                    {Object.keys(tilterBalanceMapping).map(tilter => (
+                        <AdminListItem key={tilter}>
+                            {`${tilter}: ${ethers.utils.formatEther(tilterBalanceMapping[tilter])}`}
+                        </AdminListItem>
+                    ))}
+
+                </List>
             </Grid> : <></>}
 
             <Grid item style={{ marginBottom: '12px' }}>
