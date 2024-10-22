@@ -25,7 +25,7 @@ const BalanceHeader = (props: LiveProps) => {
     const [formattedFlaxPrice, setFormattedFlaxPrice] = useState<string>("-.--")
 
     useEffect(() => {
-        setFormattedFlaxPrice(parseFloat(ethers.utils.formatEther(flxDollarPrice)).toFixed(2))
+        setFormattedFlaxPrice(parseFloat(ethers.utils.formatEther(flxDollarPrice)).toFixed(3))
     }, [flxDollarPrice])
 
     useEffect(() => {

@@ -59,6 +59,10 @@ const useAddresses = (chainId: ChainID): { addresses: OptionalAddresses, loading
                         //tera mult:1000000000000 = 10^12 so that 1 EYE mints 1 Flax
                     });
                     //input order: EYE, SCX, SCX/EYE,pyro(SCX/EYE), SCX/ETH, pyro(SCX/ETH),
+                }else if (chainId === ChainID.arbitrum){
+                    //FLX 0xA11447e54dB756A40xA11447e54dB756A4715F2cf125D74df641716134715F2cf125D74df641716134
+                    //Weth: 0x82aF49447D8a07e3bd95BD0d56f35241523fBab1
+                    //Flx/Weth 0xa72c24a1c48005dea6d74bbbb4c49bef5fd36bf5
                 }
 
             } catch (e) {
