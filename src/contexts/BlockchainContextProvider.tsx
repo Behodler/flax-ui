@@ -59,6 +59,7 @@ interface BlockchainContextType {
     tokenLockupConfig: TokenLockupConfig,
     inputDollarPrices: Record<string, BigNumber>
     refreshMultiCalls: () => void
+    ethWindow?: EthWindow
     isEth: (token: string) => boolean
     isTiltingToken: (token: string) => boolean
     rewardTokenName: string,
@@ -83,6 +84,9 @@ interface BlockchainProviderProps {
 interface EthWindow {
     ethereum: any
 }
+interface EthGetBalance {
+    (account: string): Promise<any>
+}
 export const BlockchainContextProvider: React.FC<BlockchainProviderProps> = ({ children }) => {
 
     const [selectedAssetId, setSelectedAssetId] = useState<string>('');
@@ -91,7 +95,7 @@ export const BlockchainContextProvider: React.FC<BlockchainProviderProps> = ({ c
     const { addresses } = useAddresses(derivedChainId);
 
     const { contracts, accountIsOwner, couponBalanceOfIssuer, issuerIsMinter } = useContracts(addresses, account);
-
+    const [getEthBalance, setGetEthBalance] = useState<EthGetBalance>()
     const isTiltingToken = isTiltingTokenFactory(derivedChainId)
     const dynamicTokenInfo = useDynamicTokenInfo(contracts, account, addresses, refresh)
     const pricedTokens = addresses ? [addresses.Coupon, addresses.Weth, ...addresses.Inputs] : []
@@ -102,7 +106,19 @@ export const BlockchainContextProvider: React.FC<BlockchainProviderProps> = ({ c
     const rewardConfig = useRewardConfig(contracts?.issuer, refresh)
     const { customRewardBalance, rewardTokenName } = useCustomRewardBalance(addresses?.Issuer, rewardConfig.token, refresh)
     const tilterBalanceMapping = useTilterBalances(derivedChainId, contracts?.coupon, contracts?.tilterFactory, contracts?.multicall3, accountIsOwner);
+    const ethWindow: EthWindow = (window as unknown) as EthWindow;
 
+    // useEffect(() => {
+    //     if (ethWindow.ethereum) {
+
+    //         // (async () => {
+    //         //     const result = await ethWindow.ethereum.request({ method: 'eth_getBalance', params: ['0x89091028D5097fF100D05De76f65DFC9631A9032', "latest"] })
+    //         //     console.log('result :' + result)
+    //         // })()
+    //         console.log('setting')
+    //         setGetEthBalance(async (currentAccount: string) => ethWindow.ethereum.request({ method: 'eth_getBalance', params: [currentAccount, "latest"] }))
+    //     }
+    // }, [ethWindow.ethereum])
     return (
         <BlockchainContext.Provider value={{
             couponBalanceOfIssuer,
@@ -124,6 +140,7 @@ export const BlockchainContextProvider: React.FC<BlockchainProviderProps> = ({ c
             refreshMultiCalls: () => { console.log('Refreshed at ' + Date()); setTimeout(() => setRefresh(refresh + 1), 10000) },
             isEth: addresses ? (token: string) => token === addresses.Weth : defaultIsEth,
             isTiltingToken,
+            ethWindow,
             tilterBalanceMapping
         }}>
             {children}
@@ -131,4 +148,23 @@ export const BlockchainContextProvider: React.FC<BlockchainProviderProps> = ({ c
     );
 };
 
+
+
 export const useBlockchainContext = () => useContext(BlockchainContext);
+
+export const useInejctedBalance = (account: string | undefined) => {
+    const { ethWindow } = useBlockchainContext()
+    const [balance, setBalance] = useState<BigNumber | undefined>()
+
+    useEffect(() => {
+        if (ethWindow) {
+            (async (
+            ) => {
+                const result = await ethWindow.ethereum.request({ method: 'eth_getBalance', params: [account, "latest"] })
+                setBalance(BigNumber.from(result))
+
+            })()
+        }
+    }, [ethWindow])
+    return balance
+}
