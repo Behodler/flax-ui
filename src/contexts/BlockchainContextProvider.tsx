@@ -152,7 +152,7 @@ export const BlockchainContextProvider: React.FC<BlockchainProviderProps> = ({ c
 
 export const useBlockchainContext = () => useContext(BlockchainContext);
 
-export const useInejctedBalance = (account: string | undefined) => {
+export const useInejctedBalance = (account: string | undefined, blockNumber: number | undefined) => {
     const { ethWindow } = useBlockchainContext()
     const [balance, setBalance] = useState<BigNumber | undefined>()
 
@@ -165,6 +165,6 @@ export const useInejctedBalance = (account: string | undefined) => {
 
             })()
         }
-    }, [ethWindow])
+    }, [ethWindow, blockNumber])
     return balance
 }

@@ -12,7 +12,7 @@ const useEthBalance = (account: string | undefined): BigNumber | undefined => {
     const blockNumber = useBlockNumber()
     const { ethWindow } = useBlockchainContext()
 
-    const val = useInejctedBalance(account)
+    const val = useInejctedBalance(account,blockNumber)
 
     useEffect(()=>{
         if (val)
